@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none';">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aether</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <img src="build/icon.svg" alt="Aether" class="brand-icon" onerror="this.style.display='none'">
+          <div>
+            <div class="brand-title">Aether</div>
+            <div class="brand-subtitle">AI-агент для Debian</div>
+          </div>
+        </div>
+        <button id="new-chat-btn" class="btn btn-primary btn-full">Новый чат</button>
+      </div>
+      <div class="sidebar-section">
+        <div class="section-title">Сессия</div>
+        <div id="runtime-status" class="status-card">Готово</div>
+      </div>
+      <div class="sidebar-section sidebar-bottom">
+        <button id="open-settings-btn" class="btn btn-secondary btn-full">Настройки</button>
+        <div id="sudo-indicator" class="sudo-indicator" title="Статус sudo">sudo: выкл.</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="main-header">
+        <div class="header-left">
+          <h1 class="chat-title">Чат</h1>
+          <span id="model-badge" class="badge">модель не настроена</span>
+        </div>
+        <div class="header-right">
+          <button id="abort-btn" class="btn btn-ghost" title="Остановить генерацию" disabled>Стоп</button>
+        </div>
+      </header>
+
+      <div id="messages" class="messages" aria-live="polite"></div>
+
+      <div class="composer-wrap">
+        <div id="stream-status" class="stream-status"></div>
+        <div class="composer">
+          <textarea id="composer-input" class="composer-input" rows="1" placeholder="Напишите сообщение… (Enter — отправить, Shift+Enter — новая строка)"></textarea>
+          <button id="send-btn" class="btn btn-primary">Отправить</button>
+        </div>
+        <div class="composer-hint">Поддерживаются инструменты агента Pi (bash/read/write/edit/grep/find/ls) при доступном bridge. Опросы: блоки ```poll``` интерактивны.</div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Settings modal -->
+  <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal-backdrop" data-close="settings"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="settings-title">Настройки</h2>
+        <button class="btn btn-ghost" data-close="settings">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <label>Провайдер
+            <select id="set-provider">
+              <option value="openai">openai</option>
+              <option value="anthropic">anthropic</option>
+              <option value="google">google</option>
+              <option value="openrouter">openrouter</option>
+              <option value="groq">groq</option>
+              <option value="xai">xai</option>
+              <option value="mistral">mistral</option>
+              <option value="custom">custom</option>
+            </select>
+          </label>
+          <label>Base URL
+            <input id="set-base-url" type="text" placeholder="https://api.openai.com/v1 (опционально)" />
+          </label>
+          <label>API ключ
+            <input id="set-api-key" type="password" placeholder="Введите ключ (сохраняется локально)" autocomplete="off" />
+          </label>
+          <label>Модель
+            <input id="set-model" type="text" placeholder="например: gpt-4o-mini" />
+          </label>
+          <label>Рабочая директория
+            <input id="set-workspace" type="text" placeholder="~/ (по умолчанию)" />
+          </label>
+          <label class="checkbox-row">
+            <input id="set-sudo-enabled" type="checkbox" />
+            <span>Разрешить sudo (подтверждение пароля один раз за сессию)</span>
+          </label>
+        </div>
+        <div class="settings-note">Ключи и настройки сохраняются в <code>~/.config/aether-desktop/settings.json</code> с правами 0600. Секреты не попадают в репозиторий.</div>
+        <div id="settings-runtime" class="settings-runtime"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="settings-save-btn" class="btn btn-primary">Сохранить</button>
+        <button class="btn btn-secondary" data-close="settings">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sudo modal -->
+  <div id="sudo-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="sudo-title">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card modal-small">
+      <div class="modal-header">
+        <h2 id="sudo-title">Подтверждение sudo</h2>
+      </div>
+      <div class="modal-body">
+        <p id="sudo-reason" class="muted">Требуются права администратора для этой сессии.</p>
+        <label>Пароль sudo
+          <input id="sudo-password" type="password" autocomplete="current-password" />
+        </label>
+        <div id="sudo-error" class="form-error"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="sudo-confirm-btn" class="btn btn-primary">Подтвердить</button>
+        <button id="sudo-cancel-btn" class="btn btn-secondary">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

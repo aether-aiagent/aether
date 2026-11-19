@@ -1,0 +1,66 @@
+name: Build Aether Desktop (Debian 13)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, lab/power-ui ]
+    paths:
+      - 'debian/**'
+      - '.github/workflows/build-debian-desktop.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: debian/aether-desktop
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.19.0'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build vendored agent core (pi-bridge)
+        working-directory: debian/aether-desktop/vendor/pi-bridge
+        run: |
+          npm install --no-audit --no-fund --ignore-scripts --legacy-peer-deps
+          npm run build
+
+      - name: Syntax check
+        run: |
+          for f in main.js preload.js renderer.js src/*.js test/*.js; do
+            node --check "$f"
+          done
+
+      - name: Run smoke tests
+        run: npm test
+
+      - name: Build .deb and AppImage
+        env:
+          ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npx electron-builder --linux deb AppImage --publish never
+
+      - name: Show artifacts
+        run: ls -lh dist-electron || true
+
+      - name: Upload Debian package
+        uses: actions/upload-artifact@v7
+        with:
+          name: aether-desktop-deb
+          path: |
+            debian/aether-desktop/dist-electron/*.deb
+            debian/aether-desktop/dist-electron/*.AppImage
+          if-no-files-found: error

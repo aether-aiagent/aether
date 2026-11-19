@@ -1,0 +1,17 @@
+{
+  "name": "aether-ai-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "AI Lab: spawn goal-scoped sub-agents and let a reviewer agent accept or reject their work.",
+  "license": "MIT",
+  "aether": {
+    "api": {
+      "min": 2,
+      "max": 2
+    },
+    "extensions": [
+      "./index.js"
+    ]
+  }
+}

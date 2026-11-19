@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Aether
+Comment=AI-агент Aether для Debian
+Exec=aether-desktop %U
+Icon=aether-desktop
+Terminal=false
+Categories=Development;Utility;
+StartupWMClass=Aether
+Keywords=AI;Agent;Chat;Pi;Aether;

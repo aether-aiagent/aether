@@ -1,0 +1,17 @@
+{
+  "name": "aether-lab-power",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Three power tools in the conversation drawer: Mission Control, Fan-out and the Memory Vault.",
+  "license": "MIT",
+  "aether": {
+    "api": {
+      "min": 2,
+      "max": 2
+    },
+    "extensions": [
+      "./index.js"
+    ]
+  }
+}

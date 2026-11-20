@@ -82,7 +82,9 @@ import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.Terminal
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Scaffold
@@ -750,6 +752,34 @@ fun ConversationScreen(
                                 .height(1.dp)
                         )
                     }
+                }
+            }
+
+            val scrollScope = rememberCoroutineScope()
+            val showScrollToBottom by remember(listState) {
+                derivedStateOf { listState.canScrollForward }
+            }
+            if (showScrollToBottom) {
+                SmallFloatingActionButton(
+                    onClick = {
+                        scrollScope.launch {
+                            val lastIndex = (listState.layoutInfo.totalItemsCount - 1).coerceAtLeast(0)
+                            listState.animateScrollToItem(lastIndex)
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(
+                            end = 20.dp,
+                            bottom = composerBodyHeight + animatedImeBottom + 16.dp,
+                        ),
+                    containerColor = AetherSurfaceHigh,
+                    contentColor = AetherPrimary,
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.KeyboardArrowDown,
+                        contentDescription = stringResource(R.string.chat_scroll_to_bottom),
+                    )
                 }
             }
 

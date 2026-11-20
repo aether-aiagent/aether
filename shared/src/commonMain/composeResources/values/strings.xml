@@ -1177,6 +1177,7 @@
     <string name="about_repository_value">github.com/jcufyr6d5djj-beep/aether</string>
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_appearance_hub_subtitle">Haptics, typing animation, chat list swipes</string>
+    <string name="chat_scroll_to_bottom">Scroll to latest</string>
     <string name="settings_search_placeholder">Search settings</string>
     <string name="settings_search_empty">Nothing found</string>
     <string name="settings_appearance_section_theme">Theme</string>

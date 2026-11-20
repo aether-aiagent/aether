@@ -1156,6 +1156,7 @@
     <string name="about_repository_value">github.com/jcufyr6d5djj-beep/aether</string>
     <string name="settings_appearance_title">Внешний вид</string>
     <string name="settings_appearance_hub_subtitle">Вибрация, анимация печати, свайпы в списке чатов</string>
+    <string name="chat_scroll_to_bottom">К последнему сообщению</string>
     <string name="settings_search_placeholder">Поиск по настройкам</string>
     <string name="settings_search_empty">Ничего не найдено</string>
     <string name="settings_appearance_section_theme">Тема</string>

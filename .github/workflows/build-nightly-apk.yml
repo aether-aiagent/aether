@@ -18,6 +18,7 @@ on:
       - 'gradle.properties'
       - 'gradle/**'
       - 'gradlew'
+      - 'VERSION'
       - '.github/workflows/build-nightly-apk.yml'
 
 permissions:

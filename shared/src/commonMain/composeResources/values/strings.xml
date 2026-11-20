@@ -64,6 +64,11 @@
     <string name="common_retry">Retry</string>
     <string name="common_remove">Remove</string>
     <string name="common_copy_reply">Copy reply</string>
+    <string name="chat_read_aloud">Read aloud</string>
+    <string name="chat_stop_reading">Stop reading</string>
+    <string name="chat_share_reply">Share reply</string>
+    <string name="chat_copy_code">Copy code</string>
+    <string name="chat_code_copied">Copied</string>
     <string name="common_redo_reply">Redo reply</string>
     <string name="common_delete_reply">Delete reply</string>
     <string name="statistics_title">Statistics</string>

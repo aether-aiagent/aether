@@ -62,6 +62,11 @@
     <string name="common_retry">Повторить попытку</string>
     <string name="common_remove">Удалить</string>
     <string name="common_copy_reply">Копировать ответ</string>
+    <string name="chat_read_aloud">Прочитать вслух</string>
+    <string name="chat_stop_reading">Остановить чтение</string>
+    <string name="chat_share_reply">Поделиться ответом</string>
+    <string name="chat_copy_code">Копировать код</string>
+    <string name="chat_code_copied">Скопировано</string>
     <string name="common_redo_reply">Повторить ответ</string>
     <string name="common_delete_reply">Удалить ответ</string>
     <string name="statistics_title">Статистика</string>

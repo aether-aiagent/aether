@@ -250,7 +250,7 @@ private fun LegacyConversationDrawer(
         if (query.isBlank()) {
             sessions
         } else {
-            sessions.filter { session -> session.title.lowercase().contains(query) }
+            sessions.filter { session -> chatMatchesQuery(session, query) }
         }
     }
 
@@ -310,6 +310,7 @@ private fun LegacyConversationDrawer(
                         items(bucketSessions, key = { it.id }) { session ->
                         DrawerSessionRow(
                             session = session,
+                            searchQuery = searchQuery,
                             selected = session.id == selectedSessionId,
                             indicator = when {
                                 sessionExecutionStates[session.id]?.isRunning == true -> DrawerSessionIndicator.Working
@@ -496,6 +497,7 @@ private fun DrawerDateHeader(bucket: ChatDateBucket) {
 @Composable
 private fun DrawerSessionRow(
     session: ChatSession,
+    searchQuery: String,
     selected: Boolean,
     indicator: DrawerSessionIndicator,
     onClick: () -> Unit,
@@ -588,15 +590,12 @@ private fun DrawerSessionRow(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    val previewText = session.preview.trim()
+                    val previewText = chatSearchSnippet(session, searchQuery) ?: session.preview.trim()
                     if (previewText.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(2.dp))
-                        Text(
+                        SearchSnippetText(
                             text = previewText,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = AetherOnSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                            query = searchQuery,
                         )
                     }
                 }

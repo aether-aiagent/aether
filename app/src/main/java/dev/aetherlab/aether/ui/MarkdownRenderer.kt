@@ -1,5 +1,7 @@
 package dev.aetherlab.aether.ui
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
@@ -35,11 +37,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -64,6 +71,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -83,6 +91,7 @@ import dev.aetherlab.aether.ui.theme.AetherOutlineSoft
 import dev.aetherlab.aether.ui.theme.AetherPrimary
 import dev.aetherlab.aether.ui.theme.AetherSurface
 import dev.aetherlab.aether.ui.theme.AetherSurfaceHigh
+import dev.aetherlab.aether.ui.theme.AetherTertiary
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.URLDecoder
@@ -91,6 +100,7 @@ import java.security.MessageDigest
 import java.util.Base64
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -234,7 +244,7 @@ fun MarkdownContent(
                     }
 
                     is MarkdownBlock.CodeFence -> {
-                        MarkdownCodeFence(block.code, fadeSpan)
+                        MarkdownCodeFence(block.code, block.language, fadeSpan)
                     }
 
                     is MarkdownBlock.Poll -> {
@@ -501,19 +511,66 @@ private fun MarkdownTableRow(
 @Composable
 private fun MarkdownCodeFence(
     code: MarkdownSourceText,
+    language: String,
     fadeSpan: MarkdownFadeSpan?,
 ) {
+    val context = LocalContext.current
+    var copied by remember(code.text) { mutableStateOf(false) }
+    LaunchedEffect(copied) {
+        if (copied) {
+            delay(1600)
+            copied = false
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(AetherSurfaceHigh, RoundedCornerShape(18.dp))
             .padding(horizontal = 14.dp, vertical = 12.dp)
     ) {
-        Text(
-            text = plainMarkdownText(code.text, code.sourceOffset, fadeSpan),
-            style = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
-            color = AetherOnSurface,
-        )
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = language.ifBlank { "text" },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AetherOnSurfaceVariant,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Box(
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .clickable {
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                            clipboard?.setPrimaryClip(ClipData.newPlainText("code", code.text))
+                            copied = true
+                        },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = if (copied) Icons.Rounded.Check else Icons.Rounded.ContentCopy,
+                        contentDescription = if (copied) {
+                            stringResource(R.string.chat_code_copied)
+                        } else {
+                            stringResource(R.string.chat_copy_code)
+                        },
+                        tint = if (copied) AetherTertiary else AetherOnSurfaceVariant,
+                        modifier = Modifier.size(14.dp),
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = plainMarkdownText(code.text, code.sourceOffset, fadeSpan),
+                style = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+                color = AetherOnSurface,
+            )
+        }
     }
 }
 
@@ -1222,7 +1279,7 @@ private sealed interface MarkdownBlock {
         val headers: List<MarkdownSourceText>,
         val rows: List<List<MarkdownSourceText>>,
     ) : MarkdownBlock
-    data class CodeFence(val code: MarkdownSourceText) : MarkdownBlock
+    data class CodeFence(val code: MarkdownSourceText, val language: String = "") : MarkdownBlock
     data class Poll(val poll: AetherPoll) : MarkdownBlock
     data object Rule : MarkdownBlock
 }
@@ -1270,13 +1327,13 @@ private fun parseMarkdown(markdown: String): List<MarkdownBlock> {
                 fenceLanguage == ChatChartFenceName || fenceLanguage == "aether-chart" ->
                     parseChatChartPayload(code.text)
                         ?.let { chart -> MarkdownBlock.Chart(chart) }
-                        ?: MarkdownBlock.CodeFence(code)
+                        ?: MarkdownBlock.CodeFence(code, fenceLanguage)
                 // Models emit polls as a ```poll fence; anything unparsable stays a code block.
                 fenceLanguage == AetherPollFenceName || fenceLanguage == "poll" ->
                     parseAetherPollPayload(code.text)
                         ?.let { poll -> MarkdownBlock.Poll(poll) }
-                        ?: MarkdownBlock.CodeFence(code)
-                else -> MarkdownBlock.CodeFence(code)
+                        ?: MarkdownBlock.CodeFence(code, fenceLanguage)
+                else -> MarkdownBlock.CodeFence(code, fenceLanguage)
             }
             continue
         }

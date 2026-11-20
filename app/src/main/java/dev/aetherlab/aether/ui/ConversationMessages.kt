@@ -1,6 +1,9 @@
 package dev.aetherlab.aether.ui
 
 import android.content.Context
+import android.content.Intent
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import dev.aetherlab.aether.AetherApplication
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -77,6 +80,9 @@ import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.VolumeOff
+import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -84,6 +90,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -929,6 +936,7 @@ private fun AssistantMessageBlock(
                 usageStatistics = message.usageStatistics,
                 sessionTotalTokens = sessionTotalTokens,
                 actionsEnabled = actionsEnabled,
+                replyText = message.text,
                 onCopy = onCopy,
                 onRedo = onRedo,
                 onDelete = onDelete,
@@ -1036,6 +1044,7 @@ fun ConversationAssistantGroupBubble(
                     usageStatistics = groupUsageStatistics,
                     sessionTotalTokens = sessionTotalTokens,
                     actionsEnabled = actionsEnabled,
+                    replyText = messages.getOrNull(finalTextMessageIndex)?.text.orEmpty(),
                     onCopy = onCopy,
                     onRedo = onRedo,
                     onDelete = onDelete,
@@ -1146,6 +1155,7 @@ fun ConversationAssistantGroupBubble(
                 usageStatistics = groupUsageStatistics,
                 sessionTotalTokens = sessionTotalTokens,
                 actionsEnabled = actionsEnabled,
+                replyText = messages.joinToString("\n\n") { message -> message.text }.trim(),
                 onCopy = onCopy,
                 onRedo = onRedo,
                 onDelete = onDelete,
@@ -1153,6 +1163,87 @@ fun ConversationAssistantGroupBubble(
         }
     }
 }
+
+/** Reads the reply aloud through the platform speech engine, second tap stops it. */
+@Composable
+private fun ReplySpeakAction(replyText: String) {
+    val context = LocalContext.current
+    var speaking by remember { mutableStateOf(false) }
+    var engine by remember { mutableStateOf<TextToSpeech?>(null) }
+    DisposableEffect(Unit) {
+        onDispose {
+            engine?.stop()
+            engine?.shutdown()
+            engine = null
+        }
+    }
+    fun ensureEngine(): TextToSpeech {
+        engine?.let { return it }
+        val created = TextToSpeech(context.applicationContext) { }
+        created.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) {
+                speaking = true
+            }
+
+            override fun onDone(utteranceId: String?) {
+                speaking = false
+            }
+
+            override fun onError(utteranceId: String?) {
+                speaking = false
+            }
+
+            override fun onStop(utteranceId: String?, interrupted: Boolean) {
+                speaking = false
+            }
+        })
+        engine = created
+        return created
+    }
+    val readable = remember(replyText) { speakableReplyText(replyText) }
+    AssistantMessageAction(
+        icon = if (speaking) Icons.Rounded.VolumeOff else Icons.Rounded.VolumeUp,
+        contentDescription = if (speaking) {
+            stringResource(R.string.chat_stop_reading)
+        } else {
+            stringResource(R.string.chat_read_aloud)
+        },
+        enabled = readable.isNotBlank(),
+        onClick = {
+            if (speaking) {
+                engine?.stop()
+                speaking = false
+            } else {
+                speaking = true
+                ensureEngine().speak(readable, TextToSpeech.QUEUE_FLUSH, null, "aether-reply-speech")
+            }
+        },
+    )
+}
+
+/** Hands the reply to any other app: notes, messengers, mail. */
+@Composable
+private fun ReplyShareAction(replyText: String) {
+    val context = LocalContext.current
+    AssistantMessageAction(
+        icon = Icons.Rounded.Share,
+        contentDescription = stringResource(R.string.chat_share_reply),
+        enabled = replyText.isNotBlank(),
+        onClick = {
+            val send = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, replyText)
+            }
+            context.startActivity(Intent.createChooser(send, null))
+        },
+    )
+}
+
+private fun speakableReplyText(text: String): String = text
+    .replace(Regex("```[\\s\\S]*?```"), " code block ")
+    .replace(Regex("[`*_#>|~]"), " ")
+    .replace(Regex("\\s+"), " ")
+    .trim()
 
 @Composable
 private fun AssistantGroupMessageContent(
@@ -3281,6 +3372,7 @@ private fun AssistantMessageActions(
     usageStatistics: ChatUsageStatistics?,
     sessionTotalTokens: Long?,
     actionsEnabled: Boolean,
+    replyText: String = "",
     onCopy: () -> Unit,
     onRedo: () -> Unit,
     onDelete: () -> Unit,
@@ -3327,6 +3419,8 @@ private fun AssistantMessageActions(
                 enabled = actionsEnabled,
                 onClick = onDelete,
             )
+            ReplySpeakAction(replyText = replyText)
+            ReplyShareAction(replyText = replyText)
             AssistantMessageAction(
                 icon = LucideIcons.ChartNoAxesColumn,
                 contentDescription = stringResource(R.string.statistics_title),

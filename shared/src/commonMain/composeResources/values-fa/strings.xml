@@ -61,6 +61,11 @@
     <string name="common_retry">دوباره امتحان کنید</string>
     <string name="common_remove">حذف کنید</string>
     <string name="common_copy_reply">پاسخ را کپی کنید</string>
+    <string name="chat_read_aloud">بلند خواندن</string>
+    <string name="chat_stop_reading">توقف خواندن</string>
+    <string name="chat_share_reply">اشتراک‌گذاری پاسخ</string>
+    <string name="chat_copy_code">کپی کد</string>
+    <string name="chat_code_copied">کپی شد</string>
     <string name="common_redo_reply">دوباره پاسخ دهید</string>
     <string name="common_delete_reply">حذف پاسخ</string>
     <string name="statistics_title">آمار</string>

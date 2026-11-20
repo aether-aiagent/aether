@@ -64,6 +64,11 @@
     <string name="common_retry">重试</string>
     <string name="common_remove">移除</string>
     <string name="common_copy_reply">复制回复</string>
+    <string name="chat_read_aloud">朗读</string>
+    <string name="chat_stop_reading">停止朗读</string>
+    <string name="chat_share_reply">分享回复</string>
+    <string name="chat_copy_code">复制代码</string>
+    <string name="chat_code_copied">已复制</string>
     <string name="common_redo_reply">重新执行回复</string>
     <string name="common_delete_reply">删除回复</string>
     <string name="statistics_title">数据统计</string>

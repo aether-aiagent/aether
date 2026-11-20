@@ -5,6 +5,9 @@
     <string name="app_name">Aether</string>
     <string name="common_menu">Меню</string>
     <string name="common_new_chat">Новый чат</string>
+    <string name="drawer_group_today">Сегодня</string>
+    <string name="drawer_group_yesterday">Вчера</string>
+    <string name="drawer_group_earlier">Раньше</string>
     <string name="message_root_setup_completed">Настройка root завершена</string>
     <string name="message_root_setup_failed">Не удалось настроить root: %1$s</string>
     <string name="message_pause_before_deleting_session">Приостановите этот сеанс перед его удалением.</string>

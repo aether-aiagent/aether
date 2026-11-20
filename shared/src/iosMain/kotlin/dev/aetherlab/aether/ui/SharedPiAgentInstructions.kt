@@ -34,6 +34,7 @@ internal fun buildSharedPiAgentInstructions(
             "Keep formatting minimal: short paragraphs; bullets only for genuine lists."
     )
     append(SharedPollPromptSection)
+    append(SharedChartPromptSection)
     append(SharedSubagentBackgroundSection)
 }
 

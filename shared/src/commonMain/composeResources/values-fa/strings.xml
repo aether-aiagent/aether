@@ -7,6 +7,9 @@
     <!-- Common -->
     <string name="common_menu">منو</string>
     <string name="common_new_chat">چت جدید</string>
+    <string name="drawer_group_today">امروز</string>
+    <string name="drawer_group_yesterday">دیروز</string>
+    <string name="drawer_group_earlier">پیشتر</string>
     <string name="message_root_setup_completed">راه اندازی ریشه تکمیل شد</string>
     <string name="message_root_setup_failed">راه اندازی ریشه انجام نشد: %1$s</string>
     <string name="message_pause_before_deleting_session">قبل از حذف این جلسه، آن را متوقف کنید.</string>

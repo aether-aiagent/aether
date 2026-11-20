@@ -250,6 +250,7 @@ fun MarkdownContent(
 
                     is MarkdownBlock.ImageGroup -> MarkdownImageGroup(block.images)
                     is MarkdownBlock.Mermaid -> MarkdownMermaidBlock(block.diagram)
+                    is MarkdownBlock.Chart -> ChatChartBlock(block.chart)
                     MarkdownBlock.Rule -> HorizontalDivider(color = AetherOutlineSoft)
                 }
             }
@@ -1216,6 +1217,7 @@ private sealed interface MarkdownBlock {
     data class Image(val image: MarkdownImageSpec) : MarkdownBlock
     data class ImageGroup(val images: List<MarkdownImageSpec>) : MarkdownBlock
     data class Mermaid(val diagram: MarkdownMermaidSpec) : MarkdownBlock
+    data class Chart(val chart: ChatChartSpec) : MarkdownBlock
     data class Table(
         val headers: List<MarkdownSourceText>,
         val rows: List<List<MarkdownSourceText>>,
@@ -1264,6 +1266,11 @@ private fun parseMarkdown(markdown: String): List<MarkdownBlock> {
                         ),
                     )
                 )
+                // Models emit charts as a ```chart fence; anything unparsable stays a code block.
+                fenceLanguage == ChatChartFenceName || fenceLanguage == "aether-chart" ->
+                    parseChatChartPayload(code.text)
+                        ?.let { chart -> MarkdownBlock.Chart(chart) }
+                        ?: MarkdownBlock.CodeFence(code)
                 // Models emit polls as a ```poll fence; anything unparsable stays a code block.
                 fenceLanguage == AetherPollFenceName || fenceLanguage == "poll" ->
                     parseAetherPollPayload(code.text)

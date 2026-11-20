@@ -2,6 +2,7 @@ package dev.aetherlab.aether.data.pi
 
 import dev.aetherlab.aether.data.AppSettings
 import dev.aetherlab.aether.data.LocalRuntimeId
+import dev.aetherlab.aether.ui.SharedChartPromptSection
 import dev.aetherlab.aether.ui.SharedPollPromptSection
 import dev.aetherlab.aether.ui.SharedSubagentBackgroundSection
 import java.time.ZonedDateTime
@@ -54,6 +55,7 @@ internal fun buildPiAgentInstructions(
         )
     }
     append(SharedPollPromptSection)
+    append(SharedChartPromptSection)
     append(SharedSubagentBackgroundSection)
 }
 
@@ -68,6 +70,10 @@ private fun expandDynamicPromptPlaceholders(
         "current_time" to now.toLocalTime().withNano(0).toString(),
         "timezone" to now.zone.id,
         "unix_timestamp" to now.toEpochSecond().toString(),
+        "weekday" to now.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault()),
+        "device" to "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}".trim(),
+        "android" to android.os.Build.VERSION.RELEASE.orEmpty(),
+        "locale" to Locale.getDefault().toLanguageTag(),
     )
     return DynamicPromptPlaceholderRegex.replace(prompt) { match ->
         values[match.groupValues[1].lowercase(Locale.US)] ?: match.value

@@ -7,6 +7,9 @@
     <!-- Common -->
     <string name="common_menu">Menu</string>
     <string name="common_new_chat">New chat</string>
+    <string name="drawer_group_today">Today</string>
+    <string name="drawer_group_yesterday">Yesterday</string>
+    <string name="drawer_group_earlier">Earlier</string>
     <string name="message_root_setup_completed">Root setup completed</string>
     <string name="message_root_setup_failed">Root setup failed: %1$s</string>
     <string name="message_pause_before_deleting_session">Pause this session before deleting it.</string>

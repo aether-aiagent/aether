@@ -292,6 +292,7 @@ private fun LegacyConversationDrawer(
                     }
                 }
             } else {
+                val dateGroups = remember(filteredSessions) { groupSessionsByDate(filteredSessions) }
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
@@ -302,7 +303,11 @@ private fun LegacyConversationDrawer(
                     ),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
-                    items(filteredSessions, key = { it.id }) { session ->
+                    dateGroups.forEach { (bucket, bucketSessions) ->
+                        item(key = "aether-drawer-group-$bucket") {
+                            DrawerDateHeader(bucket)
+                        }
+                        items(bucketSessions, key = { it.id }) { session ->
                         DrawerSessionRow(
                             session = session,
                             selected = session.id == selectedSessionId,
@@ -320,6 +325,7 @@ private fun LegacyConversationDrawer(
                             onExport = { onExportSession(session) },
                             onDelete = { onDeleteSession(session.id) },
                         )
+                        }
                     }
                     item(key = "aether-extension-drawer-slot") {
                         AetherExtensionSlot(
@@ -473,6 +479,21 @@ private fun DrawerCompactSearchField(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
+private fun DrawerDateHeader(bucket: ChatDateBucket) {
+    val label = when (bucket) {
+        ChatDateBucket.Today -> stringResource(R.string.drawer_group_today)
+        ChatDateBucket.Yesterday -> stringResource(R.string.drawer_group_yesterday)
+        ChatDateBucket.Earlier -> stringResource(R.string.drawer_group_earlier)
+    }
+    Text(
+        text = label,
+        style = MaterialTheme.typography.labelLarge,
+        color = AetherOnSurfaceVariant,
+        modifier = Modifier.padding(start = 6.dp, top = 14.dp, bottom = 4.dp),
+    )
+}
+
+@Composable
 private fun DrawerSessionRow(
     session: ChatSession,
     selected: Boolean,
@@ -531,6 +552,8 @@ private fun DrawerSessionRow(
                 .padding(horizontal = 12.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            ChatAvatarBadge(seed = session.id, sizeDp = 44)
+            Spacer(modifier = Modifier.width(12.dp))
             if (isRenaming) {
                 BasicTextField(
                     value = titleValue,
@@ -555,16 +578,37 @@ private fun DrawerSessionRow(
                         },
                 )
             } else {
-                Text(
-                    text = session.title.ifBlank { newChatTitle },
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
-                    ),
-                    color = AetherOnSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = session.title.ifBlank { newChatTitle },
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
+                        ),
+                        color = AetherOnSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    val previewText = session.preview.trim()
+                    if (previewText.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = previewText,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AetherOnSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+                val stampLabel = chatTimestampLabel(session.lastMessageAtMillis)
+                if (stampLabel.isNotEmpty()) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = stampLabel,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AetherOnSurfaceVariant,
+                    )
+                }
             }
             if (indicator != DrawerSessionIndicator.None) {
                 Spacer(modifier = Modifier.width(10.dp))

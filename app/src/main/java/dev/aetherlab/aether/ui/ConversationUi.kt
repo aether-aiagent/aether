@@ -407,13 +407,13 @@ fun ConversationScreen(
     val compactSuggestion = remember(messages) { compactCommandSuggestion(messages) }
     val appearancePreferences = rememberAetherAppearance()
     val conversationSpacing = if (appearancePreferences.compactMessages) 12.dp else 22.dp
-    val contextUsageLabel = sessionTotalTokens?.let { tokens ->
-        val percent = (tokens * 100L / ContextWindowHintTokens).coerceIn(0L, 100L)
-        "$percent% · " + shortTokenLabel(tokens)
-    }
     val sessionTotalTokens = remember(messages) {
         messages.sumOf { message -> message.usageStatistics?.totalTokens ?: 0L }
             .takeIf { it > 0L }
+    }
+    val contextUsageLabel = sessionTotalTokens?.let { tokens ->
+        val percent = (tokens * 100L / ContextWindowHintTokens).coerceIn(0L, 100L)
+        "$percent% · " + shortTokenLabel(tokens)
     }
     val compactSuggestionText = compactSuggestion.percent?.let { percent ->
         stringResource(R.string.chat_compact_thread_context_percent, percent)
@@ -792,15 +792,15 @@ fun ConversationScreen(
             }
 
             if (contextUsageLabel != null) {
-                Surface(
-                    shape = RoundedCornerShape(50),
-                    color = AetherSurfaceHigh,
+                Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(
                             end = 20.dp,
                             bottom = composerBodyHeight + animatedImeBottom + 30.dp,
-                        ),
+                        )
+                        .clip(RoundedCornerShape(50))
+                        .background(AetherSurfaceHigh),
                 ) {
                     Text(
                         text = contextUsageLabel,

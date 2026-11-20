@@ -316,6 +316,7 @@ fun AetherApp(
         onReplay = { viewModel.replayShowcase() }, onPause = viewModel::pauseShowcase,
         onRestore = { viewModel.replayShowcase(restoreOnly = true) }, onSpeed = viewModel::setShowcaseSpeed,
     ) else null
+    val appearancePreferences = rememberAetherAppearance()
     CompositionLocalProvider(
         LocalAetherExtensionUiController provides extensionController,
         LocalShowcaseControls provides showcaseControls,
@@ -323,6 +324,7 @@ fun AetherApp(
         AetherTheme(
             themeMode = uiState.settings.themeMode,
             language = effectiveLanguage,
+            dynamicColor = appearancePreferences.dynamicColor,
         ) {
             Surface(
                 modifier = Modifier.fillMaxSize(),

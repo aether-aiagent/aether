@@ -3,6 +3,8 @@ package dev.aetherlab.aether.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -15,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalContext
+import android.os.Build
 import androidx.compose.ui.unit.sp
 import dev.aetherlab.aether.R
 import dev.aetherlab.aether.data.AppLanguage
@@ -198,6 +202,7 @@ private fun getAetherTypography(fontFamily: FontFamily) = Typography(
 fun AetherTheme(
     themeMode: AppThemeMode = AppThemeMode.System,
     language: AppLanguage = AppLanguage.English,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val darkTheme = when (themeMode) {
@@ -205,9 +210,21 @@ fun AetherTheme(
         AppThemeMode.Light -> false
         AppThemeMode.Dark -> true
     }
+    val context = LocalContext.current
+    val activeScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && darkTheme ->
+            dynamicDarkColorScheme(context)
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
+            dynamicLightColorScheme(context)
+        else -> null
+    }
     val accessibility = rememberPlatformAccessibilityPreferences()
     SideEffect {
-        updateAetherPalette(darkTheme, accessibility.increasedContrast)
+        if (activeScheme != null) {
+            updateAetherPaletteFromScheme(activeScheme)
+        } else {
+            updateAetherPalette(darkTheme, accessibility.increasedContrast)
+        }
     }
     val currentFontFamily = if (language == AppLanguage.Persian) {
         VazirmatnFontFamily
@@ -228,7 +245,7 @@ fun AetherTheme(
         LocalReduceMotion provides accessibility.reduceMotion,
     ) {
         MaterialTheme(
-            colorScheme = when {
+            colorScheme = activeScheme ?: when {
                 darkTheme && accessibility.increasedContrast -> DarkHighContrastAetherColors
                 darkTheme -> DarkAetherColors
                 accessibility.increasedContrast -> LightHighContrastAetherColors

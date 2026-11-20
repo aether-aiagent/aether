@@ -80,6 +80,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -1416,6 +1417,7 @@ private fun SettingsHub(
     onBack: () -> Unit,
 ) {
     var topBarBodyHeightPx by remember { mutableIntStateOf(0) }
+    var settingsQuery by remember { mutableStateOf("") }
     val density = LocalDensity.current
     val fallbackTopBarBodyHeight = with(density) {
         WindowInsets.statusBars.getTop(this).toDp() + 68.dp
@@ -1443,6 +1445,37 @@ private fun SettingsHub(
                     .navigationBarsPadding(),
             ) {
                 Spacer(Modifier.height(6.dp))
+                SettingsSearchField(
+                    query = settingsQuery,
+                    onQueryChange = { settingsQuery = it },
+                )
+                Spacer(Modifier.height(12.dp))
+                if (settingsQuery.isNotBlank()) {
+                    val matches = settingsSearchEntries().filter { entry ->
+                        entry.title.contains(settingsQuery.trim(), ignoreCase = true) ||
+                            entry.subtitle.contains(settingsQuery.trim(), ignoreCase = true)
+                    }
+                    SettingsCardGroup {
+                        if (matches.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.settings_search_empty),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = AetherOnSurfaceVariant,
+                                modifier = Modifier.padding(16.dp),
+                            )
+                        } else {
+                            matches.forEachIndexed { index, entry ->
+                                if (index > 0) CardDivider()
+                                SettingsNavRow(
+                                    icon = entry.icon,
+                                    title = entry.title,
+                                    subtitle = entry.subtitle,
+                                    onClick = { onNavigate(entry.page) },
+                                )
+                            }
+                        }
+                    }
+                } else {
                 AetherExtensionSlot(AetherExtensionSlotSettingsHub)
                 if (
                     LocalAetherExtensionUiController.current
@@ -1627,6 +1660,7 @@ private fun SettingsHub(
             }
 
             Spacer(Modifier.height(32.dp))
+            }
             }
 
             SettingsTopBarOverlay(
@@ -7531,6 +7565,28 @@ private fun AppearanceSettingsPage(
         onTrailingAction = onBack,
     ) {
         Text(
+            text = stringResource(R.string.settings_appearance_section_theme),
+            style = MaterialTheme.typography.labelLarge,
+            color = AetherOnSurface,
+            modifier = Modifier.padding(horizontal = 4.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+        SettingsCardGroup {
+            Column(modifier = Modifier.padding(16.dp)) {
+                SettingsToggleRow(
+                    title = stringResource(R.string.settings_dynamic_color),
+                    subtitle = stringResource(R.string.settings_dynamic_color_subtitle),
+                    checked = appearance.dynamicColor,
+                    onCheckedChange = {
+                        appearance.updateDynamicColor(it)
+                        haptics.perform(AetherHaptic.Tick)
+                    },
+                )
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+        Text(
             text = stringResource(R.string.settings_appearance_section_feedback),
             style = MaterialTheme.typography.labelLarge,
             color = AetherOnSurface,
@@ -7704,4 +7760,150 @@ private fun AetherSwipeAction.settingsLabel(): String = when (this) {
     AetherSwipeAction.Export -> stringResource(R.string.settings_swipe_action_export)
     AetherSwipeAction.Archive -> stringResource(R.string.settings_swipe_action_archive)
     AetherSwipeAction.Trash -> stringResource(R.string.settings_swipe_action_trash)
+}
+private data class SettingsSearchEntry(
+    val page: SettingsPage,
+    val title: String,
+    val subtitle: String,
+    val icon: ImageVector,
+)
+
+@Composable
+private fun settingsSearchEntries(): List<SettingsSearchEntry> = listOf(
+    SettingsSearchEntry(
+        page = SettingsPage.General,
+        title = stringResource(R.string.settings_general),
+        subtitle = stringResource(R.string.settings_general_hint),
+        icon = Icons.Rounded.AutoAwesome,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.Appearance,
+        title = stringResource(R.string.settings_appearance_title),
+        subtitle = stringResource(R.string.settings_appearance_hub_subtitle),
+        icon = Icons.Rounded.Tune,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.Providers,
+        title = stringResource(R.string.settings_model_providers),
+        subtitle = "",
+        icon = Icons.Rounded.Cloud,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.Personalization,
+        title = stringResource(R.string.settings_personalization),
+        subtitle = stringResource(R.string.settings_custom_instructions),
+        icon = Icons.Rounded.Person,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.Reliability,
+        title = stringResource(R.string.settings_reliability),
+        subtitle = "",
+        icon = Icons.Rounded.Refresh,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.Skills,
+        title = stringResource(R.string.settings_agent_skills),
+        subtitle = "",
+        icon = Icons.Rounded.Extension,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.Extensions,
+        title = stringResource(R.string.settings_pi_extensions),
+        subtitle = "",
+        icon = Icons.Rounded.Code,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.ScheduledTasks,
+        title = stringResource(R.string.settings_scheduled_tasks),
+        subtitle = "",
+        icon = Icons.Rounded.Schedule,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.Alpine,
+        title = "Alpine",
+        subtitle = stringResource(R.string.settings_alpine_subtitle_ready),
+        icon = Icons.Rounded.Terminal,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.Termux,
+        title = stringResource(R.string.settings_termux),
+        subtitle = "",
+        icon = Icons.Rounded.Terminal,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.RuntimeDefaults,
+        title = stringResource(R.string.settings_runtime_defaults),
+        subtitle = "",
+        icon = Icons.Rounded.Folder,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.AgentMode,
+        title = stringResource(R.string.settings_agent_mode),
+        subtitle = "",
+        icon = Icons.Rounded.Security,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.RootAccess,
+        title = stringResource(R.string.settings_root_access),
+        subtitle = "",
+        icon = Icons.Rounded.Security,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.Statistics,
+        title = stringResource(R.string.settings_statistics),
+        subtitle = "",
+        icon = Icons.Rounded.Public,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.Developer,
+        title = stringResource(R.string.settings_developer),
+        subtitle = stringResource(R.string.settings_developer_subtitle),
+        icon = Icons.Rounded.WarningAmber,
+    ),
+    SettingsSearchEntry(
+        page = SettingsPage.About,
+        title = stringResource(R.string.settings_about),
+        subtitle = "",
+        icon = Icons.Rounded.Info,
+    ),
+)
+
+@Composable
+private fun SettingsSearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+        shape = RoundedCornerShape(28.dp),
+        placeholder = {
+            Text(
+                text = stringResource(R.string.settings_search_placeholder),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Rounded.Search,
+                contentDescription = null,
+                tint = AetherOnSurfaceVariant,
+            )
+        },
+        trailingIcon = if (query.isNotEmpty()) {
+            {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        contentDescription = null,
+                        tint = AetherOnSurfaceVariant,
+                    )
+                }
+            }
+        } else {
+            null
+        },
+    )
 }

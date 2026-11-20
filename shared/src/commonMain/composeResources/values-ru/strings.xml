@@ -1156,6 +1156,11 @@
     <string name="about_repository_value">github.com/jcufyr6d5djj-beep/aether</string>
     <string name="settings_appearance_title">Внешний вид</string>
     <string name="settings_appearance_hub_subtitle">Вибрация, анимация печати, свайпы в списке чатов</string>
+    <string name="settings_search_placeholder">Поиск по настройкам</string>
+    <string name="settings_search_empty">Ничего не найдено</string>
+    <string name="settings_appearance_section_theme">Тема</string>
+    <string name="settings_dynamic_color">Динамический цвет (Material You)</string>
+    <string name="settings_dynamic_color_subtitle">Брать акценты с обоев системы. Android 12 и новее.</string>
     <string name="settings_appearance_section_feedback">Отклик</string>
     <string name="settings_haptics_enabled">Вибрация при нажатии</string>
     <string name="settings_haptics_enabled_subtitle">Лёгкий отклик на кнопки, сообщения и строки чатов</string>

@@ -43,6 +43,8 @@ class AetherAppearancePrefs private constructor(context: Context) {
 
     var hapticsEnabled by mutableStateOf(prefs.getBoolean(KeyHapticsEnabled, true))
         private set
+    var dynamicColor by mutableStateOf(prefs.getBoolean(KeyDynamicColor, false))
+        private set
     var hapticStrength by mutableStateOf(prefs.getFloat(KeyHapticStrength, DefaultHapticStrength))
         private set
     var typingStyle by mutableStateOf(
@@ -108,6 +110,11 @@ class AetherAppearancePrefs private constructor(context: Context) {
     fun updateHapticsEnabled(value: Boolean) {
         hapticsEnabled = value
         prefs.edit().putBoolean(KeyHapticsEnabled, value).apply()
+    }
+
+    fun updateDynamicColor(value: Boolean) {
+        dynamicColor = value
+        prefs.edit().putBoolean(KeyDynamicColor, value).apply()
     }
 
     fun updateHapticStrength(value: Float) {
@@ -219,6 +226,7 @@ class AetherAppearancePrefs private constructor(context: Context) {
     companion object {
         private const val StoreName = "aether_appearance"
         private const val KeyHapticsEnabled = "haptics_enabled"
+        private const val KeyDynamicColor = "dynamic_color"
         private const val KeyHapticStrength = "haptic_strength"
         private const val KeyTypingStyle = "typing_style"
         private const val KeyTypingSpeed = "typing_speed_cps"

@@ -1177,6 +1177,11 @@
     <string name="about_repository_value">github.com/jcufyr6d5djj-beep/aether</string>
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_appearance_hub_subtitle">Haptics, typing animation, chat list swipes</string>
+    <string name="settings_search_placeholder">Search settings</string>
+    <string name="settings_search_empty">Nothing found</string>
+    <string name="settings_appearance_section_theme">Theme</string>
+    <string name="settings_dynamic_color">Dynamic color (Material You)</string>
+    <string name="settings_dynamic_color_subtitle">Take accents from the system wallpaper. Android 12 and newer.</string>
     <string name="settings_appearance_section_feedback">Feedback</string>
     <string name="settings_haptics_enabled">Vibrate on tap</string>
     <string name="settings_haptics_enabled_subtitle">Subtle feedback for buttons, messages and chat rows</string>

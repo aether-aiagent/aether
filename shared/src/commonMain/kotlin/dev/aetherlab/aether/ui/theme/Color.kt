@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 
 data class AetherPalette(
     val background: Color,
@@ -207,3 +208,44 @@ val AetherMessageBubble: Color
 
 val AetherScrim: Color
     get() = currentPalette.scrim
+
+/**
+ * Maps a Material You (system wallpaper) color scheme onto the Aether palette so that the
+ * custom surfaces used across chats and settings follow the same accents as MaterialTheme.
+ */
+fun updateAetherPaletteFromScheme(scheme: androidx.compose.material3.ColorScheme) {
+    val background = scheme.background
+    val surface = scheme.surface
+    val variant = scheme.surfaceVariant
+    val dynamic = AetherPalette(
+        background = background,
+        backgroundGradientTop = lerp(background, surface, 0.35f),
+        settingsBackground = lerp(background, variant, 0.65f),
+        sidebarBackground = lerp(background, surface, 0.5f),
+        sidebarControl = variant,
+        settingsIcon = scheme.onSurfaceVariant,
+        surface = surface,
+        surfaceHigh = variant,
+        surfaceHigher = lerp(variant, scheme.onSurface, 0.06f),
+        surfaceVariant = variant,
+        outline = scheme.outline,
+        outlineSoft = scheme.outlineVariant,
+        onSurface = scheme.onSurface,
+        onSurfaceVariant = scheme.onSurfaceVariant,
+        primary = scheme.primary,
+        onPrimary = scheme.onPrimary,
+        primaryContainer = scheme.primaryContainer,
+        onPrimaryContainer = scheme.onPrimaryContainer,
+        secondary = scheme.secondary,
+        onSecondary = scheme.onSecondary,
+        secondaryContainer = scheme.secondaryContainer,
+        onSecondaryContainer = scheme.onSecondaryContainer,
+        tertiary = scheme.tertiary,
+        error = scheme.error,
+        messageBubble = scheme.primaryContainer,
+        scrim = scheme.scrim,
+    )
+    if (currentPalette != dynamic) {
+        currentPalette = dynamic
+    }
+}

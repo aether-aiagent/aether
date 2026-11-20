@@ -4150,7 +4150,7 @@ private fun ConversationModelChip(
                 modifier = Modifier.widthIn(max = 220.dp),
             )
             Icon(
-                imageVector = Icons.Rounded.ArrowDropDown,
+                imageVector = Icons.Rounded.KeyboardArrowDown,
                 contentDescription = null,
                 tint = AetherOnSurfaceVariant,
                 modifier = Modifier.size(18.dp),

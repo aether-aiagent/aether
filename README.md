@@ -3,25 +3,25 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jcufyr6d5djj-beep/aether/releases"><img src="https://img.shields.io/github/v/release/jcufyr6d5djj-beep/aether?style=flat-square&amp;color=7C3AED&amp;label=APK" alt="Последний релиз" /></a>
+  <a href="https://github.com/aether-aiagent/aether/releases"><img src="https://img.shields.io/github/v/release/aether-aiagent/aether?style=flat-square&amp;color=7C3AED&amp;label=APK" alt="Последний релиз" /></a>
   <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&amp;logo=android&amp;logoColor=white" alt="Android 8.0+" />
   <img src="https://img.shields.io/badge/Kotlin-7F52FF?style=flat-square&amp;logo=kotlin&amp;logoColor=white" alt="Kotlin" />
   <img src="https://img.shields.io/badge/Jetpack_Compose-4285F4?style=flat-square&amp;logo=jetpackcompose&amp;logoColor=white" alt="Jetpack Compose" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-22D3EE?style=flat-square" alt="GPL 3.0" /></a>
-  <a href="https://github.com/jcufyr6d5djj-beep/aether/actions/workflows/build-nightly-apk.yml"><img src="https://img.shields.io/github/actions/workflow/status/jcufyr6d5djj-beep/aether/build-nightly-apk.yml?style=flat-square&amp;label=build" alt="Сборка" /></a>
-  <a href="https://github.com/jcufyr6d5djj-beep/aether/releases"><img src="https://img.shields.io/github/downloads/jcufyr6d5djj-beep/aether/total?style=flat-square&amp;label=Downloads&amp;color=22D3EE" alt="Загрузки" /></a>
-  <img src="https://img.shields.io/github/stars/jcufyr6d5djj-beep/aether?style=flat-square&amp;label=Stars&amp;color=7C3AED" alt="Звёзды" />
+  <a href="https://github.com/aether-aiagent/aether/actions/workflows/build-nightly-apk.yml"><img src="https://img.shields.io/github/actions/workflow/status/aether-aiagent/aether/build-nightly-apk.yml?style=flat-square&amp;label=build" alt="Сборка" /></a>
+  <a href="https://github.com/aether-aiagent/aether/releases"><img src="https://img.shields.io/github/downloads/aether-aiagent/aether/total?style=flat-square&amp;label=Downloads&amp;color=22D3EE" alt="Загрузки" /></a>
+  <img src="https://img.shields.io/github/stars/aether-aiagent/aether?style=flat-square&amp;label=Stars&amp;color=7C3AED" alt="Звёзды" />
 </p>
 
 <p align="center"><b>AI-агент на Android с русским интерфейсом.</b><br/>Чат, инструменты, расширения и локальная среда выполнения — на вашем устройстве.</p>
 
-<p align="center"><a href="https://github.com/jcufyr6d5djj-beep/aether/releases/latest"><b>Скачать APK</b></a> · <a href="https://jcufyr6d5djj-beep.github.io/aether/"><b>Сайт проекта</b></a> · <a href="https://t.me/AetherAIAgent"><b>Telegram владельца</b></a> · <a href="CHANGELOG.md">Изменения</a> · <a href="docs/AETHER_EXTENSIONS.md">Расширения</a> · <a href="https://github.com/jcufyr6d5djj-beep/aether/issues">Сообщить об ошибке</a></p>
+<p align="center"><a href="https://github.com/aether-aiagent/aether/releases/latest"><b>Скачать APK</b></a> · <a href="https://aether-aiagent.github.io/aether/"><b>Сайт проекта</b></a> · <a href="https://t.me/AetherAIAgent"><b>Telegram владельца</b></a> · <a href="CHANGELOG.md">Изменения</a> · <a href="docs/AETHER_EXTENSIONS.md">Расширения</a> · <a href="https://github.com/aether-aiagent/aether/issues">Сообщить об ошибке</a></p>
 
 <p align="center"><sub>
-<a href="https://jcufyr6d5djj-beep.github.io/aether/ai-agent-na-telefon/">ИИ-агент на телефон</a> ·
-<a href="https://jcufyr6d5djj-beep.github.io/aether/android-ai-agent/">Android AI agent</a> ·
-<a href="https://jcufyr6d5djj-beep.github.io/aether/local-llm-android/">Local LLM on Android</a> ·
-<a href="https://jcufyr6d5djj-beep.github.io/aether/termux-ai-agent/">Termux AI agent</a>
+<a href="https://aether-aiagent.github.io/aether/ai-agent-na-telefon/">ИИ-агент на телефон</a> ·
+<a href="https://aether-aiagent.github.io/aether/android-ai-agent/">Android AI agent</a> ·
+<a href="https://aether-aiagent.github.io/aether/local-llm-android/">Local LLM on Android</a> ·
+<a href="https://aether-aiagent.github.io/aether/termux-ai-agent/">Termux AI agent</a>
 </sub></p>
 
 <p align="center">Владелец проекта — <b>Aether AI Agent</b> · <a href="https://t.me/AetherAIAgent">t.me/AetherAIAgent</a></p>
@@ -140,8 +140,8 @@ Android ставит APK поверх только при том же пакет
 
 ## Установка
 
-1. Скачайте APK со страницы [релизов](https://github.com/jcufyr6d5djj-beep/aether/releases/latest)
-   или из [сборок Actions](https://github.com/jcufyr6d5djj-beep/aether/actions/workflows/build-nightly-apk.yml)
+1. Скачайте APK со страницы [релизов](https://github.com/aether-aiagent/aether/releases/latest)
+   или из [сборок Actions](https://github.com/aether-aiagent/aether/actions/workflows/build-nightly-apk.yml)
    (артефакт **Aether-nightly**).
 2. Установите на Android **8.0+**, устройство **ARM64**.
 3. Настройте провайдера модели в настройках и выберите русский язык.
@@ -186,8 +186,8 @@ aether-desktop
 ## Звёзды во времени
 
 <p align="center">
-  <a href="https://star-history.com/#jcufyr6d5djj-beep/aether&Date">
-    <img src="https://api.star-history.com/svg?repos=jcufyr6d5djj-beep/aether&type=Date" alt="История звёзд Aether" width="460" />
+  <a href="https://star-history.com/#aether-aiagent/aether&Date">
+    <img src="https://api.star-history.com/svg?repos=aether-aiagent/aether&type=Date" alt="История звёзд Aether" width="460" />
   </a>
 </p>
 
@@ -205,9 +205,9 @@ Aether бесплатный и открытый. Если он экономит 
 
 | Репозиторий | Что внутри |
 |---|---|
-| [aether-plugins](https://github.com/jcufyr6d5djj-beep/aether-plugins) | Примеры расширений: инструменты агента, команды чата, нативные моды |
-| [aether-skills](https://github.com/jcufyr6d5djj-beep/aether-skills) | Навыки агента в Markdown: код-ревью, релиз-ноты |
-| [aether-docs](https://github.com/jcufyr6d5djj-beep/aether-docs) | Установка, настройка провайдера, разбор частых ошибок |
+| [aether-plugins](https://github.com/aether-aiagent/aether-plugins) | Примеры расширений: инструменты агента, команды чата, нативные моды |
+| [aether-skills](https://github.com/aether-aiagent/aether-skills) | Навыки агента в Markdown: код-ревью, релиз-ноты |
+| [aether-docs](https://github.com/aether-aiagent/aether-docs) | Установка, настройка провайдера, разбор частых ошибок |
 
 ## Лицензия
 

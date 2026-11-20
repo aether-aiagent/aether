@@ -12,35 +12,35 @@ const bash = (command, stdout, seconds = 2) => ({ name: 'bash', args: { command,
 const read = (file, stdout) => ({ name: 'read', args: { path: file, offset: 1, limit: 160 }, stdout, seconds: 1 });
 const tool = (name, args, stdout, seconds = 2) => ({ name, args, stdout, seconds });
 const websiteTools = [
-  bash("ssh -o BatchMode=yes jcufyr6d5djj-beep@users.noreply.github.com 'pwd'", '/root'),
-  bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'find /opt -maxdepth 2 -name package.json -not -path \"*/node_modules/*\"'", '/opt/aetherlab.com/package.json'),
-  bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'pm2 jlist'", '[{"name":"aetherlab.com","pm2_env":{"status":"online","pm_cwd":"/opt/aetherlab.com","exec_mode":"cluster_mode","instances":2}}]'),
-  bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'cd /opt/aetherlab.com && git status --short && cat package.json'", '{"scripts":{"build":"next build","start":"next start","test":"vitest run"},"dependencies":{"next":"15.3.0","react":"19.0.0"}}'),
-  bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'cd /opt/aetherlab.com && rg -n \"projects|项目\" src --glob \"!**/node_modules/**\"'", 'src/app/projects/page.tsx:4:import { projects } from "@/data/projects";\nsrc/data/projects.ts:1:export const projects = ['),
-  bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'cd /opt/aetherlab.com && sed -n \"1,160p\" src/data/projects.ts'", 'export const projects = [\n  { name: "Personal Dashboard", href: "https://github.com/Aether Lab", description: "A personal workspace." },\n  { name: "More projects", href: "/archive", description: "Selected experiments." }\n];'),
-  bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'cd /opt/aetherlab.com && cp src/data/projects.ts /tmp/projects.before-aether.ts'", 'Backup created: /tmp/projects.before-aether.ts'),
-  tool('edit', { path: '/opt/aetherlab.com/src/data/projects.ts', oldText: '{ name: "Personal Dashboard", href: "https://github.com/Aether Lab", description: "A personal workspace." }', newText: '{ name: "Aether", href: "https://github.com/jcufyr6d5djj-beep/aether", description: "把完整的 AI Agent 工作空间带到手机与平板，连接模型、工具与本地运行环境。" }' }, 'Successfully replaced the first project. 1 file changed, 1 insertion(+), 1 deletion(-).'),
+  bash("ssh -o BatchMode=yes aether-aiagent@users.noreply.github.com 'pwd'", '/root'),
+  bash("ssh aether-aiagent@users.noreply.github.com 'find /opt -maxdepth 2 -name package.json -not -path \"*/node_modules/*\"'", '/opt/aetherlab.com/package.json'),
+  bash("ssh aether-aiagent@users.noreply.github.com 'pm2 jlist'", '[{"name":"aetherlab.com","pm2_env":{"status":"online","pm_cwd":"/opt/aetherlab.com","exec_mode":"cluster_mode","instances":2}}]'),
+  bash("ssh aether-aiagent@users.noreply.github.com 'cd /opt/aetherlab.com && git status --short && cat package.json'", '{"scripts":{"build":"next build","start":"next start","test":"vitest run"},"dependencies":{"next":"15.3.0","react":"19.0.0"}}'),
+  bash("ssh aether-aiagent@users.noreply.github.com 'cd /opt/aetherlab.com && rg -n \"projects|项目\" src --glob \"!**/node_modules/**\"'", 'src/app/projects/page.tsx:4:import { projects } from "@/data/projects";\nsrc/data/projects.ts:1:export const projects = ['),
+  bash("ssh aether-aiagent@users.noreply.github.com 'cd /opt/aetherlab.com && sed -n \"1,160p\" src/data/projects.ts'", 'export const projects = [\n  { name: "Personal Dashboard", href: "https://github.com/Aether Lab", description: "A personal workspace." },\n  { name: "More projects", href: "/archive", description: "Selected experiments." }\n];'),
+  bash("ssh aether-aiagent@users.noreply.github.com 'cd /opt/aetherlab.com && cp src/data/projects.ts /tmp/projects.before-aether.ts'", 'Backup created: /tmp/projects.before-aether.ts'),
+  tool('edit', { path: '/opt/aetherlab.com/src/data/projects.ts', oldText: '{ name: "Personal Dashboard", href: "https://github.com/Aether Lab", description: "A personal workspace." }', newText: '{ name: "Aether", href: "https://github.com/aether-aiagent/aether", description: "把完整的 AI Agent 工作空间带到手机与平板，连接模型、工具与本地运行环境。" }' }, 'Successfully replaced the first project. 1 file changed, 1 insertion(+), 1 deletion(-).'),
 ];
 
 const specs = [
   {
     key: 'website', title: ['把 Aether 放上项目页', 'Aether on the Projects page'], duration: 222, count: 27,
-    prompt: ['连接 ssh jcufyr6d5djj-beep@users.noreply.github.com /opt 有个 pm2 管理的网站 aetherlab.com，你帮我把「项目」页面的第一个项目改成 Aether，链接是 github.com/jcufyr6d5djj-beep/aether，简介你自己写。', 'Connect over SSH to jcufyr6d5djj-beep@users.noreply.github.com There is a PM2-managed website, aetherlab.com, under /opt. Change the first project on the Projects page to Aether, link it to github.com/jcufyr6d5djj-beep/aether, and write the description yourself.'],
+    prompt: ['连接 ssh aether-aiagent@users.noreply.github.com /opt 有个 pm2 管理的网站 aetherlab.com，你帮我把「项目」页面的第一个项目改成 Aether，链接是 github.com/aether-aiagent/aether，简介你自己写。', 'Connect over SSH to aether-aiagent@users.noreply.github.com There is a PM2-managed website, aetherlab.com, under /opt. Change the first project on the Projects page to Aether, link it to github.com/aether-aiagent/aether, and write the description yourself.'],
     intro: ['我会先确认 PM2 对应的项目目录和页面数据来源，保留原文件备份，再修改、构建并检查线上页面。', 'I will locate the PM2 application and the project data, save a backup, then update, build, and check the live page.'],
     tools: websiteTools,
     phases: ['Build production assets', 'Check project metadata', 'Reload PM2 workers', 'Verify HTTP response', 'Inspect mobile layout'],
     answer: [
-      '已经更新并上线。打开 [aetherlab.com/projects](https://aetherlab.com/projects)，第一个项目现在是 **Aether**。\n\n- **项目名称：** Aether\n- **项目链接：** [github.com/jcufyr6d5djj-beep/aether](https://github.com/jcufyr6d5djj-beep/aether)\n- **简介：** 把完整的 AI Agent 工作空间带到手机与平板，连接模型、工具与本地运行环境。\n\n页面继续沿用原来的项目卡片和排序，点击 Aether 会在新标签页打开 GitHub 仓库。中文简介在手机宽度下也能完整换行。\n\n我在 `/opt/aetherlab.com` 完成了生产构建，随后通过 PM2 滚动重载两个 worker。重载后检查了 HTTPS 页面、项目链接和服务日志：页面返回 200，两个进程均为 online，没有新增启动错误。\n\n修改前的项目数据保存在 `/tmp/projects.before-aether.ts`，可以用来核对这次替换。',
-      'The update is live. The first project at [aetherlab.com/projects](https://aetherlab.com/projects) is now **Aether**.\n\n- **Name:** Aether\n- **Link:** [github.com/jcufyr6d5djj-beep/aether](https://github.com/jcufyr6d5djj-beep/aether)\n- **Description:** A complete AI agent workspace for your phone and tablet, connecting models, tools, and a local runtime.\n\nThe project keeps the existing card style and position. Its link opens the repository in a new tab, and the description wraps cleanly on narrow screens.\n\nI built the production application in `/opt/aetherlab.com` and used PM2 to reload both workers. The HTTPS page returns 200, both processes are online, and the startup logs contain no new errors. I also checked that the rendered first card points to the exact repository URL.\n\nThe original project data is preserved at `/tmp/projects.before-aether.ts` for comparison or rollback.',
+      '已经更新并上线。打开 [aetherlab.com/projects](https://aetherlab.com/projects)，第一个项目现在是 **Aether**。\n\n- **项目名称：** Aether\n- **项目链接：** [github.com/aether-aiagent/aether](https://github.com/aether-aiagent/aether)\n- **简介：** 把完整的 AI Agent 工作空间带到手机与平板，连接模型、工具与本地运行环境。\n\n页面继续沿用原来的项目卡片和排序，点击 Aether 会在新标签页打开 GitHub 仓库。中文简介在手机宽度下也能完整换行。\n\n我在 `/opt/aetherlab.com` 完成了生产构建，随后通过 PM2 滚动重载两个 worker。重载后检查了 HTTPS 页面、项目链接和服务日志：页面返回 200，两个进程均为 online，没有新增启动错误。\n\n修改前的项目数据保存在 `/tmp/projects.before-aether.ts`，可以用来核对这次替换。',
+      'The update is live. The first project at [aetherlab.com/projects](https://aetherlab.com/projects) is now **Aether**.\n\n- **Name:** Aether\n- **Link:** [github.com/aether-aiagent/aether](https://github.com/aether-aiagent/aether)\n- **Description:** A complete AI agent workspace for your phone and tablet, connecting models, tools, and a local runtime.\n\nThe project keeps the existing card style and position. Its link opens the repository in a new tab, and the description wraps cleanly on narrow screens.\n\nI built the production application in `/opt/aetherlab.com` and used PM2 to reload both workers. The HTTPS page returns 200, both processes are online, and the startup logs contain no new errors. I also checked that the rendered first card points to the exact repository URL.\n\nThe original project data is preserved at `/tmp/projects.before-aether.ts` for comparison or rollback.',
     ],
   },
   {
     key: 'screenshots', title: ['App Store 英文截图', 'English App Store screenshots'], duration: 378, count: 63, skill: 'app-store-screenshots',
-    prompt: ['请帮我生成 App Store Screenshot。使用英语。只需要 iPhone 尺寸的。如果需要我选择等，都可以停下来问我。仓库在 https://github.com/jcufyr6d5djj-beep/aether', 'Please generate App Store screenshots in English, for iPhone only. You can stop and ask me whenever you need a choice or clarification. The repository is https://github.com/jcufyr6d5djj-beep/aether'],
+    prompt: ['请帮我生成 App Store Screenshot。使用英语。只需要 iPhone 尺寸的。如果需要我选择等，都可以停下来问我。仓库在 https://github.com/aether-aiagent/aether', 'Please generate App Store screenshots in English, for iPhone only. You can stop and ask me whenever you need a choice or clarification. The repository is https://github.com/aether-aiagent/aether'],
     intro: ['我会使用 app-store-screenshots，先看仓库和你上传的三张参考图，再确定一组适合 iPhone 的英文文案与版式。', 'I will use app-store-screenshots to review the repository and your three reference images, then prepare an English screenshot set for iPhone.'],
     tools: [
       read('/root/.pi/agent/skills/app-store-screenshots/SKILL.md', 'name: app-store-screenshots\nCreate App Store artwork from actual product captures. Confirm platform, locale, dimensions and source assets before exporting PNG files.'),
-      bash('git clone --depth 1 https://github.com/jcufyr6d5djj-beep/aether /workspace/Aether', "Cloning into '/workspace/Aether'...\nReceiving objects: 100%"),
+      bash('git clone --depth 1 https://github.com/aether-aiagent/aether /workspace/Aether', "Cloning into '/workspace/Aether'...\nReceiving objects: 100%"),
       read('/workspace/Aether/README.md', '# Aether\nAn AI agent workspace for Android and iOS. Local runtime, skills, extensions, files, and persistent conversations.'),
       bash('identify /workspace/uploads/reference-{1,2,3}.jpg', 'reference-1.jpg JPEG 1080x2400\nreference-2.jpg JPEG 1080x2400\nreference-3.jpg JPEG 1080x2400'),
       tool('read', { path: '/workspace/uploads/reference-1.jpg' }, 'Image loaded. Aether chat screen with message composer, model selector, and expandable tool execution.'),
@@ -196,14 +196,14 @@ for (const lang of ['zh', 'en']) for (const [index, spec] of specs.entries()) {
   if (spec.key === 'website') for (const [i, followup] of followups.entries()) {
     start += 600000;
     const ftools = [
-      bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'cd /opt/aetherlab.com && git diff --stat'", 'Working changes confined to Projects page and its assets.'),
-      bash(`ssh jcufyr6d5djj-beep@users.noreply.github.com 'cd /opt/aetherlab.com && sed -n "1,120p" ${followup.file}'`, `Current file loaded: ${followup.file}`),
+      bash("ssh aether-aiagent@users.noreply.github.com 'cd /opt/aetherlab.com && git diff --stat'", 'Working changes confined to Projects page and its assets.'),
+      bash(`ssh aether-aiagent@users.noreply.github.com 'cd /opt/aetherlab.com && sed -n "1,120p" ${followup.file}'`, `Current file loaded: ${followup.file}`),
       tool('edit', { path: `/opt/aetherlab.com/${followup.file}`, description: followup.change }, `Applied: ${followup.change}`),
-      bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'cd /opt/aetherlab.com && npm run build'", 'Compiled successfully. Static pages generated. Exit code 0.', 19),
-      bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'cd /opt/aetherlab.com && npm test -- --run'", 'Tests passed. Projects and locale assertions succeeded.', 4),
-      bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'pm2 reload aetherlab.com --update-env'", '[PM2] Process successfully reloaded. Workers: 2 online.', 3),
+      bash("ssh aether-aiagent@users.noreply.github.com 'cd /opt/aetherlab.com && npm run build'", 'Compiled successfully. Static pages generated. Exit code 0.', 19),
+      bash("ssh aether-aiagent@users.noreply.github.com 'cd /opt/aetherlab.com && npm test -- --run'", 'Tests passed. Projects and locale assertions succeeded.', 4),
+      bash("ssh aether-aiagent@users.noreply.github.com 'pm2 reload aetherlab.com --update-env'", '[PM2] Process successfully reloaded. Workers: 2 online.', 3),
       bash('curl -I https://aetherlab.com/projects', 'HTTP/2 200\ncontent-type: text/html; charset=utf-8'),
-      bash("ssh jcufyr6d5djj-beep@users.noreply.github.com 'pm2 logs aetherlab.com --nostream --lines 12'", 'Ready. No new errors after reload.'),
+      bash("ssh aether-aiagent@users.noreply.github.com 'pm2 logs aetherlab.com --nostream --lines 12'", 'Ready. No new errors after reload.'),
     ];
     messages.push(...makeTurn({ ...followup, key: 'website', intro: ['我会沿用现有页面结构完成这项调整，再检查构建和线上效果。', 'I will apply this adjustment to the existing page, then check the build and live result.'], tools: ftools, phases: ['Check responsive layout', 'Verify localized copy', 'Inspect live page'] }, lang, id, i + 1, start));
   }

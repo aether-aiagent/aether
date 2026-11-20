@@ -35,10 +35,10 @@ val BuiltInAgentSkills: List<BuiltInAgentSkill> = listOf(
 
             Read the sections relevant to the requested feature before implementing it:
 
-            - Documentation site: https://github.com/jcufyr6d5djj-beep/aether/tree/main/docs/extensions/overview.md
-            - Complete Markdown reference: https://github.com/jcufyr6d5djj-beep/aether/blob/main/docs/AETHER_EXTENSIONS.md
-            - Extension API declarations and examples: https://github.com/jcufyr6d5djj-beep/aether/tree/main/packages/extension-api
-            - Combined Pi and Aether example: https://github.com/jcufyr6d5djj-beep/aether/tree/main/examples/aether-extension
+            - Documentation site: https://github.com/aether-aiagent/aether/tree/main/docs/extensions/overview.md
+            - Complete Markdown reference: https://github.com/aether-aiagent/aether/blob/main/docs/AETHER_EXTENSIONS.md
+            - Extension API declarations and examples: https://github.com/aether-aiagent/aether/tree/main/packages/extension-api
+            - Combined Pi and Aether example: https://github.com/aether-aiagent/aether/tree/main/examples/aether-extension
 
             When the current workspace is an Aether source checkout, prefer its local `docs/AETHER_EXTENSIONS.md`, `packages/extension-api/src/index.ts`, and `examples/aether-extension/` files because they match the running source version.
 

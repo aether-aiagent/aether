@@ -2,7 +2,7 @@
   "name": "aether-desktop",
   "version": "2.4.0",
   "description": "Aether Desktop — AI-агент Aether для Debian",
-  "homepage": "https://github.com/jcufyr6d5djj-beep/aether",
+  "homepage": "https://github.com/aether-aiagent/aether",
   "main": "main.js",
   "author": "Aether Lab",
   "license": "SEE LICENSE IN ../../LICENSE",

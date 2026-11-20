@@ -8,7 +8,7 @@
 
 ## About this repository
 
-This is the **Aether-enabled fork** of [pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) by the [Aether](https://github.com/jcufyr6d5djj-beep/aether) team. It tracks the upstream project and adds first-class support for running inside Aether, the mobile AI agent built on the Pi Coding Agent core:
+This is the **Aether-enabled fork** of [pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) by the [Aether](https://github.com/aether-aiagent/aether) team. It tracks the upstream project and adds first-class support for running inside Aether, the mobile AI agent built on the Pi Coding Agent core:
 
 - **Aether Script Mod** (`aether.ts` and `aether-bridge.ts`) — a dedicated native **MCP Settings page** composed entirely from Aether's generic extension setting controls (item cards, empty states, action rows, and categories) to create, edit, rename, remove, reconnect, and OAuth-authenticate MCP servers.
 - **Semantic tool titles** — registers human-friendly running and completed titles for `mcp`, `mcpScript`, and every direct MCP tool registered in the session.

@@ -66,7 +66,7 @@
 
 - Полный ребрендинг проекта: пакет `dev.aetherlab.aether`, автор — Aether Lab,
   все ссылки ведут на официальный репозиторий
-  [jcufyr6d5djj-beep/aether](https://github.com/jcufyr6d5djj-beep/aether).
+  [aether-aiagent/aether](https://github.com/aether-aiagent/aether).
 - Автообновление из собственного репозитория: приложение проверяет GitHub
   Releases, скачивает APK и запускает установку (Настройки → О приложении →
   «Проверить обновления», а также фоновая проверка при запуске раз в сутки).

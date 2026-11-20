@@ -1174,7 +1174,7 @@
     <string name="about_owner_telegram">Telegram</string>
     <string name="about_owner_telegram_value">@AetherAIAgent</string>
     <string name="about_repository">Source code</string>
-    <string name="about_repository_value">github.com/jcufyr6d5djj-beep/aether</string>
+    <string name="about_repository_value">github.com/aether-aiagent/aether</string>
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_appearance_hub_subtitle">Haptics, typing animation, chat list swipes</string>
     <string name="chat_dictation">Dictate</string>

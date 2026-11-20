@@ -284,9 +284,9 @@ const val MaxOldCommandHistoryRetentionHours = 168
 private const val MinLlmInactivityReconnectTimeoutSeconds = 30
 private const val MaxLlmInactivityReconnectTimeoutSeconds = 3600
 const val OnboardingStarterPrompt = "Hi"
-const val AetherWebsiteUrl = "https://github.com/jcufyr6d5djj-beep/aether"
-const val AetherGitHubUrl = "https://github.com/jcufyr6d5djj-beep/aether"
-const val AetherPrivacyPolicyUrl = "https://github.com/jcufyr6d5djj-beep/aether/wiki/Privacy-Policy"
+const val AetherWebsiteUrl = "https://github.com/aether-aiagent/aether"
+const val AetherGitHubUrl = "https://github.com/aether-aiagent/aether"
+const val AetherPrivacyPolicyUrl = "https://github.com/aether-aiagent/aether/wiki/Privacy-Policy"
 
 private val AppSettingsJson = Json {
     ignoreUnknownKeys = true

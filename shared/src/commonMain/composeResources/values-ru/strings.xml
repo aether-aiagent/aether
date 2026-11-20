@@ -1153,7 +1153,7 @@
     <string name="about_owner_telegram">Telegram</string>
     <string name="about_owner_telegram_value">@AetherAIAgent</string>
     <string name="about_repository">Исходный код</string>
-    <string name="about_repository_value">github.com/jcufyr6d5djj-beep/aether</string>
+    <string name="about_repository_value">github.com/aether-aiagent/aether</string>
     <string name="settings_appearance_title">Внешний вид</string>
     <string name="settings_appearance_hub_subtitle">Вибрация, анимация печати, свайпы в списке чатов</string>
     <string name="chat_dictation">Голосовой ввод</string>

@@ -449,7 +449,7 @@ test('settings: ownerNoticeDismissed rejects non-boolean values', () => {
 test('external-links: owner URLs are allowlisted, other protocols rejected', () => {
   const links = require('../src/external-links');
   assert.equal(links.isAllowedExternalUrl('https://t.me/AetherAIAgent'), true);
-  assert.equal(links.isAllowedExternalUrl('https://github.com/jcufyr6d5djj-beep/aether'), true);
+  assert.equal(links.isAllowedExternalUrl('https://github.com/aether-aiagent/aether'), true);
   assert.equal(links.isAllowedExternalUrl('https://example.com/page'), true);
   assert.equal(links.isAllowedExternalUrl('mailto:a@b.c'), true);
   assert.equal(links.isAllowedExternalUrl('file:///etc/passwd'), false);

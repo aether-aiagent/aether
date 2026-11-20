@@ -7011,7 +7011,7 @@ private fun AboutPage(
                 icon = Icons.Rounded.Code,
                 title = stringResource(R.string.about_repository),
                 subtitle = stringResource(R.string.about_repository_value),
-                onClick = { runCatching { uriHandler.openUri("https://github.com/jcufyr6d5djj-beep/aether") } },
+                onClick = { runCatching { uriHandler.openUri("https://github.com/aether-aiagent/aether") } },
             )
         }
 

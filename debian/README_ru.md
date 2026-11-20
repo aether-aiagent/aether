@@ -34,7 +34,7 @@ sudo apt install -y nodejs build-essential python3
 ### Вариант 1 — собрать .deb и установить
 
 ```bash
-git clone https://github.com/jcufyr6d5djj-beep/aether-lab.git
+git clone https://github.com/aether-aiagent/aether-lab.git
 cd aether-lab
 ./debian/build-deb.sh                      # .deb + AppImage в debian/aether-desktop/dist-electron/
 sudo apt install ./debian/aether-desktop/dist-electron/Aether-*.deb

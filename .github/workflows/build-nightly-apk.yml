@@ -214,8 +214,8 @@ jobs:
           # In the public repo we publish directly with GITHUB_TOKEN (4-core runners);
           # from the private lab repo we publish cross-repo with PUBLIC_REPO_TOKEN.
           if [ -n "$PUBLIC_REPO_TOKEN" ]; then
-            token="$PUBLIC_REPO_TOKEN"; repo="jcufyr6d5djj-beep/aether"
-          elif [ "$GITHUB_REPOSITORY" = "jcufyr6d5djj-beep/aether" ]; then
+            token="$PUBLIC_REPO_TOKEN"; repo="aether-aiagent/aether"
+          elif [ "$GITHUB_REPOSITORY" = "aether-aiagent/aether" ]; then
             token="$GITHUB_TOKEN"; repo="$GITHUB_REPOSITORY"
           else
             echo "No publishing token available, skipping release publishing"

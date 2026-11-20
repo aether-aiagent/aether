@@ -8,7 +8,7 @@
 
 ## About this repository
 
-This is the **Aether-enabled fork** of [pi-subagents](https://github.com/tintinweb/pi-subagents) by the [Aether](https://github.com/jcufyr6d5djj-beep/aether) team. It tracks the upstream project and adds first-class support for running inside Aether, the mobile AI agent built on the Pi Coding Agent core:
+This is the **Aether-enabled fork** of [pi-subagents](https://github.com/tintinweb/pi-subagents) by the [Aether](https://github.com/aether-aiagent/aether) team. It tracks the upstream project and adds first-class support for running inside Aether, the mobile AI agent built on the Pi Coding Agent core:
 
 - **Aether Script Mod** (`src/aether.ts`) — native mobile UI surfaces including live composer status widgets, conversation viewer overlays, and dedicated settings pages.
 - **Native prompt mentions** — `@handle message` prompt mentions routed through Aether's `before_send` hook directly to running or new subagent instances without a main-model turn.

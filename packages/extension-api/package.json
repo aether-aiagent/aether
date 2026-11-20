@@ -5,12 +5,12 @@
   "license": "GPL-3.0-only",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jcufyr6d5djj-beep/aether.git",
+    "url": "git+https://github.com/aether-aiagent/aether.git",
     "directory": "packages/extension-api"
   },
-  "homepage": "https://github.com/jcufyr6d5djj-beep/aether#readme",
+  "homepage": "https://github.com/aether-aiagent/aether#readme",
   "bugs": {
-    "url": "https://github.com/jcufyr6d5djj-beep/aether/issues"
+    "url": "https://github.com/aether-aiagent/aether/issues"
   },
   "type": "module",
   "types": "./dist/index.d.ts",

@@ -44,7 +44,7 @@ Anthropic, Gemini или локальная Ollama. Всё остальное �
 
 APK подписан одним ключом — обновления ставятся поверх, чаты сохраняются.
 
-Скачать: https://github.com/jcufyr6d5djj-beep/aether/releases/latest
+Скачать: https://github.com/aether-aiagent/aether/releases/latest
 Исходники: GPL-3.0
 
 ## Хэштеги и ключевые слова

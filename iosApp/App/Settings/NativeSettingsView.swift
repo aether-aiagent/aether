@@ -2529,15 +2529,15 @@ private struct NativeAboutSettingsView: View {
                     Divider().padding(.leading, 16)
                     aboutRow(model.text("Version", "版本"), version)
                     Divider().padding(.leading, 16)
-                    Link(destination: URL(string: "https://github.com/jcufyr6d5djj-beep/aether")!) {
+                    Link(destination: URL(string: "https://github.com/aether-aiagent/aether")!) {
                         linkRow(model.text("Website", "网站"), "globe")
                     }
                     Divider().padding(.leading, 16)
-                    Link(destination: URL(string: "https://github.com/jcufyr6d5djj-beep/aether")!) {
+                    Link(destination: URL(string: "https://github.com/aether-aiagent/aether")!) {
                         linkRow("GitHub", "chevron.left.forwardslash.chevron.right")
                     }
                     Divider().padding(.leading, 16)
-                    Link(destination: URL(string: "https://github.com/jcufyr6d5djj-beep/aether/wiki/Privacy-Policy")!) {
+                    Link(destination: URL(string: "https://github.com/aether-aiagent/aether/wiki/Privacy-Policy")!) {
                         linkRow(model.text("Privacy Policy", "隐私政策"), "hand.raised")
                     }
                 }

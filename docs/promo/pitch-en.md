@@ -41,8 +41,8 @@ The UI does streaming markdown with callouts, charts and polls, TTS for replies,
 folders and an archive, an animated bot avatar and tunable haptics. Signed with one key,
 so updates install over the top and keep your chats.
 
-Code: GPL-3.0 · https://github.com/jcufyr6d5djj-beep/aether
-APK: https://github.com/jcufyr6d5djj-beep/aether/releases/latest
+Code: GPL-3.0 · https://github.com/aether-aiagent/aether
+APK: https://github.com/aether-aiagent/aether/releases/latest
 
 ## Keywords
 

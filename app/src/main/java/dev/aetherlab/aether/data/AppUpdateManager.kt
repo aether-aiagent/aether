@@ -11,11 +11,11 @@ import okhttp3.Request
 import org.json.JSONObject
 
 private const val GithubLatestReleaseUrl =
-    "https://api.github.com/repos/jcufyr6d5djj-beep/aether/releases/latest"
+    "https://api.github.com/repos/aether-aiagent/aether/releases/latest"
 private const val GithubLatestNightlyRunUrl =
-    "https://api.github.com/repos/jcufyr6d5djj-beep/aether/actions/workflows/build-nightly-apk.yml/runs?branch=main&status=success&per_page=1"
+    "https://api.github.com/repos/aether-aiagent/aether/actions/workflows/build-nightly-apk.yml/runs?branch=main&status=success&per_page=1"
 private const val NightlyArtifactDownloadUrl =
-    "https://nightly.link/jcufyr6d5djj-beep/aether/workflows/build-nightly-apk.yml/main/Aether-nightly.zip"
+    "https://nightly.link/aether-aiagent/aether/workflows/build-nightly-apk.yml/main/Aether-nightly.zip"
 private const val ApkMimeType = "application/vnd.android.package-archive"
 private const val ZipMimeType = "application/zip"
 

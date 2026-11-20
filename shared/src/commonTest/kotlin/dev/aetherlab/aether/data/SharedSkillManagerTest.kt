@@ -15,7 +15,7 @@ class SharedSkillManagerTest {
         assertEquals("Create Extensions", skill.actionLabel)
         assertTrue(metadata.description.contains("customize Aether"))
         assertTrue(skill.markdown.contains("docs/AETHER_EXTENSIONS.md"))
-        assertTrue(skill.markdown.contains("https://github.com/jcufyr6d5djj-beep/aether/tree/main/docs/extensions/overview.md"))
+        assertTrue(skill.markdown.contains("https://github.com/aether-aiagent/aether/tree/main/docs/extensions/overview.md"))
         assertTrue(skill.markdown.contains("install_package"))
         assertTrue(CreateExtensionSkillId in BuiltInAgentSkillIds)
         assertTrue(AppSettings().defaultSelectedSkillIds.isEmpty())

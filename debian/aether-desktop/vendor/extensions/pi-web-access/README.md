@@ -8,7 +8,7 @@
 
 ## About this repository
 
-This is the **Aether-enabled fork** of [pi-web-access](https://github.com/nicobailon/pi-web-access) by the [Aether](https://github.com/jcufyr6d5djj-beep/aether) team. It tracks the upstream project and adds first-class support for running inside Aether, the mobile AI agent built on the Pi Coding Agent core:
+This is the **Aether-enabled fork** of [pi-web-access](https://github.com/nicobailon/pi-web-access) by the [Aether](https://github.com/aether-aiagent/aether) team. It tracks the upstream project and adds first-class support for running inside Aether, the mobile AI agent built on the Pi Coding Agent core:
 
 - **Aether Script Mod** (`aether.ts`) — a native Settings page organized into sub-pages (categories) so provider credentials, extraction, and privacy options are configured per provider without dumping everything at once.
 - **Aether message renderers** — web-search completion, errors, curator, and Gemini account events appear as cards in the Aether transcript.

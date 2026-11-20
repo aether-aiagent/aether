@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="bannerTitle bannerDesc">
   <title id="bannerTitle">Aether — AI-агент для Android</title>
-  <desc id="bannerDesc">Знак Aether, надпись Aether и строка со ссылками t.me/AetherAIAgent · github.com/jcufyr6d5djj-beep/aether</desc>
+  <desc id="bannerDesc">Знак Aether, надпись Aether и строка со ссылками t.me/AetherAIAgent · github.com/aether-aiagent/aether</desc>
 
   <!-- canvas -->
   <rect width="1200" height="320" fill="#FFFFFF"/>
@@ -21,5 +21,5 @@
 
   <!-- footer rule + owner links -->
   <rect x="234" y="205" width="442" height="1" fill="#E5E5E5"/>
-  <text x="234" y="232" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="400" letter-spacing="0.2" fill="#8E8EA0">t.me/AetherAIAgent · github.com/jcufyr6d5djj-beep/aether</text>
+  <text x="234" y="232" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="400" letter-spacing="0.2" fill="#8E8EA0">t.me/AetherAIAgent · github.com/aether-aiagent/aether</text>
 </svg>

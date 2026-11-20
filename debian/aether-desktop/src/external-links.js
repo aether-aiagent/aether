@@ -4,12 +4,12 @@
 // Owner/project links are explicitly allowlisted; other http(s)/mailto links
 // (e.g. assistant markdown links) keep the pre-existing protocol-only gate.
 const OWNER_TELEGRAM_URL = 'https://t.me/AetherAIAgent';
-const OWNER_GITHUB_URL = 'https://github.com/jcufyr6d5djj-beep/aether';
+const OWNER_GITHUB_URL = 'https://github.com/aether-aiagent/aether';
 
 const EXTERNAL_LINK_ALLOWLIST = [
   'https://t.me/AetherAIAgent',
   'https://t.me/',
-  'https://github.com/jcufyr6d5djj-beep/aether',
+  'https://github.com/aether-aiagent/aether',
 ];
 
 function isAllowlistedUrl(url) {

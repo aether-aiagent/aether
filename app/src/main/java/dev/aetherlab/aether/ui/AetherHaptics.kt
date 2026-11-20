@@ -52,7 +52,7 @@ class AetherHapticsController(
         val effect = effectFor(haptic) ?: return
         runCatching {
             engine.vibrate(effect, AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_TOUCH)
+                .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build())
         }

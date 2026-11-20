@@ -59,29 +59,8 @@ import dev.aetherlab.aether.ui.theme.AetherPrimary
 import dev.aetherlab.aether.ui.theme.AetherPrimaryContainer
 import dev.aetherlab.aether.ui.theme.AetherSurfaceHigh
 import dev.aetherlab.aether.ui.theme.AetherTertiary
-import dev.aetherlab.aether.shared.resources.Res
-import dev.aetherlab.aether.shared.resources.abilities_body
-import dev.aetherlab.aether.shared.resources.abilities_title
-import dev.aetherlab.aether.shared.resources.ability_files_body
-import dev.aetherlab.aether.shared.resources.ability_files_title
-import dev.aetherlab.aether.shared.resources.ability_screen_body
-import dev.aetherlab.aether.shared.resources.ability_screen_title
-import dev.aetherlab.aether.shared.resources.ability_skills_body
-import dev.aetherlab.aether.shared.resources.ability_skills_title
-import dev.aetherlab.aether.shared.resources.ability_terminal_body
-import dev.aetherlab.aether.shared.resources.ability_terminal_title
-import dev.aetherlab.aether.shared.resources.close_label
-import dev.aetherlab.aether.shared.resources.goal_ask
-import dev.aetherlab.aether.shared.resources.goal_automation
-import dev.aetherlab.aether.shared.resources.goal_code
-import dev.aetherlab.aether.shared.resources.goal_reminders
-import dev.aetherlab.aether.shared.resources.goal_screen
-import dev.aetherlab.aether.shared.resources.goal_voice
-import dev.aetherlab.aether.shared.resources.goals_body
-import dev.aetherlab.aether.shared.resources.goals_title
-import dev.aetherlab.aether.shared.resources.onboarding_continue
-import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.res.stringResource
+import dev.aetherlab.aether.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -96,14 +75,17 @@ internal object OnboardingGoal {
 
     val ordered = listOf(Ask, Code, Screen, Reminders, Voice, Automation)
 
-    fun label(goal: String): StringResource = when (goal) {
-        Ask -> Res.string.goal_ask
-        Code -> Res.string.goal_code
-        Screen -> Res.string.goal_screen
-        Reminders -> Res.string.goal_reminders
-        Voice -> Res.string.goal_voice
-        else -> Res.string.goal_automation
-    }
+    @Composable
+    fun label(goal: String): String = stringResource(
+        when (goal) {
+            Ask -> R.string.goal_ask
+            Code -> R.string.goal_code
+            Screen -> R.string.goal_screen
+            Reminders -> R.string.goal_reminders
+            Voice -> R.string.goal_voice
+            else -> R.string.goal_automation
+        },
+    )
 }
 
 /**
@@ -154,7 +136,7 @@ private fun TourPageFrame(
     stepCount: Int,
     onBack: (() -> Unit)?,
     onSkip: (() -> Unit)?,
-    skipLabel: StringResource,
+    skipLabel: Int,
     content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit,
 ) {
     Box(
@@ -271,18 +253,18 @@ internal fun OnboardingAbilitiesStep(
         stepCount = stepCount,
         onBack = onBack,
         onSkip = if (replayMode) null else onSkip,
-        skipLabel = if (replayMode) Res.string.close_label else Res.string.skip_label,
+        skipLabel = if (replayMode) R.string.close_label else R.string.skip_label,
     ) {
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = stringResource(Res.string.abilities_title),
+            text = stringResource(R.string.abilities_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
             color = AetherOnSurface,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = stringResource(Res.string.abilities_body),
+            text = stringResource(R.string.abilities_body),
             style = MaterialTheme.typography.bodyMedium,
             color = AetherOnSurfaceVariant,
         )
@@ -290,26 +272,26 @@ internal fun OnboardingAbilitiesStep(
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             AbilityRow(
                 icon = Icons.Rounded.Terminal,
-                title = stringResource(Res.string.ability_terminal_title),
-                body = stringResource(Res.string.ability_terminal_body),
+                title = stringResource(R.string.ability_terminal_title),
+                body = stringResource(R.string.ability_terminal_body),
                 accent = AetherPrimary,
             )
             AbilityRow(
                 icon = Icons.Rounded.FolderOpen,
-                title = stringResource(Res.string.ability_files_title),
-                body = stringResource(Res.string.ability_files_body),
+                title = stringResource(R.string.ability_files_title),
+                body = stringResource(R.string.ability_files_body),
                 accent = AetherTertiary,
             )
             AbilityRow(
                 icon = Icons.Rounded.PhoneAndroid,
-                title = stringResource(Res.string.ability_screen_title),
-                body = stringResource(Res.string.ability_screen_body),
+                title = stringResource(R.string.ability_screen_title),
+                body = stringResource(R.string.ability_screen_body),
                 accent = AetherPrimaryContainer,
             )
             AbilityRow(
                 icon = Icons.Rounded.AutoAwesome,
-                title = stringResource(Res.string.ability_skills_title),
-                body = stringResource(Res.string.ability_skills_body),
+                title = stringResource(R.string.ability_skills_title),
+                body = stringResource(R.string.ability_skills_body),
                 accent = AetherPrimary,
             )
         }
@@ -326,7 +308,7 @@ internal fun OnboardingAbilitiesStep(
             ),
         ) {
             Text(
-                text = stringResource(Res.string.onboarding_continue),
+                text = stringResource(R.string.onboarding_continue),
                 fontWeight = FontWeight.SemiBold,
             )
         }
@@ -349,18 +331,18 @@ internal fun OnboardingGoalsStep(
         stepCount = stepCount,
         onBack = onBack,
         onSkip = if (replayMode) null else onSkip,
-        skipLabel = if (replayMode) Res.string.close_label else Res.string.skip_label,
+        skipLabel = if (replayMode) R.string.close_label else R.string.skip_label,
     ) {
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = stringResource(Res.string.goals_title),
+            text = stringResource(R.string.goals_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
             color = AetherOnSurface,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = stringResource(Res.string.goals_body),
+            text = stringResource(R.string.goals_body),
             style = MaterialTheme.typography.bodyMedium,
             color = AetherOnSurfaceVariant,
         )
@@ -386,7 +368,7 @@ internal fun OnboardingGoalsStep(
                         contentAlignment = Alignment.CenterStart,
                     ) {
                         Text(
-                            text = stringResource(OnboardingGoal.label(goal)),
+                            text = OnboardingGoal.label(goal),
                             style = MaterialTheme.typography.bodyMedium,
                             color = if (selected) AetherOnPrimary else AetherOnSurface,
                             modifier = Modifier.padding(horizontal = 14.dp),
@@ -411,7 +393,7 @@ internal fun OnboardingGoalsStep(
             ),
         ) {
             Text(
-                text = stringResource(Res.string.onboarding_continue),
+                text = stringResource(R.string.onboarding_continue),
                 fontWeight = FontWeight.SemiBold,
             )
         }

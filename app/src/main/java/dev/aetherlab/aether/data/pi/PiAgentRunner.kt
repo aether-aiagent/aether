@@ -1,7 +1,6 @@
 package dev.aetherlab.aether.data.pi
 
 import dev.aetherlab.aether.data.ActiveSkillContext
-import dev.aetherlab.aether.data.AetherAccessibilityService
 import dev.aetherlab.aether.data.AetherAgentTurnResult
 import dev.aetherlab.aether.data.AetherDiagnosticLogger
 import dev.aetherlab.aether.data.AetherAppExtensionManager
@@ -143,7 +142,6 @@ class PiAgentRunner(
                             agentModeEnabled = agentModeEnabled,
                             rootAccessEnabled = settings.rootAccessEnabled,
                             runtimeTasksEnabled = true,
-                            deviceControlEnabled = AetherAccessibilityService.isConnected(),
                         ),
                     )
                 }

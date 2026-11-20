@@ -37,8 +37,6 @@ class AetherToolExecutor(
         onProgress: (suspend (String) -> Unit)? = null,
     ): AetherToolExecutionResult {
         val rawOutput = when (toolName) {
-            DeviceControlToolName -> executeDeviceControl(argumentsJson)
-
             "agent_display" -> if (agentModeEnabled) {
                 agentModeController?.execute(
                     settings = settings,
@@ -152,7 +150,6 @@ class AetherToolExecutor(
     companion object {
         val hostToolNames: Set<String> = setOf(
             "agent_display",
-            DeviceControlToolName,
             DeviceRootToolName,
             RuntimeRunToolName,
             RuntimeCheckToolName,
@@ -167,7 +164,6 @@ class AetherToolExecutor(
             agentModeEnabled: Boolean = false,
             rootAccessEnabled: Boolean = false,
             runtimeTasksEnabled: Boolean = false,
-            deviceControlEnabled: Boolean = false,
         ): JSONArray = JSONArray().apply {
             selfManagementTool?.toolDefinitions()?.forEach { definition ->
                 put(
@@ -179,7 +175,6 @@ class AetherToolExecutor(
                     ),
                 )
             }
-            if (deviceControlEnabled) put(deviceControlToolDefinition())
             if (agentModeEnabled) put(agentModeToolDefinition())
             if (rootAccessEnabled) put(deviceRootToolDefinition())
             if (runtimeTasksEnabled) {
@@ -326,7 +321,6 @@ suspend fun DeviceRootController.executeTool(
 
 private const val DeviceRootToolName = "aether_root_shell"
 
-private const val DeviceControlToolName = "device_control"
 private const val RuntimeRunToolName = "aether_runtime_run"
 private const val RuntimeCheckToolName = "aether_runtime_check"
 private const val RuntimeKillToolName = "aether_runtime_kill"
@@ -476,116 +470,3 @@ private fun integerProperty(description: String): JSONObject = JSONObject()
 private fun booleanProperty(description: String): JSONObject = JSONObject()
     .put("type", "boolean")
     .put("description", description)
-
-private fun deviceControlToolDefinition(): JSONObject = JSONObject().apply {
-    put("name", DeviceControlToolName)
-    put(
-        "description",
-        "Control the phone itself through Android's accessibility service — no Termux and no root. " +
-            "Use action=screen first to read the current interface tree (text, buttons with bounds, " +
-            "tappable and editable markers), then act with tap (x,y or text), type, swipe, back, home, " +
-            "recents or open_app. Prefer text targeting over raw coordinates when an element has a " +
-            "readable label. The user must keep the Aether accessibility service enabled.",
-    )
-    put(
-        "parameters",
-        JSONObject().apply {
-            put("type", "object")
-            put(
-                "properties",
-                JSONObject().apply {
-                    put(
-                        "action",
-                        JSONObject()
-                            .put("type", "string")
-                            .put("description", "screen | tap | type | swipe | back | home | recents | open_app")
-                            .put(
-                                "enum",
-                                JSONArray().put("screen").put("tap").put("type").put("swipe")
-                                    .put("back").put("home").put("recents").put("open_app"),
-                            ),
-                    )
-                    put("x", integerProperty("Tap target X coordinate in screen pixels (action=tap)."))
-                    put("y", integerProperty("Tap target Y coordinate in screen pixels (action=tap)."))
-                    put("text", stringProperty("Visible label to tap (action=tap) or text to type (action=type)."))
-                    put("from_x", integerProperty("Swipe start X in pixels (action=swipe)."))
-                    put("from_y", integerProperty("Swipe start Y in pixels (action=swipe)."))
-                    put("to_x", integerProperty("Swipe end X in pixels (action=swipe)."))
-                    put("to_y", integerProperty("Swipe end Y in pixels (action=swipe)."))
-                    put("duration_ms", integerProperty("Swipe duration in milliseconds (action=swipe, default 320)."))
-                    put("package", stringProperty("App package to launch (action=open_app), e.g. com.android.settings."))
-                },
-            )
-            put("required", JSONArray().put("action"))
-            put("additionalProperties", false)
-        },
-    )
-    put("execution_mode", "sequential")
-}
-
-private fun executeDeviceControl(argumentsJson: String): String {
-    val service = AetherAccessibilityService.instance ?: return JSONObject()
-        .put("ok", false)
-        .put("errmsg", "The Aether accessibility service is not enabled. Ask the user to enable Settings → Device control.")
-        .toString()
-    val args = runCatching { JSONObject(argumentsJson.ifBlank { "{}" }) }.getOrDefault(JSONObject())
-    val action = args.optString("action").trim().lowercase()
-    return runCatching {
-        when (action) {
-            "screen" -> JSONObject()
-                .put("ok", true)
-                .put("package", AetherAccessibilityService.currentPackage)
-                .put("tree", service.dumpScreenTree())
-
-            "tap" -> {
-                val label = args.optString("text").trim()
-                val performed = if (label.isNotEmpty()) {
-                    service.clickOnText(label)
-                } else {
-                    service.tap(
-                        args.optDouble("x").toFloat(),
-                        args.optDouble("y").toFloat(),
-                    )
-                }
-                JSONObject().put("ok", performed).put(
-                    "errmsg",
-                    if (performed) "" else "Tap did not land on a clickable element.",
-                )
-            }
-
-            "type" -> {
-                val performed = service.typeText(args.optString("text"))
-                JSONObject().put("ok", performed).put(
-                    "errmsg",
-                    if (performed) "" else "No editable field is focused.",
-                )
-            }
-
-            "swipe" -> {
-                val performed = service.swipe(
-                    fromX = args.optDouble("from_x").toFloat(),
-                    fromY = args.optDouble("from_y").toFloat(),
-                    toX = args.optDouble("to_x").toFloat(),
-                    toY = args.optDouble("to_y").toFloat(),
-                    durationMs = args.optLong("duration_ms", 320L).coerceIn(50L, 4_000L),
-                )
-                JSONObject().put("ok", performed)
-            }
-
-            "back" -> JSONObject().put("ok", service.globalBack())
-            "home" -> JSONObject().put("ok", service.globalHome())
-            "recents" -> JSONObject().put("ok", service.globalRecents())
-            "open_app" -> JSONObject()
-                .put("ok", true)
-                .put(
-                    "note",
-                    "open_app needs the launcher intent from the app; ask the user to open the app, " +
-                        "then use action=screen. Requested package: " + args.optString("package"),
-                )
-
-            else -> JSONObject().put("ok", false).put("errmsg", "Unsupported action '$action'.")
-        }
-    }.getOrElse { error ->
-        JSONObject().put("ok", false).put("errmsg", error.message ?: "device_control failed")
-    }.toString()
-}

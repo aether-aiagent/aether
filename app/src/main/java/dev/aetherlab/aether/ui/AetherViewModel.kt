@@ -13,6 +13,7 @@ import dev.aetherlab.aether.BuildConfig
 import dev.aetherlab.aether.R
 import dev.aetherlab.aether.aetherRuntime
 import dev.aetherlab.aether.data.ActiveSkillContext
+import dev.aetherlab.aether.data.AetherAccessibilityService
 import dev.aetherlab.aether.data.AetherAnalytics
 import dev.aetherlab.aether.data.AetherModOperationDecision
 import dev.aetherlab.aether.data.AetherModServiceMethod

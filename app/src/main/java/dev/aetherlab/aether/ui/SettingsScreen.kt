@@ -1486,6 +1486,7 @@ private fun SettingsHub(
                 ) {
                     Spacer(Modifier.height(16.dp))
                 }
+                SettingsSectionLabel(stringResource(R.string.settings_section_interface))
                 SettingsCardGroup {
                     SettingsNavRow(
                         icon = Icons.Rounded.AutoAwesome,
@@ -1505,6 +1506,7 @@ private fun SettingsHub(
                 Spacer(Modifier.height(16.dp))
 
             // Configuration card
+            SettingsSectionLabel(stringResource(R.string.settings_section_assistant))
             SettingsCardGroup {
                 SettingsNavRow(
                     icon = Icons.Rounded.Cloud,
@@ -1530,6 +1532,7 @@ private fun SettingsHub(
 
             if (extensionSettings.isNotEmpty()) {
                 Spacer(Modifier.height(16.dp))
+                SettingsSectionLabel(stringResource(R.string.settings_section_extensions))
                 SettingsCardGroup {
                     extensionSettings.forEachIndexed { index, settingPage ->
                         if (index > 0) CardDivider()
@@ -1546,6 +1549,7 @@ private fun SettingsHub(
             Spacer(Modifier.height(16.dp))
 
             // Extensions card
+            SettingsSectionLabel(stringResource(R.string.settings_section_capabilities))
             SettingsCardGroup {
                 SettingsNavRow(
                     icon = Icons.Rounded.Extension,
@@ -1632,6 +1636,7 @@ private fun SettingsHub(
             Spacer(Modifier.height(16.dp))
 
             // About card
+            SettingsSectionLabel(stringResource(R.string.settings_section_app))
             SettingsCardGroup {
                 SettingsNavRow(
                     icon = Icons.Rounded.AutoAwesome,
@@ -7905,5 +7910,16 @@ private fun SettingsSearchField(
         } else {
             null
         },
+    )
+}
+
+@Composable
+private fun SettingsSectionLabel(text: String) {
+    Spacer(Modifier.height(16.dp))
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelLarge,
+        color = AetherOnSurfaceVariant,
+        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
     )
 }

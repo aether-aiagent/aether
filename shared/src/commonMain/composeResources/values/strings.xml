@@ -1178,6 +1178,11 @@
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_appearance_hub_subtitle">Haptics, typing animation, chat list swipes</string>
     <string name="chat_scroll_to_bottom">Scroll to latest</string>
+    <string name="settings_section_interface">Interface</string>
+    <string name="settings_section_assistant">Assistant</string>
+    <string name="settings_section_extensions">Extensions</string>
+    <string name="settings_section_capabilities">Capabilities and system</string>
+    <string name="settings_section_app">App</string>
     <string name="settings_search_placeholder">Search settings</string>
     <string name="settings_search_empty">Nothing found</string>
     <string name="settings_appearance_section_theme">Theme</string>

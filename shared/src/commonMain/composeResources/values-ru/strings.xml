@@ -1157,6 +1157,11 @@
     <string name="settings_appearance_title">Внешний вид</string>
     <string name="settings_appearance_hub_subtitle">Вибрация, анимация печати, свайпы в списке чатов</string>
     <string name="chat_scroll_to_bottom">К последнему сообщению</string>
+    <string name="settings_section_interface">Интерфейс</string>
+    <string name="settings_section_assistant">Ассистент</string>
+    <string name="settings_section_extensions">Расширения</string>
+    <string name="settings_section_capabilities">Возможности и система</string>
+    <string name="settings_section_app">Приложение</string>
     <string name="settings_search_placeholder">Поиск по настройкам</string>
     <string name="settings_search_empty">Ничего не найдено</string>
     <string name="settings_appearance_section_theme">Тема</string>

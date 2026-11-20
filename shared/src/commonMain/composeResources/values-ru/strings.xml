@@ -5,6 +5,7 @@
     <string name="app_name">Aether</string>
     <string name="common_menu">Меню</string>
     <string name="common_new_chat">Новый чат</string>
+    <string name="drawer_search_hint">Поиск по чатам и сообщениям</string>
     <string name="drawer_group_today">Сегодня</string>
     <string name="drawer_group_yesterday">Вчера</string>
     <string name="drawer_group_earlier">Раньше</string>

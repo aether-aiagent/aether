@@ -145,13 +145,16 @@ import dev.aetherlab.aether.ui.theme.AetherBackground
 import dev.aetherlab.aether.ui.theme.AetherBackgroundGradientTop
 import dev.aetherlab.aether.ui.theme.AetherOnSurface
 import dev.aetherlab.aether.ui.theme.AetherOnPrimary
+import dev.aetherlab.aether.ui.theme.AetherOnPrimaryContainer
 import dev.aetherlab.aether.ui.theme.AetherOnSurfaceVariant
 import dev.aetherlab.aether.ui.theme.AetherPrimary
+import dev.aetherlab.aether.ui.theme.AetherPrimaryContainer
 import dev.aetherlab.aether.ui.theme.AetherScrim
 import dev.aetherlab.aether.ui.theme.AetherSidebarBackground
 import dev.aetherlab.aether.ui.theme.AetherSurface
 import dev.aetherlab.aether.ui.theme.AetherSurfaceHigh
 import dev.aetherlab.aether.ui.theme.AetherSurfaceHigher
+import dev.aetherlab.aether.ui.theme.AetherTertiary
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.delay
@@ -301,7 +304,7 @@ private fun LegacyConversationDrawer(
                         top = overlayHeight - DrawerOverlayFadeHeight,
                         bottom = 96.dp,
                     ),
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     dateGroups.forEach { (bucket, bucketSessions) ->
                         item(key = "aether-drawer-group-$bucket") {
@@ -364,20 +367,6 @@ private fun LegacyConversationDrawer(
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             HeaderCircleButton(
-                                icon = LucideIcons.Search,
-                                contentDescription = stringResource(R.string.common_search),
-                                onClick = {
-                                    if (searchExpanded || searchQuery.isNotBlank()) {
-                                        searchExpanded = false
-                                        searchQuery = ""
-                                    } else {
-                                        searchExpanded = true
-                                    }
-                                },
-                                size = 46.dp,
-                                containerColor = Color.Transparent,
-                            )
-                            HeaderCircleButton(
                                 icon = LucideIcons.Settings,
                                 contentDescription = stringResource(R.string.settings_title),
                                 onClick = {
@@ -391,17 +380,12 @@ private fun LegacyConversationDrawer(
                         }
                     }
 
-                    AnimatedVisibility(visible = searchExpanded || searchQuery.isNotBlank()) {
-                        Column {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            DrawerCompactSearchField(
-                                value = searchQuery,
-                                onValueChange = { searchQuery = it },
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(if (searchExpanded || searchQuery.isNotBlank()) 10.dp else 12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
+                    DrawerCompactSearchField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
 
                 Spacer(
@@ -443,8 +427,8 @@ private fun DrawerCompactSearchField(
         modifier = modifier
             .shadow(12.dp, RoundedCornerShape(24.dp), ambientColor = AetherScrim, spotColor = AetherScrim)
             .clip(RoundedCornerShape(24.dp))
-            .background(AetherSurface)
-            .padding(horizontal = 14.dp, vertical = 11.dp),
+            .background(AetherSidebarControl)
+            .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -460,7 +444,7 @@ private fun DrawerCompactSearchField(
         ) {
             if (value.isBlank()) {
                 Text(
-                    text = stringResource(R.string.common_search),
+                    text = stringResource(R.string.drawer_search_hint),
                     style = MaterialTheme.typography.bodyMedium,
                     color = AetherOnSurfaceVariant,
                 )
@@ -537,8 +521,8 @@ private fun DrawerSessionRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(18.dp))
-                .background(if (selected) AetherSurfaceHigh else Color.Transparent)
+                .clip(RoundedCornerShape(22.dp))
+                .background(if (selected) AetherPrimaryContainer else AetherSurfaceHigh)
                 .then(
                     if (isRenaming) {
                         Modifier
@@ -551,7 +535,7 @@ private fun DrawerSessionRow(
                         )
                     }
                 )
-                .padding(horizontal = 12.dp, vertical = 12.dp),
+                .padding(horizontal = 10.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ChatAvatarBadge(seed = session.id, sizeDp = 44)
@@ -586,7 +570,7 @@ private fun DrawerSessionRow(
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
                         ),
-                        color = AetherOnSurface,
+                        color = if (selected) AetherOnPrimaryContainer else AetherOnSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -596,6 +580,12 @@ private fun DrawerSessionRow(
                         SearchSnippetText(
                             text = previewText,
                             query = searchQuery,
+                            color = if (selected) {
+                                AetherOnPrimaryContainer.copy(alpha = 0.86f)
+                            } else {
+                                AetherOnSurfaceVariant
+                            },
+                            highlightColor = if (selected) Color.White else AetherTertiary,
                         )
                     }
                 }
@@ -605,7 +595,7 @@ private fun DrawerSessionRow(
                     Text(
                         text = stampLabel,
                         style = MaterialTheme.typography.labelSmall,
-                        color = AetherOnSurfaceVariant,
+                        color = if (selected) AetherOnPrimaryContainer.copy(alpha = 0.8f) else AetherOnSurfaceVariant,
                     )
                 }
             }

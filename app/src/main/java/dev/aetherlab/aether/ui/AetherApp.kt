@@ -142,9 +142,11 @@ import dev.aetherlab.aether.termux.TermuxContract
 import dev.aetherlab.aether.termux.TermuxSetupIssue
 import dev.aetherlab.aether.termux.TermuxSetupState
 import dev.aetherlab.aether.ui.theme.AetherBackground
+import dev.aetherlab.aether.ui.theme.AetherBackgroundGradientTop
 import dev.aetherlab.aether.ui.theme.AetherOnSurface
 import dev.aetherlab.aether.ui.theme.AetherOnSurfaceVariant
 import dev.aetherlab.aether.ui.theme.AetherPrimary
+import dev.aetherlab.aether.ui.theme.AetherPrimaryContainer
 import dev.aetherlab.aether.ui.theme.AetherScrim
 import dev.aetherlab.aether.ui.theme.AetherSurface
 import dev.aetherlab.aether.ui.theme.AetherSurfaceHigh
@@ -1797,7 +1799,7 @@ private fun ChatScreen(
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(AetherBackground, Color(0xFF0B0B0D), Color(0xFF070708))
+                        listOf(AetherBackground, AetherBackgroundGradientTop, AetherBackground)
                     )
                 )
                 .padding(innerPadding)
@@ -1896,7 +1898,7 @@ private fun SuggestionChip(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(22.dp))
-            .background(Color(0xFF0C0D10))
+            .background(AetherSurfaceHigh)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -1926,7 +1928,7 @@ private fun MessageBubble(message: ChatMessage) {
                 modifier = Modifier
                     .clip(RoundedCornerShape(22.dp))
                     .background(
-                        Brush.horizontalGradient(listOf(Color(0xFF5B36D7), Color(0xFF6E48FF)))
+                        Brush.horizontalGradient(listOf(AetherPrimaryContainer, AetherPrimary))
                     )
                     .padding(horizontal = 18.dp, vertical = 14.dp),
                 style = MaterialTheme.typography.bodyLarge,

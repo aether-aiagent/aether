@@ -7,6 +7,7 @@
     <!-- Common -->
     <string name="common_menu">منو</string>
     <string name="common_new_chat">چت جدید</string>
+    <string name="drawer_search_hint">جست‌وجوی گفتگوها و پیام‌ها</string>
     <string name="drawer_group_today">امروز</string>
     <string name="drawer_group_yesterday">دیروز</string>
     <string name="drawer_group_earlier">پیشتر</string>

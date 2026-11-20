@@ -7,6 +7,7 @@
     <!-- Common -->
     <string name="common_menu">菜单</string>
     <string name="common_new_chat">新建对话</string>
+    <string name="drawer_search_hint">搜索对话和消息</string>
     <string name="drawer_group_today">今天</string>
     <string name="drawer_group_yesterday">昨天</string>
     <string name="drawer_group_earlier">更早</string>

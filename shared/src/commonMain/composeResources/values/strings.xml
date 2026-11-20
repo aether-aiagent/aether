@@ -7,6 +7,7 @@
     <!-- Common -->
     <string name="common_menu">Menu</string>
     <string name="common_new_chat">New chat</string>
+    <string name="drawer_search_hint">Search chats and messages</string>
     <string name="drawer_group_today">Today</string>
     <string name="drawer_group_yesterday">Yesterday</string>
     <string name="drawer_group_earlier">Earlier</string>

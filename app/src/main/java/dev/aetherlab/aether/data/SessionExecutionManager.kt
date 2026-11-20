@@ -748,7 +748,7 @@ class SessionExecutionManager(
                 },
                 onAssistantTextReset = {
                     if (handle.pauseRequested) return@runTurn
-                    flushAssistantTextDelta(handle)
+                    discardAssistantTextDelta(handle)
                     updateExecutionState(handle.sessionId) { current ->
                         if (current.pendingAssistantText.isEmpty()) {
                             current
@@ -766,6 +766,7 @@ class SessionExecutionManager(
                 },
                 onAssistantResponseReset = {
                     if (!handle.pauseRequested) {
+                        discardAssistantTextDelta(handle)
                         providerRequestCheckpoint?.let { checkpoint ->
                             handle.restoreProviderRequestCheckpoint(checkpoint)
                             updateExecutionState(handle.sessionId) { current ->
@@ -1733,6 +1734,14 @@ class SessionExecutionManager(
             text
         }
         applyAssistantTextDelta(handle, buffered)
+    }
+
+    /** Выбрасывает буфер: провайдер перезапустил ответ, показывать старый текст нельзя. */
+    private fun discardAssistantTextDelta(handle: SessionExecutionHandle) {
+        synchronized(handle.lock) {
+            handle.pendingAssistantTextDelta.setLength(0)
+            handle.lastAssistantTextFlushUptimeMillis = SystemClock.uptimeMillis()
+        }
     }
 
     private fun enqueueAssistantTextDelta(

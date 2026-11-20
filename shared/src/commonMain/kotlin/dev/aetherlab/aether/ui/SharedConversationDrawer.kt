@@ -983,7 +983,6 @@ private fun SharedDrawerFolderPicker(
     }
 }
 
-@Composable
 /** Human label shown inside the swipe overlay for the configured gesture. */
 @Composable
 private fun SharedDrawerSwipeLabel(action: SharedDrawerSwipeAction): String = when (action) {

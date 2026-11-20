@@ -75,6 +75,8 @@ import dev.aetherlab.aether.shared.resources.chat_no_conversations_yet
 import dev.aetherlab.aether.shared.resources.common_cancel
 import dev.aetherlab.aether.shared.resources.common_chat
 import dev.aetherlab.aether.shared.resources.common_delete
+import dev.aetherlab.aether.shared.resources.drawer_archive
+import dev.aetherlab.aether.shared.resources.drawer_unarchive
 import dev.aetherlab.aether.shared.resources.common_export
 import dev.aetherlab.aether.shared.resources.common_new_chat
 import dev.aetherlab.aether.shared.resources.common_rename
@@ -1034,14 +1036,16 @@ private fun SharedDrawerActionMenu(
                 }
                 if (archived) {
                     if (onUnarchive != null) {
-                        SharedDrawerActionRow(stringResource(Res.string.drawer_unarchive)) {
-                            onUnarchive()
-                        }
+                        SharedDrawerActionRow(
+                            label = stringResource(Res.string.drawer_unarchive),
+                            onClick = { onUnarchive() },
+                        )
                     }
                 } else if (onArchive != null) {
-                    SharedDrawerActionRow(stringResource(Res.string.drawer_archive)) {
-                        onArchive()
-                    }
+                    SharedDrawerActionRow(
+                        label = stringResource(Res.string.drawer_archive),
+                        onClick = { onArchive() },
+                    )
                 }
                 SharedDrawerActionRow(stringResource(Res.string.common_rename), onRename)
                 SharedDrawerActionRow(stringResource(Res.string.common_export), onExport)

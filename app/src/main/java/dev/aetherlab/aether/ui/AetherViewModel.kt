@@ -4231,7 +4231,7 @@ class AetherViewModel(
 
         "device.screenshot" -> AetherAccessibilityService.instance?.let { service ->
             val target = File(
-                File(application.cacheDir, "device-control").apply { mkdirs() },
+                File(getApplication<android.app.Application>().cacheDir, "device-control").apply { mkdirs() },
                 "aether-screen-${System.currentTimeMillis()}.png",
             )
             val saved = withContext(Dispatchers.IO) { service.screenshotToFile(target) }

@@ -8094,7 +8094,7 @@ private fun DeviceControlSettingsPage(
             onDismissRequest = { treePreview = null },
             confirmButton = {
                 TextButton(onClick = { treePreview = null }) {
-                    Text(text = stringResource(R.string.dialog_close))
+                    Text(text = stringResource(R.string.action_done))
                 }
             },
             title = { Text(text = stringResource(R.string.settings_device_control_probe_title)) },

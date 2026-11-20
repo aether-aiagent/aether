@@ -407,6 +407,10 @@ fun ConversationScreen(
     val compactSuggestion = remember(messages) { compactCommandSuggestion(messages) }
     val appearancePreferences = rememberAetherAppearance()
     val conversationSpacing = if (appearancePreferences.compactMessages) 12.dp else 22.dp
+    val contextUsageLabel = sessionTotalTokens?.let { tokens ->
+        val percent = (tokens * 100L / ContextWindowHintTokens).coerceIn(0L, 100L)
+        "$percent% · " + shortTokenLabel(tokens)
+    }
     val sessionTotalTokens = remember(messages) {
         messages.sumOf { message -> message.usageStatistics?.totalTokens ?: 0L }
             .takeIf { it > 0L }
@@ -783,6 +787,26 @@ fun ConversationScreen(
                     Icon(
                         imageVector = Icons.Rounded.KeyboardArrowDown,
                         contentDescription = stringResource(R.string.chat_scroll_to_bottom),
+                    )
+                }
+            }
+
+            if (contextUsageLabel != null) {
+                Surface(
+                    shape = RoundedCornerShape(50),
+                    color = AetherSurfaceHigh,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(
+                            end = 20.dp,
+                            bottom = composerBodyHeight + animatedImeBottom + 30.dp,
+                        ),
+                ) {
+                    Text(
+                        text = contextUsageLabel,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AetherOnSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                     )
                 }
             }
@@ -4057,4 +4081,13 @@ private fun ComposerMicButton(onTranscript: (String) -> Unit) {
             tint = AetherOnSurfaceVariant,
         )
     }
+}
+
+/** Mirrors the compaction budget used by the session manager so the pill stays consistent. */
+private const val ContextWindowHintTokens = 128_000L
+
+private fun shortTokenLabel(tokens: Long): String = when {
+    tokens >= 1_000_000L -> String.format(java.util.Locale.US, "%.1fM", tokens / 1_000_000.0)
+    tokens >= 1_000L -> String.format(java.util.Locale.US, "%.1fk", tokens / 1_000.0)
+    else -> tokens.toString()
 }

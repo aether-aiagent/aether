@@ -1177,6 +1177,8 @@
     <string name="about_repository_value">github.com/jcufyr6d5djj-beep/aether</string>
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_appearance_hub_subtitle">Haptics, typing animation, chat list swipes</string>
+    <string name="chat_dictation">Dictate</string>
+    <string name="chat_dictation_unavailable">Speech recognition is not available on this device</string>
     <string name="chat_scroll_to_bottom">Scroll to latest</string>
     <string name="settings_section_interface">Interface</string>
     <string name="settings_section_assistant">Assistant</string>

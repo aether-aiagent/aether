@@ -83,6 +83,7 @@ import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -2792,6 +2793,15 @@ private fun ConversationComposerBar(
                             )
                         }
                         Spacer(modifier = Modifier.width(8.dp))
+                        if (!hasDraft && !isSending) {
+                            ComposerMicButton(
+                                onTranscript = { spoken ->
+                                    val merged = if (value.isBlank()) spoken else value.trimEnd() + " " + spoken
+                                    onValueChange(merged)
+                                },
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                        }
                         if (showPauseButton) {
                             ComposerPauseButton(
                                 onClick = onPauseGeneration,
@@ -4006,5 +4016,42 @@ private fun ComposerPlusMenuRow(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ComposerMicButton(onTranscript: (String) -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val launcher = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        val spoken = result.data
+            ?.getStringArrayListExtra(android.speech.RecognizerIntent.EXTRA_RESULTS)
+            ?.firstOrNull()
+        if (!spoken.isNullOrBlank()) onTranscript(spoken.trim())
+    }
+    IconButton(
+        onClick = {
+            val intent = android.content.Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(
+                    android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
+                )
+                putExtra(android.speech.RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
+            }
+            runCatching { launcher.launch(intent) }.onFailure {
+                android.widget.Toast.makeText(
+                    context,
+                    context.getString(dev.aetherlab.aether.R.string.chat_dictation_unavailable),
+                    android.widget.Toast.LENGTH_SHORT,
+                ).show()
+            }
+        },
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Mic,
+            contentDescription = stringResource(dev.aetherlab.aether.R.string.chat_dictation),
+            tint = AetherOnSurfaceVariant,
+        )
     }
 }

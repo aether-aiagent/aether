@@ -1156,6 +1156,8 @@
     <string name="about_repository_value">github.com/jcufyr6d5djj-beep/aether</string>
     <string name="settings_appearance_title">Внешний вид</string>
     <string name="settings_appearance_hub_subtitle">Вибрация, анимация печати, свайпы в списке чатов</string>
+    <string name="chat_dictation">Голосовой ввод</string>
+    <string name="chat_dictation_unavailable">Распознавание речи недоступно на устройстве</string>
     <string name="chat_scroll_to_bottom">К последнему сообщению</string>
     <string name="settings_section_interface">Интерфейс</string>
     <string name="settings_section_assistant">Ассистент</string>

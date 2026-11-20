@@ -328,7 +328,7 @@ private fun LegacyConversationDrawer(
         modifier = Modifier
             .fillMaxHeight()
             .widthIn(min = 304.dp, max = 328.dp),
-        drawerContainerColor = AetherSidebarBackground,
+        drawerContainerColor = AetherSidebarBackground.copy(alpha = 0.88f),
         drawerShape = RoundedCornerShape(topEnd = 30.dp, bottomEnd = 30.dp),
     ) {
         Box(
@@ -506,9 +506,11 @@ private fun DrawerCompactSearchField(
 ) {
     Row(
         modifier = modifier
-            .shadow(12.dp, RoundedCornerShape(24.dp), ambientColor = AetherScrim, spotColor = AetherScrim)
-            .clip(RoundedCornerShape(24.dp))
-            .background(AetherSidebarControl)
+            .aetherGlassPanel(
+                shape = RoundedCornerShape(24.dp),
+                tint = AetherSidebarControl,
+                shadowElevation = 12,
+            )
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -886,9 +888,7 @@ private fun DrawerSessionActionMenu(
             Column(
                 modifier = Modifier
                     .widthIn(min = 188.dp, max = 220.dp)
-                    .shadow(18.dp, RoundedCornerShape(24.dp), ambientColor = AetherScrim, spotColor = AetherScrim)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(AetherSurface)
+                    .aetherGlassPanel(shape = RoundedCornerShape(24.dp), shadowElevation = 18)
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {

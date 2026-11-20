@@ -2998,9 +2998,7 @@ fun AttachmentPreviewDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 18.dp, vertical = 24.dp)
-                .shadow(24.dp, RoundedCornerShape(30.dp), ambientColor = AetherScrim, spotColor = AetherScrim)
-                .clip(RoundedCornerShape(30.dp))
-            .background(AetherSurface.copy(alpha = 0.98f))
+                .aetherGlassPanel(shape = RoundedCornerShape(30.dp), shadowElevation = 24)
                 .padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {

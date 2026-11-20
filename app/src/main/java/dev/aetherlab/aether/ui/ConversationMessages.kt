@@ -2769,7 +2769,6 @@ fun ReconnectingStatusCard(
     }
 }
 
-@Composable
 internal fun formatToolInvocationDurationLabel(
     startedAtMillis: Long,
     completedAtMillis: Long?,
@@ -2785,6 +2784,7 @@ internal fun formatToolInvocationDurationLabel(
     }
 }
 
+@Composable
 fun ToolInvocationCard(
     toolInvocation: ChatToolInvocation,
     topPadding: Dp = 6.dp,

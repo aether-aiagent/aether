@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Local LLM on Android with tools — Aether AI agent</title>
+<meta name="description" content="Run a local LLM on Android with a real tool loop: Aether is an open-source AI agent with bash, file tools and an on-device Alpine runtime. Works with local or cloud models." />
+<meta name="keywords" content="local llm android, run llm on android, on-device llm, offline ai assistant android, llm tools android, aether ai agent" />
+<link rel="canonical" href="https://jcufyr6d5djj-beep.github.io/aether/local-llm-android/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Local LLM on Android with tools — Aether AI agent" />
+<meta property="og:description" content="Run a local LLM on Android with a real tool loop: Aether is an open-source AI agent with bash, file tools and an on-device Alpine runtime. Works with local or cloud models." />
+<meta property="og:url" content="https://jcufyr6d5djj-beep.github.io/aether/local-llm-android/" />
+<meta name="twitter:card" content="summary_large_image" />
+<style>
+:root{color-scheme:dark}
+body{margin:0;background:#12121a;color:#e9e9f2;font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:56px 20px 80px}
+h1{font-size:34px;line-height:1.2;margin:0 0 12px}
+h2{font-size:20px;margin:34px 0 10px}
+p,li{color:#c3c3d4}
+a{color:#8fa8ff}
+.cta{display:inline-block;margin:18px 12px 0 0;padding:12px 20px;border-radius:999px;background:#3358c4;color:#fff;text-decoration:none;font-weight:600}
+.muted{font-size:13px;color:#7a7a90;margin-top:40px}
+code{background:#1e1e2a;padding:2px 6px;border-radius:6px}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Aether","alternateName":"Local LLM Android agent","applicationCategory":"DeveloperApplication","operatingSystem":"Android 8.0+","description":"Run a local LLM on Android with a real tool loop: Aether is an open-source AI agent with bash, file tools and an on-device Alpine runtime. Works with local or cloud models.","url":"https://jcufyr6d5djj-beep.github.io/aether/local-llm-android/","downloadUrl":"https://github.com/jcufyr6d5djj-beep/aether/releases/latest","codeRepository":"https://github.com/jcufyr6d5djj-beep/aether","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+</head>
+<body>
+<main>
+<h1>Local LLM on Android, with tools</h1>
+<p>Aether connects to any OpenAI-compatible endpoint, including a model served on the phone itself or on your own machine over the network. What makes it an agent: the model gets a real tool loop — shell, files, search, MCP servers — and a local Alpine environment to run in.</p>
+<a class="cta" href="https://github.com/jcufyr6d5djj-beep/aether/releases/latest">Скачать APK</a>
+<a class="cta" href="https://github.com/jcufyr6d5djj-beep/aether">Исходники на GitHub</a>
+<h2>Why an agent and not a chat app</h2>
+<p>A chat window gives you text. Aether gives the model hands: it lists directories, greps code, patches files and runs commands, showing each step with arguments and output.</p>
+<h2>Setup</h2>
+<ul>
+<li>Settings → Providers: base URL, API key, model id</li>
+<li>Any endpoint that speaks OpenAI chat-completions works</li>
+<li>Settings → Runtime: bundled Alpine (proot) or Termux</li>
+</ul>
+<h2>Privacy</h2>
+<p>Chats, files and the runtime live on the device. Only the model request leaves the phone, to the provider you configured.</p>
+<p class="muted">Aether · <a href="https://jcufyr6d5djj-beep.github.io/aether/">сайт проекта</a> · <a href="https://github.com/jcufyr6d5djj-beep/aether">GitHub</a> · <a href="https://t.me/AetherAIAgent">Telegram</a></p>
+</main>
+</body>
+</html>

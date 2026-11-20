@@ -17,6 +17,13 @@
 
 <p align="center"><a href="https://github.com/jcufyr6d5djj-beep/aether/releases/latest"><b>Скачать APK</b></a> · <a href="https://jcufyr6d5djj-beep.github.io/aether/"><b>Сайт проекта</b></a> · <a href="https://t.me/AetherAIAgent"><b>Telegram владельца</b></a> · <a href="CHANGELOG.md">Изменения</a> · <a href="docs/AETHER_EXTENSIONS.md">Расширения</a> · <a href="https://github.com/jcufyr6d5djj-beep/aether/issues">Сообщить об ошибке</a></p>
 
+<p align="center"><sub>
+<a href="https://jcufyr6d5djj-beep.github.io/aether/ai-agent-na-telefon/">ИИ-агент на телефон</a> ·
+<a href="https://jcufyr6d5djj-beep.github.io/aether/android-ai-agent/">Android AI agent</a> ·
+<a href="https://jcufyr6d5djj-beep.github.io/aether/local-llm-android/">Local LLM on Android</a> ·
+<a href="https://jcufyr6d5djj-beep.github.io/aether/termux-ai-agent/">Termux AI agent</a>
+</sub></p>
+
 <p align="center">Владелец проекта — <b>Aether AI Agent</b> · <a href="https://t.me/AetherAIAgent">t.me/AetherAIAgent</a></p>
 
 ---
@@ -36,6 +43,11 @@ OpenAI-совместимый API. Интерфейс и настройки — 
 > Signed APK builds ship from GitHub Releases. Keywords: android ai agent, local llm android,
 > on-device ai assistant, termux ai agent, shizuku automation, mcp client android,
 > open source chatgpt alternative for android, kotlin llm chat app.
+
+> **ИИ-агент на телефон.** Aether — открытый ИИ-агент для Android: нейросеть на телефоне, которая
+> не только отвечает, но и запускает команды, читает и правит файлы, держит локальную среду Alpine.
+> Ключевые слова: ии агент на телефон, ии агент андроид, локальный ии агент, аи агент apk,
+> нейросеть на телефон, чат с ии на андроид, termux агент, shizuku автоматизация, mcp клиент android.
 
 ## Возможности
 
@@ -178,6 +190,14 @@ aether-desktop
     <img src="https://api.star-history.com/svg?repos=jcufyr6d5djj-beep/aether&type=Date" alt="История звёзд Aether" width="460" />
   </a>
 </p>
+
+## Связанные репозитории
+
+| Репозиторий | Что внутри |
+|---|---|
+| [aether-plugins](https://github.com/jcufyr6d5djj-beep/aether-plugins) | Примеры расширений: инструменты агента, команды чата, нативные моды |
+| [aether-skills](https://github.com/jcufyr6d5djj-beep/aether-skills) | Навыки агента в Markdown: код-ревью, релиз-ноты |
+| [aether-docs](https://github.com/jcufyr6d5djj-beep/aether-docs) | Установка, настройка провайдера, разбор частых ошибок |
 
 ## Лицензия
 

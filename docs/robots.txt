@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jcufyr6d5djj-beep.github.io/aether/sitemap.xml

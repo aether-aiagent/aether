@@ -1,0 +1,8 @@
+# Кнопка «Sponsor» в репозитории Aether.
+# Заполни ссылки, которые реально работают для твоей страны, и удали пустые строки.
+# GitHub Sponsors для РФ недоступен (выплаты через Stripe), поэтому основной путь — custom.
+custom:
+  - "https://t.me/AetherAIAgent"
+  # - "https://boosty.to/aether"        # подписка, работает из РФ
+  # - "https://www.donationalerts.com/r/aether"  # разовые донаты
+  # - "https://yoomoney.ru/to/0000000000"        # карта/кошелёк

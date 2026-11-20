@@ -1869,7 +1869,7 @@ private fun EmptyChatState() {
         AetherAgentAvatar(size = 64.dp)
         Spacer(modifier = Modifier.height(18.dp))
         Text(
-            text = stringResource(R.string.chat_welcome_help),
+            text = chatGreeting(),
             style = MaterialTheme.typography.headlineMedium,
             color = AetherOnSurface,
         )

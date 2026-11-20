@@ -1501,7 +1501,7 @@ private fun ConversationEmptyState(
 ) {
     AetherConversationEmptyState(
         modifier = modifier,
-        welcomeLabel = stringResource(R.string.chat_welcome_help),
+        welcomeLabel = chatGreeting(),
         analyzeImageLabel = stringResource(R.string.chat_analyze_image_chip),
         codeLabel = stringResource(R.string.chat_code_chip),
         helpWriteLabel = stringResource(R.string.chat_help_me_write_chip),

@@ -471,9 +471,15 @@ class SessionExecutionManager(
             agentModeEnabled = updatedSession.agentModeEnabled
             chromeEnabled = updatedSession.chromeEnabled
             updatedSessions.add(0, updatedSession)
+            // A background run must never steal the chat the user is looking at.
+            val visibleSessionId = persisted.currentSessionId
             persisted.copy(
                 sessions = updatedSessions,
-                currentSessionId = sessionId,
+                currentSessionId = if (visibleSessionId.isBlank() || visibleSessionId == "draft") {
+                    sessionId
+                } else {
+                    visibleSessionId
+                },
             )
         }
 

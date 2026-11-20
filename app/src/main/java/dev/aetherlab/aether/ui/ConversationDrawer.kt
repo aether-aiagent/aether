@@ -151,6 +151,7 @@ import dev.aetherlab.aether.ui.theme.AetherPrimary
 import dev.aetherlab.aether.ui.theme.AetherPrimaryContainer
 import dev.aetherlab.aether.ui.theme.AetherScrim
 import dev.aetherlab.aether.ui.theme.AetherSidebarBackground
+import dev.aetherlab.aether.ui.theme.AetherSidebarControl
 import dev.aetherlab.aether.ui.theme.AetherSurface
 import dev.aetherlab.aether.ui.theme.AetherSurfaceHigh
 import dev.aetherlab.aether.ui.theme.AetherSurfaceHigher

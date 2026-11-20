@@ -359,12 +359,18 @@ private fun LegacyConversationDrawer(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = "Aether",
-                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Normal),
-                            color = AetherOnSurface,
-                            modifier = Modifier.padding(start = 6.dp),
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            AetherAgentAvatar(
+                                size = 30.dp,
+                                modifier = Modifier.padding(start = 2.dp),
+                            )
+                            Spacer(modifier = Modifier.width(9.dp))
+                            Text(
+                                text = "Aether",
+                                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
+                                color = AetherOnSurface,
+                            )
+                        }
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             HeaderCircleButton(
                                 icon = LucideIcons.Settings,

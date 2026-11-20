@@ -1866,6 +1866,8 @@ private fun EmptyChatState() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        AetherAgentAvatar(size = 64.dp)
+        Spacer(modifier = Modifier.height(18.dp))
         Text(
             text = stringResource(R.string.chat_welcome_help),
             style = MaterialTheme.typography.headlineMedium,

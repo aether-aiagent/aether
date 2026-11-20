@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -76,6 +77,8 @@ fun AetherConversationTopBarFrame(
                 iconSize = 19.dp,
                 containerColor = AetherSurface.copy(alpha = 0.96f),
             )
+            Spacer(modifier = Modifier.width(9.dp))
+            AetherAgentAvatar(size = 26.dp)
         }
         Box(
             modifier = Modifier
@@ -154,6 +157,8 @@ fun AetherConversationEmptyState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        AetherAgentAvatar(size = 64.dp)
+        Spacer(modifier = Modifier.height(18.dp))
         Text(
             text = welcomeLabel,
             style = MaterialTheme.typography.titleLarge.copy(

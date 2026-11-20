@@ -602,6 +602,8 @@ private fun ChatSession.matchesDrawerFilter(filter: DrawerChatFilter, nowMillis:
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
 private fun DrawerSessionRow(
     session: ChatSession,
     searchQuery: String,

@@ -240,14 +240,7 @@ private fun ConversationStarterCard(
 ) {
     Column(
         modifier = modifier
-            .shadow(
-                4.dp,
-                RoundedCornerShape(20.dp),
-                ambientColor = ConversationControlShadow,
-                spotColor = ConversationControlShadow,
-            )
-            .clip(RoundedCornerShape(20.dp))
-            .background(AetherSurface.copy(alpha = 0.98f))
+            .aetherGlassPanel(shape = RoundedCornerShape(20.dp), shadowElevation = 8)
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),

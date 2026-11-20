@@ -2754,8 +2754,7 @@ private fun ConversationComposerBar(
                         .animateContentSize(
                             animationSpec = tween(durationMillis = 320, easing = ChatGptMotionEasing),
                         )
-                        .clip(fieldShape)
-                        .background(AetherSurface)
+                        .aetherGlassPanel(shape = fieldShape, shadowElevation = 18)
                         .padding(
                             start = fieldContentStartPadding,
                             end = 8.dp,

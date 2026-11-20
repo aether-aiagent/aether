@@ -46,6 +46,14 @@ import org.json.JSONObject
 private const val ReasoningInitialSummaryTokenThreshold = 100
 private const val ReasoningTimedSummaryIntervalMillis = 5_000L
 private const val AssistantCheckpointIntervalMillis = 1_000L
+
+/**
+ * Токены модели приходят десятками в секунду, и каждая порция раньше перестраивала
+ * весь StateFlow и всю ленту сообщений. Копим текст и отдаём в UI не чаще, чем раз в
+ * [AssistantDeltaFlushIntervalMillis] миллисекунд (или сразу, если накопился крупный кусок).
+ */
+private const val AssistantDeltaFlushIntervalMillis = 45L
+private const val AssistantDeltaFlushChars = 640
 private const val ReasoningSummaryMaxInputChars = 8_000
 private const val ReasoningSummaryTitleMaxChars = 120
 private const val ReasoningSummaryDetailMaxChars = 520
@@ -659,6 +667,7 @@ class SessionExecutionManager(
             val reasoningTraceToolRoutingEnabled = request.settings.supportsVisibleReasoningTrace()
             var providerRequestCheckpoint: ProviderRequestCheckpoint? = null
             val emitToolEvent: suspend (AgentToolEvent) -> Unit = { event ->
+                flushAssistantTextDelta(handle)
                 if (!handle.pauseRequested) {
                     handleToolEvent(
                         handle = handle,
@@ -735,21 +744,11 @@ class SessionExecutionManager(
                         handle = handle,
                         trigger = ReasoningCompletionTrigger.BodyStarted,
                     )
-                    updateExecutionState(handle.sessionId) { current ->
-                        val pendingResponseBlocks = appendAssistantResponseText(
-                            blocks = completePendingReconnectBlocks(current.pendingResponseBlocks),
-                            delta = delta,
-                        ) { handle.nextPendingBlockId("pending-text") }
-                        current.copy(
-                            pendingStatusText = "",
-                            pendingStatusDetail = "",
-                            pendingAssistantText = pendingTrailingAssistantText(pendingResponseBlocks),
-                            pendingResponseBlocks = pendingResponseBlocks,
-                        )
-                    }
+                    enqueueAssistantTextDelta(handle = handle, delta = delta)
                 },
                 onAssistantTextReset = {
                     if (handle.pauseRequested) return@runTurn
+                    flushAssistantTextDelta(handle)
                     updateExecutionState(handle.sessionId) { current ->
                         if (current.pendingAssistantText.isEmpty()) {
                             current
@@ -828,6 +827,7 @@ class SessionExecutionManager(
                     drained.map { buildSteerRequestMessage(it.message, request.settings) }
                 },
             )
+            flushAssistantTextDelta(handle)
             diagnosticLogger.event(
                 category = "session",
                 event = "pi_agent_runner_end",
@@ -1701,6 +1701,61 @@ class SessionExecutionManager(
         ) {
             ensureForegroundServiceRunning()
         }
+    }
+
+    /** Применяет накопленный кусок текста к состоянию сессии. */
+    private fun applyAssistantTextDelta(
+        handle: SessionExecutionHandle,
+        delta: String,
+    ) {
+        if (delta.isEmpty()) return
+        updateExecutionState(handle.sessionId) { current ->
+            val pendingResponseBlocks = appendAssistantResponseText(
+                blocks = completePendingReconnectBlocks(current.pendingResponseBlocks),
+                delta = delta,
+            ) { handle.nextPendingBlockId("pending-text") }
+            current.copy(
+                pendingStatusText = "",
+                pendingStatusDetail = "",
+                pendingAssistantText = pendingTrailingAssistantText(pendingResponseBlocks),
+                pendingResponseBlocks = pendingResponseBlocks,
+            )
+        }
+    }
+
+    /** Сбрасывает буфер в UI немедленно — перед сменой блока, паузой и в конце хода. */
+    private fun flushAssistantTextDelta(handle: SessionExecutionHandle) {
+        val buffered = synchronized(handle.lock) {
+            if (handle.pendingAssistantTextDelta.isEmpty()) return
+            val text = handle.pendingAssistantTextDelta.toString()
+            handle.pendingAssistantTextDelta.setLength(0)
+            handle.lastAssistantTextFlushUptimeMillis = SystemClock.uptimeMillis()
+            text
+        }
+        applyAssistantTextDelta(handle, buffered)
+    }
+
+    private fun enqueueAssistantTextDelta(
+        handle: SessionExecutionHandle,
+        delta: String,
+    ) {
+        if (delta.isEmpty()) return
+        val ready = synchronized(handle.lock) {
+            handle.pendingAssistantTextDelta.append(delta)
+            val now = SystemClock.uptimeMillis()
+            val elapsed = now - handle.lastAssistantTextFlushUptimeMillis
+            if (elapsed >= AssistantDeltaFlushIntervalMillis ||
+                handle.pendingAssistantTextDelta.length >= AssistantDeltaFlushChars
+            ) {
+                handle.lastAssistantTextFlushUptimeMillis = now
+                val text = handle.pendingAssistantTextDelta.toString()
+                handle.pendingAssistantTextDelta.setLength(0)
+                text
+            } else {
+                null
+            }
+        }
+        if (ready != null) applyAssistantTextDelta(handle, ready)
     }
 
     private fun requestAssistantCheckpoint(sessionId: String) {
@@ -2979,6 +3034,8 @@ class SessionExecutionManager(
         var activeResponseIdentity: AssistantResponseIdentity? = null
         var lastAssistantCheckpointUptimeMillis: Long? = null
         var assistantCheckpointJob: Job? = null
+        val pendingAssistantTextDelta = StringBuilder()
+        var lastAssistantTextFlushUptimeMillis: Long = 0L
 
         @Volatile
         var pauseRequested: Boolean = false

@@ -768,22 +768,14 @@ private fun SharedDrawerSessionRow(
         ) {
             if (swipedFromStart != SharedDrawerSwipeAction.None) {
                 Text(
-                    text = if (swipedFromStart == SharedDrawerSwipeAction.Trash) {
-                        stringResource(Res.string.common_delete)
-                    } else {
-                        stringResource(Res.string.common_export)
-                    },
+                    text = SharedDrawerSwipeLabel(swipedFromStart),
                     style = MaterialTheme.typography.labelMedium,
                     color = AetherOnSurfaceVariant,
                 )
             }
             if (swipedFromEnd != SharedDrawerSwipeAction.None) {
                 Text(
-                    text = if (swipedFromEnd == SharedDrawerSwipeAction.Trash) {
-                        stringResource(Res.string.common_delete)
-                    } else {
-                        stringResource(Res.string.common_export)
-                    },
+                    text = SharedDrawerSwipeLabel(swipedFromEnd),
                     style = MaterialTheme.typography.labelMedium,
                     color = if (swipedFromEnd == SharedDrawerSwipeAction.Trash) {
                         Color(0xFFE5695F)
@@ -989,6 +981,16 @@ private fun SharedDrawerFolderPicker(
             }
         }
     }
+}
+
+@Composable
+/** Human label shown inside the swipe overlay for the configured gesture. */
+@Composable
+private fun SharedDrawerSwipeLabel(action: SharedDrawerSwipeAction): String = when (action) {
+    SharedDrawerSwipeAction.None -> ""
+    SharedDrawerSwipeAction.Export -> stringResource(Res.string.common_export)
+    SharedDrawerSwipeAction.Archive -> stringResource(Res.string.drawer_archive)
+    SharedDrawerSwipeAction.Trash -> stringResource(Res.string.common_delete)
 }
 
 @Composable

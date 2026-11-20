@@ -854,7 +854,7 @@ private fun AssistantMessageBlock(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        AetherAgentAvatar(size = 24.dp)
+        AetherAgentAvatar(size = 24.dp, animated = false)
         val context = LocalContext.current
         val replayToolInvocations = message.replayToolInvocations()
         val agentModeFrames = remember(context, replayToolInvocations) {

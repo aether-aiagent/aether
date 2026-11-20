@@ -165,6 +165,8 @@ internal fun mergeImportedPiExtensions(
         .distinctBy(InstalledPiExtension::id)
         .sortedBy { it.name.lowercase(Locale.US) }
 
+private const val OnboardingGoalsMarker = "[[preferred-uses]]"
+
 class AetherViewModel(
     application: Application,
 ) : AndroidViewModel(application) {
@@ -1540,6 +1542,37 @@ class AetherViewModel(
                     onboardingReturnScreen = AppScreen.Chat,
                 )
             }
+        }
+    }
+
+    /** Stores the onboarding survey answers as a short preference block in the system prompt. */
+    fun applyOnboardingGoals(goals: List<String>) {
+        if (goals.isEmpty()) return
+        val labels = goals.mapNotNull { goal ->
+            when (goal) {
+                "ask" -> "questions and explanations"
+                "code" -> "code and files"
+                "screen" -> "controlling apps on the device"
+                "reminders" -> "reminders and schedules"
+                "voice" -> "voice and dictation"
+                "automation" -> "automation"
+                else -> null
+            }
+        }
+        if (labels.isEmpty()) return
+        viewModelScope.launch {
+            val current = settingsRepository.settings.first()
+            if (current.systemPrompt.contains(OnboardingGoalsMarker)) return@launch
+            val block = buildString {
+                append(current.systemPrompt.trim())
+                if (isNotEmpty()) append("\n\n")
+                append(OnboardingGoalsMarker)
+                append("\n")
+                append("Preferred uses declared during onboarding: ")
+                append(labels.joinToString(", "))
+                append(". Lean on these when suggesting next steps.")
+            }
+            settingsRepository.updateSystemPrompt(block)
         }
     }
 

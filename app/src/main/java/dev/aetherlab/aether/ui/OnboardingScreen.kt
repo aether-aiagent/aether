@@ -139,6 +139,8 @@ private const val SetupProgressTickMillis = 450L
 private val TourEasing = CubicBezierEasing(0.22f, 0.84f, 0.18f, 1f)
 private val InitialOnboardingSteps = listOf(
     OnboardingStep.Landing,
+    OnboardingStep.Abilities,
+    OnboardingStep.Goals,
     OnboardingStep.AlpineSetup,
     OnboardingStep.ProviderSetup,
 )
@@ -199,6 +201,7 @@ fun OnboardingScreen(
     onSkip: () -> Unit,
     onClose: () -> Unit,
     onCompleteProviderSetup: (LlmProviderConfig) -> Unit,
+    onSaveGoals: (List<String>) -> Unit = {},
     onRequestTermuxPermission: () -> Unit,
     onOpenAppPermissions: () -> Unit,
     onOpenTermuxSettings: () -> Unit,
@@ -221,7 +224,12 @@ fun OnboardingScreen(
     var selectedRuntimePath by rememberSaveable(initialStep, replayMode) {
         mutableStateOf<OnboardingStep?>(null)
     }
+    var selectedGoals by rememberSaveable(initialStep, replayMode) {
+        mutableStateOf(emptyList<String>())
+    }
     val isInitialFlow = initialStep == OnboardingStep.Landing ||
+        initialStep == OnboardingStep.Abilities ||
+        initialStep == OnboardingStep.Goals ||
         initialStep == OnboardingStep.ProviderSetup ||
         initialStep == OnboardingStep.AlpineSetup
     val steps = remember(initialStep) {
@@ -261,8 +269,37 @@ fun OnboardingScreen(
                 stepIndex = stepIndex,
                 stepCount = steps.size,
                 replayMode = replayMode,
-                onPrimary = { currentStep = OnboardingStep.AlpineSetup },
+                onPrimary = { currentStep = OnboardingStep.Abilities },
                 onSecondary = if (replayMode) onClose else onSkip,
+            )
+
+            OnboardingStep.Abilities -> OnboardingAbilitiesStep(
+                stepIndex = stepIndex,
+                stepCount = steps.size,
+                replayMode = replayMode,
+                onBack = { currentStep = OnboardingStep.Landing },
+                onContinue = { currentStep = OnboardingStep.Goals },
+                onSkip = if (replayMode) onClose else onSkip,
+            )
+
+            OnboardingStep.Goals -> OnboardingGoalsStep(
+                stepIndex = stepIndex,
+                stepCount = steps.size,
+                replayMode = replayMode,
+                selectedGoals = selectedGoals.toSet(),
+                onToggleGoal = { goal ->
+                    selectedGoals = if (selectedGoals.contains(goal)) {
+                        selectedGoals - goal
+                    } else {
+                        selectedGoals + goal
+                    }
+                },
+                onBack = { currentStep = OnboardingStep.Abilities },
+                onContinue = {
+                    onSaveGoals(selectedGoals)
+                    currentStep = OnboardingStep.AlpineSetup
+                },
+                onSkip = if (replayMode) onClose else onSkip,
             )
 
             OnboardingStep.ProviderSetup -> ProviderSetupStep(

@@ -974,6 +974,7 @@ private fun AetherAppContent(
                         onSkip = viewModel::skipOnboarding,
                         onClose = viewModel::closeOnboarding,
                         onCompleteProviderSetup = viewModel::completeOnboardingProviderSetup,
+                        onSaveGoals = viewModel::applyOnboardingGoals,
                         onRequestTermuxPermission = { requestTermuxPermission("onboarding_termux_permission") },
                         onOpenAppPermissions = {
                             startTermuxSetupAction("onboarding_app_permissions") { openAppPermissionSettings(context) }

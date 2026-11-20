@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Как запустить ИИ-агента на Android: пошаговая инструкция (Aether)</title>
+<meta name="description" content="Пошагово: установить ИИ-агента на Android, подключить модель по API, дать ему терминал и файлы, включить MCP. Инструкция по Aether: APK, ключ, Alpine или Termux, типичные ошибки и их причины." />
+<meta name="keywords" content="как запустить ии агента на андроид, ии агент на телефоне инструкция, подключить нейросеть к телефону, аи агент apk, termux ии агент, локальная нейросеть андроид, openai api андроид, mcp на телефоне, Aether" />
+<link rel="canonical" href="https://aether-aiagent.github.io/aether/kak-zapustit-ii-agenta-na-android/" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Как запустить ИИ-агента на Android: пошаговая инструкция" />
+<meta property="og:description" content="Установка APK, подключение модели, терминал, файлы, MCP и разбор типичных ошибок." />
+<meta property="og:url" content="https://aether-aiagent.github.io/aether/kak-zapustit-ii-agenta-na-android/" />
+<meta name="twitter:card" content="summary_large_image" />
+<style>
+:root{color-scheme:dark}
+body{margin:0;background:#12121a;color:#e9e9f2;font:16px/1.65 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:56px 20px 80px}
+h1{font-size:34px;line-height:1.2;margin:0 0 12px}
+h2{font-size:22px;margin:38px 0 10px}
+h3{font-size:17px;margin:24px 0 6px}
+p,li{color:#c3c3d4}
+a{color:#8fa8ff}
+code{background:#1e1e2a;padding:2px 6px;border-radius:6px;font-size:14px}
+pre{background:#1e1e2a;padding:14px 16px;border-radius:12px;overflow-x:auto;font-size:14px}
+.cta{display:inline-block;margin:18px 12px 0 0;padding:12px 20px;border-radius:999px;background:#3358c4;color:#fff;text-decoration:none;font-weight:600}
+.note{border-left:3px solid #3358c4;padding:8px 0 8px 14px;color:#9a9ab0;margin:18px 0}
+.muted{font-size:13px;color:#7a7a90;margin-top:44px}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"HowTo","name":"Как запустить ИИ-агента на Android","description":"Установка Aether, подключение модели по OpenAI-совместимому API, запуск инструментов и локальной среды.","totalTime":"PT10M","tool":[{"@type":"HowToTool","name":"Телефон с Android 8.0 или новее"},{"@type":"HowToTool","name":"APK Aether"},{"@type":"HowToTool","name":"API-ключ провайдера модели"}],"step":[{"@type":"HowToStep","name":"Установить APK","text":"Скачать APK из GitHub Releases, разрешить установку из этого источника и открыть файл."},{"@type":"HowToStep","name":"Подключить модель","text":"В настройках добавить провайдера: base URL, ключ и имя модели. Для локальной модели указать адрес LM Studio или Ollama в домашней сети."},{"@type":"HowToStep","name":"Задать первый запрос","text":"Открыть чат и попросить агента посмотреть файлы. Опасные инструменты требуют подтверждения."},{"@type":"HowToStep","name":"Выбрать среду","text":"Встроенная Alpine через proot без root или подключение к установленному Termux."},{"@type":"HowToStep","name":"Подключить MCP","text":"Добавить MCP-сервер по stdio в настройках расширений."}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Нужен ли root?","acceptedAnswer":{"@type":"Answer","text":"Нет. Среда Alpine запускается через proot, а инструменты работают внутри песочницы приложения."}},{"@type":"Question","name":"Можно ли работать без интернета?","acceptedAnswer":{"@type":"Answer","text":"Можно, если модель запущена локально в вашей сети: Aether обращается к любому OpenAI-совместимому адресу, включая LM Studio и Ollama."}},{"@type":"Question","name":"Почему пишет «Приложение не установлено»?","acceptedAnswer":{"@type":"Answer","text":"Обычно из-за другой подписи APK или меньшего versionCode. Установите сборку из официальных релизов, она подписана одним ключом и versionCode растёт монотонно."}},{"@type":"Question","name":"Сколько стоит?","acceptedAnswer":{"@type":"Answer","text":"Приложение бесплатное и открытое (GPL-3.0). Платите только провайдеру модели за токены."}},{"@type":"Question","name":"Есть ли управление телефоном?","acceptedAnswer":{"@type":"Answer","text":"Нет. Aether работает только в своей песочнице и не использует службу доступности для нажатий по экрану."}}]}
+</script>
+</head>
+<body>
+<main>
+<h1>Как запустить ИИ-агента на Android: пошагово</h1>
+<p>Ниже инструкция для Aether — открытого агента для Android. Она же подойдёт как общий план для любого приложения такого типа: сначала установка, потом модель, потом инструменты, и только в конце среда и расширения. По времени — минут десять, если ключ от провайдера уже есть.</p>
+<a class="cta" href="https://github.com/aether-aiagent/aether/releases/latest">Скачать APK</a>
+<a class="cta" href="https://github.com/aether-aiagent/aether">Исходники</a>
+<h2>Что понадобится</h2>
+<ul>
+<li>Телефон с Android 8.0 или новее, свободных ~200 МБ.</li>
+<li>APK из раздела Releases. Сборки подписаны одним ключом, поэтому обновления ставятся поверх.</li>
+<li>API-ключ провайдера модели: OpenAI, Anthropic через совместимый шлюз, OpenRouter, либо локальный сервер (LM Studio, Ollama, llama.cpp) в домашней сети.</li>
+</ul>
+<div class="note">Если приложение из магазина ставить не хочется, APK — нормальный вариант: оно не требует аккаунта и не отправляет историю на сторонний сервер, кроме самого запроса к выбранной модели.</div>
+<h2>Шаг 1. Установка</h2>
+<p>Скачайте последний APK и откройте файл. Android спросит разрешение на установку из этого источника — включите для файлового менеджера или браузера, которым открывали, и вернитесь назад. Дальше обычное «Установить».</p>
+<p>Если система пишет «Приложение не установлено», причин ровно три: скачался битый файл, на телефоне уже стоит сборка с другой подписью, или versionCode меньше установленного. Лечится так: удалить старую версию (данные при этом потеряются) и поставить релизную. Именно поэтому я не меняю подпись и не откатываю versionCode.</p>
+<h2>Шаг 2. Подключение модели</h2>
+<p>Откройте настройки, раздел с провайдерами. Нужны три поля: адрес API, ключ, имя модели.</p>
+<ul>
+<li>Облако: адрес вида <code>https://api.openai.com/v1</code> (или адрес вашего шлюза), ключ из личного кабинета, модель вроде <code>gpt-4o-mini</code>.</li>
+<li>Локально: поднимите LM Studio или Ollama на компьютере, включите доступ по сети и укажите адрес компьютера с портом, например <code>http://192.168.1.10:1234/v1</code>. Ключ обычно любой непустой.</li>
+</ul>
+<p>После сохранения в чате появится чип модели над полем ввода. Если ответа нет — почти всегда дело в адресе: нужен именно суффикс <code>/v1</code> и доступность порта с телефона.</p>
+<h2>Шаг 3. Первый запрос</h2>
+<p>Начните с чего-то проверяемого: «посмотри список файлов в рабочей папке и скажи, что там». Агент вызовет инструмент, покажет карточку с командой и результатом, потом ответит текстом. Опасные действия — <code>bash</code>, <code>write</code>, <code>edit</code> — требуют подтверждения: это не формальность, а страховка от «удали всё в проекте».</p>
+<h2>Шаг 4. Среда выполнения</h2>
+<p>Есть два варианта. Встроенная Alpine запускается через proot: без root, без разблокировки загрузчика, старт около двух секунд. Пакеты ставятся через <code>apk add</code>, состояние сохраняется между запусками.</p>
+<p>Второй вариант — подключить Termux, если он уже настроен. Тогда агент видит ваши пакеты, конфиги и git-репозитории, и ничего не надо ставить дважды. Переключение — в настройках среды.</p>
+<h2>Шаг 5. Расширения и MCP</h2>
+<p>MCP-серверы подключаются по stdio: указываете команду запуска и аргументы, Aether поднимает процесс и получает список инструментов. Так к агенту добавляются поиск в интернете, работа с базами, доступ к заметкам и что угодно ещё, для чего уже написан сервер. Расширения — то же самое, но на уровне приложения: новые инструменты, команды и хуки.</p>
+<h2>Типичные ошибки</h2>
+<h3>Ответ обрывается на середине</h3>
+<p>Android убил фоновый процесс. Держите уведомление агента активным и отключите оптимизацию батареи для приложения.</p>
+<h3>Терминал тормозит</h3>
+<p>proot — это эмуляция, а не виртуализация. Тяжёлые сборки лучше гонять в Termux или на компьютере, а на телефоне — короткие команды и правки.</p>
+<h3>Модель «не видит» файл</h3>
+<p>Проверьте, в какой среде работает сессия: Alpine и Termux — разные файловые системы, пути в них не совпадают.</p>
+<h2>Вопросы, которые задают чаще всего</h2>
+<p><strong>Нужен ли root?</strong> Нет. Всё работает в песочнице приложения.</p>
+<p><strong>Можно ли без интернета?</strong> Да, если модель локальная: приложение ходит на любой совместимый адрес, включая LM Studio и Ollama.</p>
+<p><strong>Сколько стоит?</strong> Приложение бесплатное, открытое под GPL-3.0. Платите только за токены провайдеру, если он платный.</p>
+<p><strong>Есть ли управление телефоном?</strong> Нет и не планируется: агент не нажимает по экрану и не читает другие приложения.</p>
+<p class="muted">Aether — открытый проект. Исходники: <a href="https://github.com/aether-aiagent/aether">github.com/aether-aiagent/aether</a>. Другие страницы: <a href="../ai-agent-na-telefon/">ИИ-агент на телефон</a>, <a href="../android-ai-agent/">AI-агент для Android</a>, <a href="../local-llm-android/">локальная модель на Android</a>, <a href="../termux-ai-agent/">Termux и ИИ</a>.</p>
+</main>
+</body>
+</html>

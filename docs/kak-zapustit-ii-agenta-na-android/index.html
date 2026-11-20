@@ -13,21 +13,7 @@
 <meta property="og:description" content="Установка APK, подключение модели, терминал, файлы, MCP и разбор типичных ошибок." />
 <meta property="og:url" content="https://aether-aiagent.github.io/aether/kak-zapustit-ii-agenta-na-android/" />
 <meta name="twitter:card" content="summary_large_image" />
-<style>
-:root{color-scheme:dark}
-body{margin:0;background:#12121a;color:#e9e9f2;font:16px/1.65 -apple-system,Segoe UI,Roboto,sans-serif}
-main{max-width:760px;margin:0 auto;padding:56px 20px 80px}
-h1{font-size:34px;line-height:1.2;margin:0 0 12px}
-h2{font-size:22px;margin:38px 0 10px}
-h3{font-size:17px;margin:24px 0 6px}
-p,li{color:#c3c3d4}
-a{color:#8fa8ff}
-code{background:#1e1e2a;padding:2px 6px;border-radius:6px;font-size:14px}
-pre{background:#1e1e2a;padding:14px 16px;border-radius:12px;overflow-x:auto;font-size:14px}
-.cta{display:inline-block;margin:18px 12px 0 0;padding:12px 20px;border-radius:999px;background:#3358c4;color:#fff;text-decoration:none;font-weight:600}
-.note{border-left:3px solid #3358c4;padding:8px 0 8px 14px;color:#9a9ab0;margin:18px 0}
-.muted{font-size:13px;color:#7a7a90;margin-top:44px}
-</style>
+<link rel="stylesheet" href="../assets/site.css" />
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"HowTo","name":"Как запустить ИИ-агента на Android","description":"Установка Aether, подключение модели по OpenAI-совместимому API, запуск инструментов и локальной среды.","totalTime":"PT10M","tool":[{"@type":"HowToTool","name":"Телефон с Android 8.0 или новее"},{"@type":"HowToTool","name":"APK Aether"},{"@type":"HowToTool","name":"API-ключ провайдера модели"}],"step":[{"@type":"HowToStep","name":"Установить APK","text":"Скачать APK из GitHub Releases, разрешить установку из этого источника и открыть файл."},{"@type":"HowToStep","name":"Подключить модель","text":"В настройках добавить провайдера: base URL, ключ и имя модели. Для локальной модели указать адрес LM Studio или Ollama в домашней сети."},{"@type":"HowToStep","name":"Задать первый запрос","text":"Открыть чат и попросить агента посмотреть файлы. Опасные инструменты требуют подтверждения."},{"@type":"HowToStep","name":"Выбрать среду","text":"Встроенная Alpine через proot без root или подключение к установленному Termux."},{"@type":"HowToStep","name":"Подключить MCP","text":"Добавить MCP-сервер по stdio в настройках расширений."}]}
 </script>
@@ -36,11 +22,13 @@ pre{background:#1e1e2a;padding:14px 16px;border-radius:12px;overflow-x:auto;font
 </script>
 </head>
 <body>
-<main>
+<div class="aura"><i></i><i></i><i></i><i></i></div>
+<div class="grain"></div>
+<main class="wrap doc">
 <h1>Как запустить ИИ-агента на Android: пошагово</h1>
 <p>Ниже инструкция для Aether — открытого агента для Android. Она же подойдёт как общий план для любого приложения такого типа: сначала установка, потом модель, потом инструменты, и только в конце среда и расширения. По времени — минут десять, если ключ от провайдера уже есть.</p>
-<a class="cta" href="https://github.com/aether-aiagent/aether/releases/latest">Скачать APK</a>
-<a class="cta" href="https://github.com/aether-aiagent/aether">Исходники</a>
+<a class="btn btn-primary" href="https://github.com/aether-aiagent/aether/releases/latest">Скачать APK</a>
+<a class="btn btn-primary" href="https://github.com/aether-aiagent/aether">Исходники</a>
 <h2>Что понадобится</h2>
 <ul>
 <li>Телефон с Android 8.0 или новее, свободных ~200 МБ.</li>

@@ -9,7 +9,16 @@
 <meta name="keywords" content="Aether, Aether AI agent, AI agent for Android, AI-агент для Android, локальный AI агент, LLM на телефоне, on-device AI assistant, android ai agent apk, Termux AI agent, Shizuku automation, MCP client Android, Alpine proot Android, open source AI assistant, Kotlin Jetpack Compose LLM chat" />
 <meta name="author" content="Aether AI Agent" />
 <link rel="canonical" href="https://aether-aiagent.github.io/aether/" />
+<link rel="stylesheet" href="assets/site.css" />
+<link rel="icon" type="image/png" href="social-preview.png" />
+<meta name="theme-color" content="#101116" />
 <meta property="og:site_name" content="Aether — AI agent for Android" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Aether — AI-агент на Android" />
+<meta property="og:description" content="Чат, инструменты, файлы, среда Alpine, MCP-серверы и суб-агенты прямо на телефоне. Без аккаунта и без бэкенда." />
+<meta property="og:image" content="https://aether-aiagent.github.io/aether/social-preview.png" />
+<meta property="og:url" content="https://aether-aiagent.github.io/aether/" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Aether — AI agent for Android" />
 <meta name="twitter:description" content="Open-source Android AI agent: on-device LLM chat with bash, files, MCP servers, subagents and a local Alpine runtime. Signed APK releases." />
 <script type="application/ld+json">
@@ -28,113 +37,201 @@
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 }
 </script>
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Aether — AI-агент на Android" />
-<meta property="og:description" content="Чат, инструменты, файлы, среда Alpine, MCP-серверы и суб-агенты прямо на телефоне. Без аккаунта и без бэкенда." />
-<meta property="og:image" content="https://aether-aiagent.github.io/aether/social-preview.png" />
-<meta property="og:url" content="https://aether-aiagent.github.io/aether/" />
-<meta name="twitter:card" content="summary_large_image" />
-<link rel="icon" type="image/png" href="social-preview.png" />
-<style>
-  :root{
-    --bg:#14162a; --bg2:#1b1b22; --card:#20202a; --card2:#26262f;
-    --primary:#6e8dfb; --container:#3358c4; --text:#e8eaf6; --muted:#9aa0b4;
-    --radius:24px;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  body{
-    background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 60%,#141419 100%);
-    color:var(--text);
-    font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
-    min-height:100vh;
-  }
-  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
-  header{padding:56px 0 8px;text-align:center}
-  .hero-img{width:min(720px,100%);border-radius:var(--radius);box-shadow:0 24px 60px rgba(0,0,0,.45)}
-  h1{font-size:clamp(30px,6vw,52px);margin:26px 0 10px;letter-spacing:-.02em}
-  h1 span{color:var(--primary)}
-  .tag{color:var(--muted);font-size:clamp(15px,2.4vw,19px);max-width:640px;margin:0 auto}
-  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:28px 0 8px}
-  a.btn{
-    display:inline-flex;align-items:center;gap:8px;text-decoration:none;
-    background:var(--container);color:#fff;font-weight:600;
-    padding:14px 26px;border-radius:999px;transition:transform .15s ease,background .15s ease;
-  }
-  a.btn:hover{transform:translateY(-2px);background:#3d63d6}
-  a.btn.ghost{background:transparent;color:var(--primary);border:1px solid rgba(110,141,251,.5)}
-  .meta{color:var(--muted);font-size:13px;margin-top:10px}
-  section{padding:44px 0}
-  h2{font-size:clamp(22px,3.4vw,30px);margin:0 0 18px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-  .card{
-    background:var(--card);border:1px solid rgba(255,255,255,.06);
-    border-radius:var(--radius);padding:20px;
-  }
-  .card b{display:block;margin-bottom:6px;color:#fff}
-  .card p{margin:0;color:var(--muted);font-size:14.5px}
-  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--primary);margin-right:8px}
-  ol.steps{color:var(--muted);padding-left:20px}
-  ol.steps li{margin:8px 0}
-  ol.steps code{background:var(--card2);padding:2px 7px;border-radius:8px;color:#cfd6ff}
-  footer{padding:34px 0 46px;color:var(--muted);font-size:13.5px;text-align:center}
-  footer a{color:var(--primary);text-decoration:none}
-  .pill{display:inline-block;background:var(--card2);border-radius:999px;padding:6px 14px;font-size:13px;color:#cfd6ff;margin:0 4px 8px 0}
-</style>
 </head>
 <body>
-<header class="wrap">
-  <img class="hero-img" src="aether-demo.gif" alt="Aether: запрос, три вызова инструментов, ответ" width="480" height="288" />
-  <h1>Aether — <span>AI-агент</span> на Android</h1>
-  <p class="tag">Чат, инструменты, файлы, локальная среда Alpine, MCP-серверы и суб-агенты прямо на телефоне. Без аккаунта, без бэкенда, без телеметрии.</p>
-  <div class="cta">
-    <a class="btn" href="https://github.com/aether-aiagent/aether/releases/latest">Скачать APK</a>
-    <a class="btn ghost" href="https://github.com/aether-aiagent/aether">Исходники на GitHub</a>
+<div class="aura"><i></i><i></i><i></i><i></i></div>
+<div class="grain"></div>
+
+<div class="nav">
+  <div class="nav-in">
+    <a class="brand" href="./">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="4" y="8" width="24" height="20" rx="7" fill="url(#g)"/>
+        <circle cx="12.5" cy="17" r="2.6" fill="#0a2a5e"/>
+        <circle cx="19.5" cy="17" r="2.6" fill="#0a2a5e"/>
+        <rect x="15" y="2.5" width="2" height="5" rx="1" fill="#adc6ff"/>
+        <circle cx="16" cy="2.6" r="2.1" fill="#adc6ff"/>
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#c8d7ff"/><stop offset="1" stop-color="#7e9dff"/>
+        </linearGradient></defs>
+      </svg>
+      Aether
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Возможности</a>
+      <a href="#shots">Экраны</a>
+      <a href="#install">Установка</a>
+      <a href="kak-zapustit-ii-agenta-na-android/">Инструкция</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="https://github.com/aether-aiagent/aether/releases/latest">Скачать APK</a>
   </div>
-  <div class="meta">Android 8.0+ · ARM64 · GPL-3.0 · обновления ставятся поверх</div>
+</div>
+
+<main>
+<header class="wrap hero">
+  <div class="reveal">
+    <span class="eyebrow"><b></b>Открытый исходный код · GPL-3.0</span>
+    <h1>Aether — <em>AI-агент</em>, который живёт на телефоне</h1>
+    <p class="lede">Не чат-обёртка. Модель запускает команды, читает и правит файлы, держит локальную среду Alpine и подключает MCP-серверы. Всё на устройстве, без аккаунта и без бэкенда.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/aether-aiagent/aether/releases/latest">Скачать APK</a>
+      <a class="btn btn-glass" href="https://github.com/aether-aiagent/aether">Исходники на GitHub</a>
+    </div>
+    <div class="meta-line">
+      <span>Android 8.0+</span><span>ARM64</span><span>~41 МБ</span><span>Обновление поверх</span>
+    </div>
+  </div>
+  <div class="hero-visual glass reveal">
+    <img src="social-preview.png" alt="Aether — бот-аватар агента и чат с вызовом инструментов на тёмном экране" width="1280" height="640" />
+  </div>
 </header>
 
-<section class="wrap">
-  <div>
-    <span class="pill">Русский интерфейс</span><span class="pill">Локально</span><span class="pill">OpenAI / Anthropic / Gemini</span><span class="pill">MCP</span><span class="pill">Shizuku</span><span class="pill">Termux</span><span class="pill">Debian 13</span>
+<section class="wrap" id="features">
+  <div class="section-head reveal">
+    <div>
+      <h2>Возможности</h2>
+      <p>Всё, что нужно агенту, чтобы работать руками: терминал, файлы, расширения и любая модель.</p>
+    </div>
   </div>
-  <h2 style="margin-top:26px">Что умеет</h2>
   <div class="grid">
-    <div class="card"><b><span class="dot"></span>Агент, а не чат-бот</b><p>bash, чтение и правка файлов, grep, find, установка пакетов в Alpine proot или Termux.</p></div>
-    <div class="card"><b><span class="dot"></span>Любая модель</b><p>OpenAI-совместимый API, Anthropic, Gemini или локальная Ollama: свой URL, ключ и заголовки.</p></div>
-    <div class="card"><b><span class="dot"></span>Расширения и MCP</b><p>Web Access, MCP-серверы, суб-агенты, AI Lab — подключаются в настройках без пересборки.</p></div>
-    <div class="card"><b><span class="dot"></span>Управление устройством</b><p>Shizuku и Agent Mode: виртуальный дисплей и операции с другими приложениями без root.</p></div>
-    <div class="card"><b><span class="dot"></span>Живой интерфейс</b><p>Стриминг, markdown с колаутами и графиками, опросы, озвучка ответов, анимированный аватар.</p></div>
-    <div class="card"><b><span class="dot"></span>Приватность</b><p>История, файлы и ключи остаются на устройстве. Наружу уходят только ваши запросы к модели.</p></div>
+    <article class="card glass reveal">
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 7l8-4 8 4-8 4-8-4z"/><path d="M4 12l8 4 8-4"/><path d="M4 17l8 4 8-4"/></svg></div>
+      <h3>Агент, а не чат-бот</h3>
+      <p>bash, чтение и правка файлов, grep, find, установка пакетов в Alpine proot или в вашем Termux. Опасные действия — только с подтверждением.</p>
+    </article>
+    <article class="card glass reveal">
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M5 8l7-5 7 5"/><path d="M5 14l7-5 7 5"/></svg></div>
+      <h3>Любая модель</h3>
+      <p>OpenAI-совместимый API, Anthropic, Gemini или локальная Ollama со своего компьютера: адрес, ключ, заголовки — всё настраивается.</p>
+    </article>
+    <article class="card glass reveal">
+      <div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></div>
+      <h3>Расширения и MCP</h3>
+      <p>MCP-серверы по stdio, суб-агенты для параллельных задач, навыки и расширения — подключаются в настройках, без пересборки приложения.</p>
+    </article>
+    <article class="card glass reveal">
+      <div class="icon"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="3"/><path d="M11 18h2"/></svg></div>
+      <h3>Shizuku и Agent Mode</h3>
+      <p>Виртуальный дисплей и операции с другими приложениями через Shizuku — без root, но и без службы доступности и чтения чужого экрана.</p>
+    </article>
+    <article class="card glass reveal">
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 3-4 6 6"/><path d="M3 6h18"/></svg></div>
+      <h3>Живой интерфейс</h3>
+      <p>Стриминг ответа, markdown с колаутами и встроенными графиками, опросы с полем ввода, озвучка ответов, анимированный аватар агента.</p>
+    </article>
+    <article class="card glass reveal">
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3z"/><path d="M9.5 12l1.8 1.8 3.4-3.6"/></svg></div>
+      <h3>Приватность по умолчанию</h3>
+      <p>История чатов, файлы и ключи остаются на устройстве. Наружу уходит только запрос к выбранной вами модели.</p>
+    </article>
+  </div>
+</section>
+
+<section class="wrap" id="shots">
+  <div class="section-head reveal">
+    <div>
+      <h2>Как это выглядит</h2>
+      <p>Чат, карточки инструментов со временем выполнения, настройки на русском.</p>
+    </div>
+  </div>
+  <div class="shots">
+    <figure class="shot glass reveal">
+      <img src="screenshots/chat-keyboard-ru.jpg" alt="Чат Aether: ответ агента и вызовы инструментов, русский интерфейс" loading="lazy" />
+      <figcaption>Чат: работа агента сворачивается в один блок</figcaption>
+    </figure>
+    <figure class="shot glass reveal">
+      <img src="screenshots/settings-ru.jpg" alt="Настройки Aether: провайдеры моделей, среда выполнения, внешний вид" loading="lazy" />
+      <figcaption>Настройки: провайдеры, среда, внешний вид</figcaption>
+    </figure>
   </div>
 </section>
 
 <section class="wrap">
-  <h2>Установка за минуту</h2>
-  <ol class="steps">
-    <li>Скачайте <code>Aether-v2.4.1.apk</code> со страницы релизов.</li>
-    <li>Установите, разрешив установку из неизвестных источников.</li>
-    <li>Откройте приложение и укажите провайдера модели — дальше агент работает сам.</li>
-  </ol>
-  <p style="color:var(--muted);font-size:14.5px">Официальные сборки выходят только в <a href="https://github.com/aether-aiagent/aether/releases">разделe Releases</a> репозитория. APK подписан ключом проекта, versionCode растёт монотонно, поэтому обновление ставится поверх без потери чатов. Сборки из форков и с других сайтов — не наши: подпись отличается, обновиться поверх не получится.</p>
-  <p style="color:var(--muted);font-size:14.5px">Обновления приходят из приложения: оно проверяет релизы репозитория и ставит APK поверх, сохраняя чаты и настройки.</p>
+  <div class="section-head reveal">
+    <div>
+      <h2>Три шага до первого запуска</h2>
+      <p>Больше всего времени уходит на получение ключа у провайдера модели.</p>
+    </div>
+  </div>
+  <div class="steps">
+    <div class="step glass reveal">
+      <h3>Установить APK</h3>
+      <p>Скачать <code>Aether-v2.4.1.apk</code> из релизов, разрешить установку из этого источника, открыть файл.</p>
+    </div>
+    <div class="step glass reveal">
+      <h3>Подключить модель</h3>
+      <p>Указать адрес API, ключ и имя модели. Для локальной — адрес Ollama или LM Studio в домашней сети.</p>
+    </div>
+    <div class="step glass reveal">
+      <h3>Спросить по делу</h3>
+      <p>Например: «посмотри, почему падает сборка». Агент сам вызовет нужные инструменты и покажет каждый шаг.</p>
+    </div>
+  </div>
 </section>
 
-<nav class="wrap" style="padding:8px 0 24px;font-size:14px;color:var(--muted)">
-  <a href="kak-zapustit-ii-agenta-na-android/">Инструкция по запуску</a> ·
-  <a href="ai-agent-na-telefon/">ИИ-агент на телефон</a> ·
-  <a href="android-ai-agent/">Android AI agent</a> ·
-  <a href="local-llm-android/">Local LLM on Android</a> ·
-  <a href="termux-ai-agent/">Termux AI agent</a> ·
-  <a href="https://github.com/aether-aiagent/aether-plugins">Расширения</a> ·
-  <a href="https://github.com/aether-aiagent/aether-skills">Навыки</a> ·
-  <a href="https://github.com/aether-aiagent/aether-docs">Документация</a>
-</nav>
+<section class="wrap" id="install">
+  <div class="install glass reveal">
+    <div class="install-grid">
+      <div>
+        <h2>Установка и обновления</h2>
+        <p class="lede" style="margin:14px 0 20px">Подписанный APK, без аккаунта и без Google Play. Приложение само проверяет новые релизы и ставит их поверх, сохраняя чаты и настройки.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://github.com/aether-aiagent/aether/releases/latest">Скачать APK</a>
+          <a class="btn btn-glass" href="kak-zapustit-ii-agenta-na-android/">Подробная инструкция</a>
+        </div>
+        <div class="notice">
+          <b>Официальные сборки</b> — только в разделе Releases репозитория. APK подписан ключом проекта, <code>versionCode</code> растёт монотонно. Сборки из форков и с других сайтов — не наши: подпись отличается, обновиться поверх не получится.
+        </div>
+      </div>
+      <div class="glass" style="padding:22px;border-radius:22px">
+        <div class="meta-line" style="margin:0 0 14px">
+          <span>GPL-3.0</span><span>Kotlin + Compose</span><span>Без телеметрии</span>
+        </div>
+        <p style="margin:0;color:var(--on-surface-variant);font-size:14.5px">Исходный код открыт: интерфейс на Kotlin и Jetpack Compose, агентный цикл в отдельном процессе, инструменты и расширения подключаются по JSON-RPC. Сборки собираются в GitHub Actions из этого репозитория.</p>
+        <div class="linkrow" style="margin-top:16px">
+          <a href="https://github.com/aether-aiagent/aether">Репозиторий</a>
+          <a href="https://github.com/aether-aiagent/aether/blob/main/CHANGELOG.md">Изменения</a>
+          <a href="https://github.com/aether-aiagent/aether/issues">Ошибки</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="section-head reveal">
+    <div>
+      <h2>Документация и материалы</h2>
+      <p>Инструкции, расширения, навыки и страницы под конкретные сценарии.</p>
+    </div>
+  </div>
+  <div class="linkrow reveal">
+    <a href="kak-zapustit-ii-agenta-na-android/">Как запустить агента на Android</a>
+    <a href="ai-agent-na-telefon/">ИИ-агент на телефон</a>
+    <a href="android-ai-agent/">Android AI agent</a>
+    <a href="local-llm-android/">Локальная модель на Android</a>
+    <a href="termux-ai-agent/">Termux и ИИ</a>
+    <a href="https://github.com/aether-aiagent/aether-plugins">Расширения</a>
+    <a href="https://github.com/aether-aiagent/aether-skills">Навыки</a>
+    <a href="https://github.com/aether-aiagent/aether-docs">Документация</a>
+    <a href="https://github.com/aether-aiagent/aether-mcp">MCP-серверы</a>
+  </div>
+</section>
+</main>
 
 <footer class="wrap">
-  Владелец проекта — <a href="https://t.me/AetherAIAgent">Aether AI Agent</a> ·
-  <a href="https://github.com/aether-aiagent/aether/blob/main/CHANGELOG.md">Изменения</a> ·
-  <a href="https://github.com/aether-aiagent/aether/issues">Сообщить об ошибке</a>
+  <div class="footline">
+    <div>Владелец проекта — <a href="https://t.me/AetherAIAgent">Aether AI Agent</a> · Aether распространяется под GPL-3.0</div>
+    <div><a href="https://github.com/aether-aiagent/aether">GitHub</a> · <a href="https://aether-aiagent.github.io/aether/">Сайт</a></div>
+  </div>
 </footer>
+
+<script>
+document.documentElement.classList.add('js');
+const io = new IntersectionObserver((es)=>{
+  for(const e of es){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }
+},{rootMargin:'0px 0px -8% 0px',threshold:.08});
+document.querySelectorAll('.reveal').forEach((el,i)=>{ el.style.transitionDelay=Math.min(i,6)*40+'ms'; io.observe(el); });
+</script>
 </body>
 </html>

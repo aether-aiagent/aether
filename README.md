@@ -9,11 +9,13 @@
   <img src="https://img.shields.io/badge/Jetpack_Compose-4285F4?style=flat-square&amp;logo=jetpackcompose&amp;logoColor=white" alt="Jetpack Compose" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-22D3EE?style=flat-square" alt="GPL 3.0" /></a>
   <a href="https://github.com/jcufyr6d5djj-beep/aether/actions/workflows/build-nightly-apk.yml"><img src="https://img.shields.io/github/actions/workflow/status/jcufyr6d5djj-beep/aether/build-nightly-apk.yml?style=flat-square&amp;label=build" alt="Сборка" /></a>
+  <a href="https://github.com/jcufyr6d5djj-beep/aether/releases"><img src="https://img.shields.io/github/downloads/jcufyr6d5djj-beep/aether/total?style=flat-square&amp;label=Downloads&amp;color=22D3EE" alt="Загрузки" /></a>
+  <img src="https://img.shields.io/github/stars/jcufyr6d5djj-beep/aether?style=flat-square&amp;label=Stars&amp;color=7C3AED" alt="Звёзды" />
 </p>
 
 <p align="center"><b>AI-агент на Android с русским интерфейсом.</b><br/>Чат, инструменты, расширения и локальная среда выполнения — на вашем устройстве.</p>
 
-<p align="center"><a href="https://github.com/jcufyr6d5djj-beep/aether/releases/latest"><b>Скачать APK</b></a> · <a href="https://t.me/AetherAIAgent"><b>Telegram владельца</b></a> · <a href="CHANGELOG.md">Изменения</a> · <a href="docs/AETHER_EXTENSIONS.md">Расширения</a> · <a href="https://github.com/jcufyr6d5djj-beep/aether/issues">Сообщить об ошибке</a></p>
+<p align="center"><a href="https://github.com/jcufyr6d5djj-beep/aether/releases/latest"><b>Скачать APK</b></a> · <a href="https://jcufyr6d5djj-beep.github.io/aether/"><b>Сайт проекта</b></a> · <a href="https://t.me/AetherAIAgent"><b>Telegram владельца</b></a> · <a href="CHANGELOG.md">Изменения</a> · <a href="docs/AETHER_EXTENSIONS.md">Расширения</a> · <a href="https://github.com/jcufyr6d5djj-beep/aether/issues">Сообщить об ошибке</a></p>
 
 <p align="center">Владелец проекта — <b>Aether AI Agent</b> · <a href="https://t.me/AetherAIAgent">t.me/AetherAIAgent</a></p>
 
@@ -161,6 +163,14 @@ aether-desktop
 
 Готовые пакеты собираются workflow **Build Aether Desktop (Debian 13)**. Подробности — в
 [debian/README_ru.md](debian/README_ru.md).
+
+## Звёзды во времени
+
+<p align="center">
+  <a href="https://star-history.com/#jcufyr6d5djj-beep/aether&Date">
+    <img src="https://api.star-history.com/svg?repos=jcufyr6d5djj-beep/aether&type=Date" alt="История звёзд Aether" width="460" />
+  </a>
+</p>
 
 ## Лицензия
 

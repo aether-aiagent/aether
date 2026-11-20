@@ -120,7 +120,18 @@ fun AetherAgentAvatar(
         label = "bot_morph",
     )
     var blink by remember { mutableStateOf(false) }
-    var gaze by remember { mutableStateOf(Offset.Zero) }
+    var gazeTargetX by remember { mutableStateOf(0f) }
+    var gazeTargetY by remember { mutableStateOf(0f) }
+    val gazeX by animateFloatAsState(
+        targetValue = gazeTargetX,
+        animationSpec = spring(dampingRatio = 0.55f, stiffness = 90f),
+        label = "bot_gaze_x",
+    )
+    val gazeY by animateFloatAsState(
+        targetValue = gazeTargetY,
+        animationSpec = spring(dampingRatio = 0.55f, stiffness = 90f),
+        label = "bot_gaze_y",
+    )
 
     if (animated) {
         LaunchedEffect(working) {
@@ -149,10 +160,8 @@ fun AetherAgentAvatar(
         LaunchedEffect(animated) {
             while (true) {
                 delay(1_400L + Random.nextLong(0, 3_200))
-                gaze = Offset(
-                    x = Random.nextFloat() * 2f - 1f,
-                    y = Random.nextFloat() * 1.2f - 0.6f,
-                )
+                gazeTargetX = Random.nextFloat() * 2f - 1f
+                gazeTargetY = Random.nextFloat() * 1.2f - 0.6f
             }
         }
     }
@@ -170,7 +179,6 @@ fun AetherAgentAvatar(
                 ),
             ),
     ) {
-        val gazeAnimated = animateOffset(gaze)
         Canvas(modifier = Modifier.fillMaxSize()) {
             val center = Offset(this.size.width / 2f, this.size.height / 2f)
             val baseRadius = this.size.minDimension * 0.34f
@@ -193,7 +201,7 @@ fun AetherAgentAvatar(
             drawEyes(
                 center = center,
                 radius = radius,
-                gaze = gazeAnimated.value,
+                gaze = Offset(gazeX, gazeY),
                 blink = blink,
                 working = working,
             )
@@ -282,17 +290,4 @@ private fun breathingPhase(working: Boolean): Float {
         label = "bot_breathe_value",
     )
     return value
-}
-
-/** Smoothed gaze offset so eye darts read as blinks of attention, not jumps. */
-@Composable
-private fun animateOffset(target: Offset): androidx.compose.animation.core.Animatable<Offset, androidx.compose.animation.core.AnimationVector2D> {
-    val animatable = remember { androidx.compose.animation.core.Animatable(Offset.Zero, Offset.VectorConverter) }
-    LaunchedEffect(target) {
-        animatable.animateTo(
-            targetValue = target,
-            animationSpec = spring(dampingRatio = 0.55f, stiffness = 90f),
-        )
-    }
-    return animatable
 }

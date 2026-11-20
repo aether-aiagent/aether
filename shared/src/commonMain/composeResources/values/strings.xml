@@ -1222,4 +1222,8 @@
     <string name="drawer_archive">Archive</string>
     <string name="drawer_unarchive">Restore</string>
     <string name="settings_swipe_action_archive">Archive</string>
+    <string name="chat_starter_analyze_image_desc">Describe what matters in a picture</string>
+    <string name="chat_starter_code_desc">Write or fix code with me</string>
+    <string name="chat_starter_write_desc">Draft a polished message</string>
+    <string name="chat_starter_summarize_desc">Pull the key points out of a file</string>
 </resources>

@@ -1561,9 +1561,13 @@ private fun ConversationEmptyState(
         modifier = modifier,
         welcomeLabel = chatGreeting(),
         analyzeImageLabel = stringResource(R.string.chat_analyze_image_chip),
+        analyzeImageSubtitle = stringResource(R.string.chat_starter_analyze_image_desc),
         codeLabel = stringResource(R.string.chat_code_chip),
+        codeSubtitle = stringResource(R.string.chat_starter_code_desc),
         helpWriteLabel = stringResource(R.string.chat_help_me_write_chip),
+        helpWriteSubtitle = stringResource(R.string.chat_starter_write_desc),
         summarizeFileLabel = stringResource(R.string.chat_summarize_file_chip),
+        summarizeFileSubtitle = stringResource(R.string.chat_starter_summarize_desc),
         inputFocused = inputFocused,
         onStarterPromptSelected = onStarterPromptSelected,
     )

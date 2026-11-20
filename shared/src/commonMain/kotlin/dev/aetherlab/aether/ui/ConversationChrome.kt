@@ -136,9 +136,13 @@ fun AetherSimpleModelSelector(
 fun AetherConversationEmptyState(
     welcomeLabel: String,
     analyzeImageLabel: String,
+    analyzeImageSubtitle: String = "",
     codeLabel: String,
+    codeSubtitle: String = "",
     helpWriteLabel: String,
+    helpWriteSubtitle: String = "",
     summarizeFileLabel: String,
+    summarizeFileSubtitle: String = "",
     inputFocused: Boolean,
     onStarterPromptSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -173,38 +177,52 @@ fun AetherConversationEmptyState(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                ConversationStarterChip(
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                ConversationStarterCard(
                     icon = Icons.Rounded.Image,
                     label = analyzeImageLabel,
+                    subtitle = analyzeImageSubtitle,
                     iconTint = Color(0xFF38A961),
                     onClick = {
                         onStarterPromptSelected("Analyze this image and describe the important details.")
                     },
+                    modifier = Modifier.weight(1f),
                 )
-                ConversationStarterChip(
+                ConversationStarterCard(
                     icon = Icons.Rounded.Terminal,
                     label = codeLabel,
+                    subtitle = codeSubtitle,
                     iconTint = Color(0xFF7D70DD),
                     onClick = { onStarterPromptSelected("Help me write or debug this code: ") },
+                    modifier = Modifier.weight(1f),
                 )
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                ConversationStarterChip(
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                ConversationStarterCard(
                     icon = Icons.Rounded.AutoAwesome,
                     label = helpWriteLabel,
+                    subtitle = helpWriteSubtitle,
                     iconTint = Color(0xFFE48AAE),
                     onClick = {
                         onStarterPromptSelected("Help me write a clear, polished message about ")
                     },
+                    modifier = Modifier.weight(1f),
                 )
-                ConversationStarterChip(
+                ConversationStarterCard(
                     icon = Icons.Rounded.AttachFile,
                     label = summarizeFileLabel,
+                    subtitle = summarizeFileSubtitle,
                     iconTint = Color(0xFF66C7D4),
                     onClick = {
                         onStarterPromptSelected("Summarize this file and list the key points.")
                     },
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -212,37 +230,53 @@ fun AetherConversationEmptyState(
 }
 
 @Composable
-private fun ConversationStarterChip(
+private fun ConversationStarterCard(
     icon: ImageVector,
     label: String,
+    subtitle: String,
     iconTint: Color,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = Modifier
+    Column(
+        modifier = modifier
             .shadow(
-                6.dp,
-                RoundedCornerShape(999.dp),
+                4.dp,
+                RoundedCornerShape(20.dp),
                 ambientColor = ConversationControlShadow,
                 spotColor = ConversationControlShadow,
             )
-            .clip(RoundedCornerShape(999.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(AetherSurface.copy(alpha = 0.98f))
             .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(horizontal = 14.dp, vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = iconTint,
-            modifier = Modifier.size(19.dp),
-        )
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(iconTint.copy(alpha = 0.14f))
+                .padding(horizontal = 8.dp, vertical = 7.dp),
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconTint,
+                modifier = Modifier.size(18.dp),
+            )
+        }
         Text(
             text = label,
-            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
-            color = AetherOnSurfaceVariant,
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+            color = AetherOnSurface,
         )
+        if (subtitle.isNotBlank()) {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = AetherOnSurfaceVariant,
+                maxLines = 2,
+            )
+        }
     }
 }

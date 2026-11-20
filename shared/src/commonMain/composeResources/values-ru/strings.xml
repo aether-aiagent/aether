@@ -1201,4 +1201,8 @@
     <string name="drawer_archive">Архив</string>
     <string name="drawer_unarchive">Вернуть из архива</string>
     <string name="settings_swipe_action_archive">В архив</string>
+    <string name="chat_starter_analyze_image_desc">Разберу картинку и опишу важное</string>
+    <string name="chat_starter_code_desc">Напишу или починю код</string>
+    <string name="chat_starter_write_desc">Соберу аккуратный текст</string>
+    <string name="chat_starter_summarize_desc">Вытащу главное из файла</string>
 </resources>

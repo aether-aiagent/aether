@@ -3368,6 +3368,37 @@ private fun AssistantMessageAction(
     }
 }
 
+/** Compact "14.4s · ↑13.4k ↓770" footer, the way modern agent UIs label a finished turn. */
+@Composable
+private fun ReplyUsageSummary(usage: ChatUsageStatistics?) {
+    if (usage == null) return
+    val durationMillis = (usage.completedAtMillis - usage.startedAtMillis).coerceAtLeast(0L)
+    val duration = durationMillis.takeIf { it >= 300L }?.let { millis ->
+        if (millis < 60_000L) {
+            (millis / 100L).toFloat().div(10f).toString() + "s"
+        } else {
+            val seconds = millis / 1_000L
+            (seconds / 60L).toString() + "m " + (seconds % 60L).toString() + "s"
+        }
+    }
+    val input = usage.inputTokens?.takeIf { it > 0L }?.let { "\u2191" + compactTokenCount(it) }
+    val output = usage.outputTokens?.takeIf { it > 0L }?.let { "\u2193" + compactTokenCount(it) }
+    val parts = listOfNotNull(duration, input, output)
+    if (parts.isEmpty()) return
+    Text(
+        text = parts.joinToString(" \u00b7 "),
+        style = MaterialTheme.typography.labelSmall,
+        color = AetherOnSurfaceVariant.copy(alpha = 0.62f),
+        maxLines = 1,
+    )
+}
+
+private fun compactTokenCount(value: Long): String = when {
+    value >= 1_000_000L -> (value / 100_000L).toFloat().div(10f).toString() + "M"
+    value >= 1_000L -> (value / 100L).toFloat().div(10f).toString() + "k"
+    else -> value.toString()
+}
+
 @Composable
 private fun AssistantMessageActions(
     usageStatistics: ChatUsageStatistics?,
@@ -3430,6 +3461,7 @@ private fun AssistantMessageActions(
                     showStatistics = true
                 },
             )
+            ReplyUsageSummary(usageStatistics)
         }
         if (keepStatisticsPopup || showStatistics) {
             Popup(

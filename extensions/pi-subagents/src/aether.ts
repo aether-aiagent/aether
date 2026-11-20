@@ -6,9 +6,8 @@
  * TUI-facing parts on Aether Script API v2:
  *
  * - a native settings page that reads/writes the same .pi/subagents.json,
- * - a live "Agents" surface above the composer (widget + FleetView folded
- *   into tappable cards),
- * - an app.overlay conversation viewer with steering and stop controls,
+ * - a live "Agents" status surface above the composer (running/queued/done
+ *   counts with stop control; subagent transcripts are never opened as a chat),
  * - custom message renderers for background-completion notifications,
  * - semantic running/completed tool-card titles for Agent, get_subagent_result,
  *   and steer_subagent,
@@ -722,7 +721,6 @@ function messageTypes(api: AetherExtensionAPI): AetherMessageTypeDefinition[] {
 	return [
 		{ type: "subagent-notification", title: "Subagent complete", icon: "auto", render: ({ message }) => notificationCard(api, message) },
 		{ type: "subagent-result", title: "Subagent result", icon: "info", render: ({ message }) => resultCard(api, message) },
-		{ type: "subagent-conversation", title: "Subagent conversation", icon: "terminal", render: ({ message }) => conversationCard(api, message) },
 	];
 }
 
@@ -771,13 +769,8 @@ async function runAgentAction(api: AetherExtensionAPI, action: string, payload: 
 			return { ok: steered, id };
 		}
 		case "agent-view": {
-			if (!id) return { ok: false };
-			api.storage.set("viewerAgentId", id);
-			const sessionId = typeof context?.session_id === "string" ? context.session_id : "";
-			if (sessionId) api.storage.set("viewerSessionId", sessionId);
-			else api.storage.delete("viewerSessionId");
-			api.invalidate?.();
-			return { ok: true, id };
+			// Subagent conversations are intentionally not opened as a chat in Aether.
+			return { ok: false };
 		}
 		case "agent-result": {
 			if (!id) return { ok: false };
@@ -786,10 +779,8 @@ async function runAgentAction(api: AetherExtensionAPI, action: string, payload: 
 			return { ok: true, id };
 		}
 		case "agent-conversation": {
-			if (!id) return { ok: false };
-			const conversation = bridge.getConversation(id) ?? "";
-			await api.messages.append("subagent-conversation", { id, conversation }, conversation);
-			return { ok: true, id };
+			// Do not dump the subagent transcript into the main chat.
+			return { ok: false };
 		}
 		case "agent-toggle": {
 			const name = typeof payload.name === "string" ? payload.name : "";
@@ -972,11 +963,6 @@ export const activateAether = async (api: AetherExtensionAPI) => {
 		id: "subagents-activity",
 		order: 90,
 		render: (context) => fallbackActivityCard(api, context),
-	});
-	api.registerSurface("app.overlay", {
-		id: "subagents-viewer",
-		order: 80,
-		render: (context) => viewerOverlay(api, context),
 	});
 
 	api.on?.("before_send", async (payload) => {

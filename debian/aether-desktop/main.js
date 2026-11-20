@@ -34,7 +34,7 @@ function createWindow() {
     minHeight: 640,
     title: 'Aether',
     icon: fs.existsSync(iconPath) ? iconPath : undefined,
-    backgroundColor: '#212121',
+    backgroundColor: '#262626',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

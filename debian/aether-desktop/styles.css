@@ -1,8 +1,8 @@
 :root {
-  --bg: #212121;
-  --bg-elev: #171717;
-  --bg-elev-2: #2F2F2F;
-  --border: #3E3E3E;
+  --bg: #262626;
+  --bg-elev: #1C1C1C;
+  --bg-elev-2: #343434;
+  --border: #434343;
   --text: #ECECEC;
   --muted: #B4B4B4;
   --primary: #10A37F;
@@ -11,9 +11,9 @@
   --danger: #ef4444;
   --success: #10A37F;
   --warn: #f59e0b;
-  --user-bg: #2F2F2F;
-  --assistant-bg: #212121;
-  --code-bg: #171717;
+  --user-bg: #343434;
+  --assistant-bg: #262626;
+  --code-bg: #1C1C1C;
   --radius: 16px;
   --shadow: 0 8px 30px rgba(0,0,0,0.35);
   font-synthesis: none;

@@ -642,6 +642,11 @@ private fun DrawerSessionRow(
                 onExport()
                 false
             }
+            AetherSwipeAction.Archive -> {
+                haptics.perform(AetherHaptic.Confirm)
+                appearance.archiveSession(session.id)
+                false
+            }
             AetherSwipeAction.Trash -> {
                 haptics.perform(AetherHaptic.Press)
                 onDelete()

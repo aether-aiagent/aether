@@ -1756,6 +1756,48 @@ internal fun buildMarkdownTextHtml(
                 .aether-text .katex-display > .katex {
                     white-space: nowrap;
                 }
+                .aether-text .aether-callout {
+                    margin: 0.7em 0;
+                    padding: 10px 12px;
+                    border-radius: 12px;
+                    border-left: 3px solid #6E8DFB;
+                    background: rgba(110, 141, 251, 0.10);
+                }
+                .aether-text .aether-callout p {
+                    margin: 0.2em 0;
+                }
+                .aether-text .aether-callout[data-kind="tip"],
+                .aether-text .aether-callout[data-kind="success"] {
+                    border-left-color: #36C7A4;
+                    background: rgba(54, 199, 164, 0.10);
+                }
+                .aether-text .aether-callout[data-kind="warning"],
+                .aether-text .aether-callout[data-kind="question"] {
+                    border-left-color: #F0B429;
+                    background: rgba(240, 180, 41, 0.10);
+                }
+                .aether-text .aether-callout[data-kind="caution"],
+                .aether-text .aether-callout[data-kind="danger"] {
+                    border-left-color: #FF7A7A;
+                    background: rgba(255, 122, 122, 0.10);
+                }
+                .aether-text .aether-callout[data-kind="summary"],
+                .aether-text .aether-callout[data-kind="quote"] {
+                    border-left-color: #9EA3B4;
+                    background: rgba(158, 163, 180, 0.10);
+                }
+                .aether-text .aether-callout-title {
+                    font-weight: 600;
+                    font-size: 0.92em;
+                    letter-spacing: 0.02em;
+                    margin-bottom: 4px;
+                }
+                .aether-text mark.aether-mark {
+                    background: rgba(110, 141, 251, 0.28);
+                    color: inherit;
+                    border-radius: 4px;
+                    padding: 0 2px;
+                }
             </style>
             <script defer src="$KatexScriptUrl"></script>
             <script defer src="$KatexAutoRenderScriptUrl"></script>
@@ -1788,7 +1830,70 @@ internal fun buildMarkdownTextHtml(
                     });
                 }
 
+                function enhanceAetherCallouts() {
+                    const kinds = ['note', 'tip', 'important', 'warning', 'caution', 'success', 'question', 'example', 'summary', 'quote', 'info', 'danger'];
+                    document.querySelectorAll('.aether-text blockquote').forEach(function(quote) {
+                        const firstParagraph = quote.querySelector('p');
+                        if (!firstParagraph) return;
+                        const raw = firstParagraph.textContent || '';
+                        const marker = raw.match(/^\s*\[!([A-Za-z]+)\]\s*/);
+                        if (!marker) return;
+                        const kind = marker[1].toLowerCase();
+                        if (kinds.indexOf(kind) < 0) return;
+                        firstParagraph.textContent = raw.slice(marker[0].length);
+                        quote.classList.add('aether-callout');
+                        quote.setAttribute('data-kind', kind);
+                        const title = document.createElement('div');
+                        title.className = 'aether-callout-title';
+                        title.textContent = marker[1].toUpperCase();
+                        quote.insertBefore(title, quote.firstChild);
+                    });
+                }
+
+                function enhanceAetherMarks() {
+                    const root = document.querySelector('.aether-text');
+                    if (!root) return;
+                    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+                        acceptNode: function(node) {
+                            if (!node.nodeValue || node.nodeValue.indexOf('==') < 0) return NodeFilter.FILTER_REJECT;
+                            const parent = node.parentElement;
+                            if (!parent) return NodeFilter.FILTER_REJECT;
+                            const tag = parent.tagName;
+                            if (tag === 'CODE' || tag === 'PRE' || tag === 'SCRIPT' || tag === 'STYLE') {
+                                return NodeFilter.FILTER_REJECT;
+                            }
+                            return NodeFilter.FILTER_ACCEPT;
+                        },
+                    });
+                    const targets = [];
+                    while (walker.nextNode()) targets.push(walker.currentNode);
+                    targets.forEach(function(node) {
+                        const text = node.nodeValue;
+                        const pattern = /==([^=]+)==/g;
+                        if (!pattern.test(text)) return;
+                        const fragment = document.createDocumentFragment();
+                        let cursor = 0;
+                        text.replace(/==([^=]+)==/g, function(match, inner, offset) {
+                            if (offset > cursor) {
+                                fragment.appendChild(document.createTextNode(text.slice(cursor, offset)));
+                            }
+                            const mark = document.createElement('mark');
+                            mark.className = 'aether-mark';
+                            mark.textContent = inner;
+                            fragment.appendChild(mark);
+                            cursor = offset + match.length;
+                            return match;
+                        });
+                        if (cursor < text.length) {
+                            fragment.appendChild(document.createTextNode(text.slice(cursor)));
+                        }
+                        node.parentNode.replaceChild(fragment, node);
+                    });
+                }
+
                 function renderAetherMath() {
+                    enhanceAetherCallouts();
+                    enhanceAetherMarks();
                     bindAetherLinks();
                     try {
                         if (window.renderMathInElement) {

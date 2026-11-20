@@ -140,6 +140,10 @@
     <string name="goal_automation">خودکارسازی</string>
     <string name="onboarding_continue">ادامه</string>
     <string name="goals_summary_suffix">کاربردهای ترجیحی دستیار</string>
+    <string name="drawer_filter_all">همه</string>
+    <string name="drawer_filter_today">امروز</string>
+    <string name="drawer_filter_week">هفته</string>
+    <string name="drawer_filter_older">قدیمی‌تر</string>
     <string name="chat_welcome_help">در چه زمینه ای می توانم کمک کنم؟</string>
     <string name="chat_create_image">تصویر ایجاد کنید</string>
     <string name="chat_brainstorm">طوفان فکری</string>

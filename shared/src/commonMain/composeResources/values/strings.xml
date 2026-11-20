@@ -143,6 +143,10 @@
     <string name="goal_automation">Automation</string>
     <string name="onboarding_continue">Continue</string>
     <string name="goals_summary_suffix">Preferred uses of the assistant</string>
+    <string name="drawer_filter_all">All</string>
+    <string name="drawer_filter_today">Today</string>
+    <string name="drawer_filter_week">Week</string>
+    <string name="drawer_filter_older">Older</string>
     <string name="chat_welcome_help">What can I help with?</string>
     <string name="chat_create_image">Create image</string>
     <string name="chat_brainstorm">Brainstorm</string>

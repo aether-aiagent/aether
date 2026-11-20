@@ -139,6 +139,10 @@
     <string name="goal_automation">Автоматизация</string>
     <string name="onboarding_continue">Далее</string>
     <string name="goals_summary_suffix">Предпочтительные задачи ассистента</string>
+    <string name="drawer_filter_all">Все</string>
+    <string name="drawer_filter_today">Сегодня</string>
+    <string name="drawer_filter_week">Неделя</string>
+    <string name="drawer_filter_older">Старее</string>
     <string name="chat_welcome_help">Чем я могу помочь?</string>
     <string name="chat_create_image">Создать изображение</string>
     <string name="chat_brainstorm">Мозговой штурм</string>

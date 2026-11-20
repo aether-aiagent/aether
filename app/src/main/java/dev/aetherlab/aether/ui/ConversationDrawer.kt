@@ -249,13 +249,16 @@ private fun LegacyConversationDrawer(
     val overlayHeight = with(density) {
         if (overlayHeightPx > 0) overlayHeightPx.toDp() else 132.dp
     }
-    val filteredSessions = remember(sessions, searchQuery) {
+    var chatFilter by rememberSaveable { mutableStateOf(DrawerChatFilter.All) }
+    val nowMillis = remember(sessions) { System.currentTimeMillis() }
+    val filteredSessions = remember(sessions, searchQuery, chatFilter, nowMillis) {
         val query = searchQuery.trim().lowercase()
-        if (query.isBlank()) {
+        val byQuery = if (query.isBlank()) {
             sessions
         } else {
             sessions.filter { session -> chatMatchesQuery(session, query) }
         }
+        byQuery.filter { session -> session.matchesDrawerFilter(chatFilter, nowMillis) }
     }
 
     ModalDrawerSheet(
@@ -307,6 +310,12 @@ private fun LegacyConversationDrawer(
                     ),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
+                    item(key = "aether-drawer-filters") {
+                        DrawerFilterChips(
+                            selected = chatFilter,
+                            onSelect = { chatFilter = it },
+                        )
+                    }
                     dateGroups.forEach { (bucket, bucketSessions) ->
                         item(key = "aether-drawer-group-$bucket") {
                             DrawerDateHeader(bucket)
@@ -418,6 +427,8 @@ private fun LegacyConversationDrawer(
     }
 }
 
+private enum class DrawerChatFilter { All, Today, Week, Older }
+
 private enum class DrawerSessionIndicator {
     None,
     Working,
@@ -486,6 +497,59 @@ private fun DrawerDateHeader(bucket: ChatDateBucket) {
 }
 
 @Composable
+@Composable
+private fun DrawerFilterChips(
+    selected: DrawerChatFilter,
+    onSelect: (DrawerChatFilter) -> Unit,
+) {
+    val haptics = rememberAetherHaptics()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        DrawerChatFilter.entries.forEach { filter ->
+            val active = filter == selected
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(if (active) AetherPrimaryContainer else AetherSidebarControl)
+                    .clickable {
+                        haptics.perform(AetherHaptic.Tick)
+                        onSelect(filter)
+                    }
+                    .padding(horizontal = 14.dp, vertical = 7.dp),
+            ) {
+                Text(
+                    text = stringResource(filter.labelRes()),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = if (active) AetherOnPrimaryContainer else AetherOnSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+private fun DrawerChatFilter.labelRes(): Int = when (this) {
+    DrawerChatFilter.All -> R.string.drawer_filter_all
+    DrawerChatFilter.Today -> R.string.drawer_filter_today
+    DrawerChatFilter.Week -> R.string.drawer_filter_week
+    DrawerChatFilter.Older -> R.string.drawer_filter_older
+}
+
+private fun ChatSession.matchesDrawerFilter(filter: DrawerChatFilter, nowMillis: Long): Boolean {
+    if (filter == DrawerChatFilter.All) return true
+    val stamp = lastMessageAtMillis ?: return filter == DrawerChatFilter.Older
+    val ageMillis = (nowMillis - stamp).coerceAtLeast(0L)
+    return when (filter) {
+        DrawerChatFilter.Today -> ageMillis < 24L * 60L * 60L * 1000L
+        DrawerChatFilter.Week -> ageMillis < 7L * 24L * 60L * 60L * 1000L
+        DrawerChatFilter.Older -> ageMillis >= 7L * 24L * 60L * 60L * 1000L
+        DrawerChatFilter.All -> true
+    }
+}
+
 private fun DrawerSessionRow(
     session: ChatSession,
     searchQuery: String,
@@ -504,6 +568,7 @@ private fun DrawerSessionRow(
     var titleValue by remember(session.id, session.title, newChatTitle) { mutableStateOf(session.title.ifBlank { newChatTitle }) }
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val haptics = rememberAetherHaptics()
 
     fun commitRename() {
         val trimmed = titleValue.trim()
@@ -536,9 +601,13 @@ private fun DrawerSessionRow(
                     } else {
                         Modifier.combinedClickable(
                             onClick = {
+                                haptics.perform(AetherHaptic.Tick)
                                 onClick()
                             },
-                            onLongClick = { menuExpanded = true },
+                            onLongClick = {
+                                haptics.perform(AetherHaptic.Press)
+                                menuExpanded = true
+                            },
                         )
                     }
                 )

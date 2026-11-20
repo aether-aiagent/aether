@@ -143,6 +143,10 @@
     <string name="goal_automation">自动化</string>
     <string name="onboarding_continue">继续</string>
     <string name="goals_summary_suffix">助手的偏好用途</string>
+    <string name="drawer_filter_all">全部</string>
+    <string name="drawer_filter_today">今天</string>
+    <string name="drawer_filter_week">本周</string>
+    <string name="drawer_filter_older">更早</string>
     <string name="chat_welcome_help">想让我帮你做什么？</string>
     <string name="chat_create_image">生成图片</string>
     <string name="chat_brainstorm">头脑风暴</string>

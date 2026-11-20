@@ -3353,10 +3353,14 @@ private fun AssistantMessageAction(
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
+    val haptics = rememberAetherHaptics()
     Box(
         modifier = Modifier
             .size(24.dp)
-            .clickable(enabled = enabled, onClick = onClick),
+            .clickable(enabled = enabled) {
+                haptics.perform(AetherHaptic.Tap)
+                onClick()
+            },
         contentAlignment = Alignment.Center,
     ) {
         Icon(

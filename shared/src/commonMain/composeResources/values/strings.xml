@@ -1203,6 +1203,11 @@
     <string name="settings_typing_style_raw_subtitle">No animation, text appears at once</string>
     <string name="settings_typing_speed">Speed</string>
     <string name="settings_typing_speed_value">%1$d chars/s</string>
+    <string name="settings_appearance_section_chat">Chat</string>
+    <string name="settings_show_reply_meta">Reply stats</string>
+    <string name="settings_show_reply_meta_subtitle">Show elapsed time and token counts under replies.</string>
+    <string name="settings_compact_messages">Compact messages</string>
+    <string name="settings_compact_messages_subtitle">Tighter spacing between messages in the transcript.</string>
     <string name="settings_appearance_section_swipe">Chat list swipes</string>
     <string name="settings_swipe_start">Swipe right</string>
     <string name="settings_swipe_end">Swipe left</string>

@@ -405,6 +405,8 @@ fun ConversationScreen(
         }
     }
     val compactSuggestion = remember(messages) { compactCommandSuggestion(messages) }
+    val appearancePreferences = rememberAetherAppearance()
+    val conversationSpacing = if (appearancePreferences.compactMessages) 12.dp else 22.dp
     val sessionTotalTokens = remember(messages) {
         messages.sumOf { message -> message.usageStatistics?.totalTokens ?: 0L }
             .takeIf { it > 0L }
@@ -616,7 +618,7 @@ fun ConversationScreen(
                         top = topBarBodyHeight + 10.dp,
                         bottom = composerBodyHeight + animatedImeBottom + 28.dp,
                     ),
-                    verticalArrangement = Arrangement.spacedBy(22.dp),
+                    verticalArrangement = Arrangement.spacedBy(conversationSpacing),
                 ) {
                     item(key = "aether-extension-chat-list-start") {
                         AetherExtensionSlot(AetherExtensionSlotChatListStart)

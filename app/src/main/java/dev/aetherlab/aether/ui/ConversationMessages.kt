@@ -3474,7 +3474,10 @@ private fun AssistantMessageActions(
                     showStatistics = true
                 },
             )
-            ReplyUsageSummary(usageStatistics)
+            val appearance = rememberAetherAppearance()
+            if (appearance.showReplyMeta) {
+                ReplyUsageSummary(usageStatistics)
+            }
         }
         if (keepStatisticsPopup || showStatistics) {
             Popup(

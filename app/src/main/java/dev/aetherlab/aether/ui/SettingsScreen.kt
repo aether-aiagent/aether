@@ -7706,6 +7706,40 @@ private fun AppearanceSettingsPage(
 
         Spacer(Modifier.height(16.dp))
         Text(
+            text = stringResource(R.string.settings_appearance_section_chat),
+            style = MaterialTheme.typography.labelLarge,
+            color = AetherOnSurface,
+            modifier = Modifier.padding(horizontal = 4.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+        SettingsCardGroup {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                SettingsToggleRow(
+                    title = stringResource(R.string.settings_show_reply_meta),
+                    subtitle = stringResource(R.string.settings_show_reply_meta_subtitle),
+                    checked = appearance.showReplyMeta,
+                    onCheckedChange = {
+                        appearance.updateShowReplyMeta(it)
+                        haptics.perform(AetherHaptic.Tick)
+                    },
+                )
+                SettingsToggleRow(
+                    title = stringResource(R.string.settings_compact_messages),
+                    subtitle = stringResource(R.string.settings_compact_messages_subtitle),
+                    checked = appearance.compactMessages,
+                    onCheckedChange = {
+                        appearance.updateCompactMessages(it)
+                        haptics.perform(AetherHaptic.Tick)
+                    },
+                )
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+        Text(
             text = stringResource(R.string.settings_appearance_section_swipe),
             style = MaterialTheme.typography.labelLarge,
             color = AetherOnSurface,

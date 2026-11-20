@@ -13,6 +13,10 @@
   <img src="https://img.shields.io/github/stars/aether-aiagent/aether?style=flat-square&amp;label=Stars&amp;color=7C3AED" alt="Звёзды" />
 </p>
 
+<p align="center">
+  <img src="assets/aether-demo.gif" alt="Aether: запрос, три вызова инструментов, ответ" width="100%" />
+</p>
+
 <p align="center"><b>AI-агент на Android с русским интерфейсом.</b><br/>Чат, инструменты, расширения и локальная среда выполнения — на вашем устройстве.</p>
 
 <p align="center"><a href="https://github.com/aether-aiagent/aether/releases/latest"><b>Скачать APK</b></a> · <a href="https://aether-aiagent.github.io/aether/"><b>Сайт проекта</b></a> · <a href="https://t.me/AetherAIAgent"><b>Telegram владельца</b></a> · <a href="CHANGELOG.md">Изменения</a> · <a href="docs/AETHER_EXTENSIONS.md">Расширения</a> · <a href="https://github.com/aether-aiagent/aether/issues">Сообщить об ошибке</a></p>

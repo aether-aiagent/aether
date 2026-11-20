@@ -284,16 +284,6 @@ internal fun hasVisibleReasoningStatus(trace: ReasoningTrace): Boolean =
         trace.hasTimelineContent ||
         trace.completedAtMillis != null
 
-private fun topOverlayBodyGradient(): Brush = Brush.verticalGradient(
-    colorStops = arrayOf(
-        0.0f to AetherBackground.copy(alpha = 0.98f),
-        0.28f to AetherBackground.copy(alpha = 0.92f),
-        0.58f to AetherBackground.copy(alpha = 0.52f),
-        0.82f to AetherBackground.copy(alpha = 0.18f),
-        1.0f to Color.Transparent,
-    )
-)
-
 private fun topOverlayTailGradient(): Brush = Brush.verticalGradient(
     colorStops = arrayOf(
         0.0f to AetherBackground.copy(alpha = 0.10f),
@@ -599,13 +589,9 @@ fun ConversationScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(AetherBackgroundGradientTop, AetherBackground, AetherSurface)
-                    )
-                )
                 .padding(innerPadding)
         ) {
+            AetherAuraLayer(modifier = Modifier.matchParentSize())
             if (messages.isEmpty()) {
                 AetherExtensionSlot(
                     slot = AetherExtensionSlotChatEmpty,
@@ -958,7 +944,11 @@ private fun ConversationTopOverlay(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(topOverlayBodyGradient())
+                .aetherGlassPanel(
+                    shape = RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp),
+                    tintAlpha = 0.62f,
+                    shadowElevation = 0,
+                )
                 .onSizeChanged { onBodyHeightChanged(it.height) },
         ) {
             Column {

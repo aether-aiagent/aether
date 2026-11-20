@@ -396,16 +396,6 @@ private fun settingsEnabledProvidersSummary(enabledCount: Int): String =
 private fun settingsReleaseSummary(versionName: String): String =
     stringResource(R.string.settings_release_summary, versionName)
 
-private fun settingsTopOverlayBodyGradient(): Brush = Brush.verticalGradient(
-    colorStops = arrayOf(
-        0.0f to AetherSettingsBackground.copy(alpha = 0.96f),
-        0.18f to AetherSettingsBackground.copy(alpha = 0.86f),
-        0.42f to AetherSettingsBackground.copy(alpha = 0.48f),
-        0.72f to AetherSettingsBackground.copy(alpha = 0.22f),
-        1.0f to AetherSettingsBackground.copy(alpha = 0.12f),
-    )
-)
-
 private fun settingsTopOverlayTailGradient(): Brush = Brush.verticalGradient(
     colorStops = arrayOf(
         0.0f to AetherSettingsBackground.copy(alpha = 0.12f),
@@ -1435,6 +1425,7 @@ private fun SettingsHub(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            AetherAuraLayer(modifier = Modifier.matchParentSize())
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -7095,6 +7086,7 @@ private fun SubPageScaffold(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            AetherAuraLayer(modifier = Modifier.matchParentSize())
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -7160,7 +7152,12 @@ private fun SettingsTopBarOverlay(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(settingsTopOverlayBodyGradient())
+                .aetherGlassPanel(
+                    shape = RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp),
+                    tint = AetherSettingsBackground,
+                    tintAlpha = 0.62f,
+                    shadowElevation = 0,
+                )
                 .onSizeChanged { onBodyHeightChanged(it.height) },
         ) {
             SettingsTopBar(

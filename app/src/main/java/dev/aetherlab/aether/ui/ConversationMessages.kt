@@ -815,8 +815,12 @@ private fun UserTextBubble(
     Box(
         modifier = Modifier
             .widthIn(max = maxWidth)
-            .clip(RoundedCornerShape(24.dp))
-            .background(AetherMessageBubble)
+            .aetherGlassPanel(
+                shape = RoundedCornerShape(24.dp),
+                tint = AetherMessageBubble,
+                tintAlpha = 0.86f,
+                shadowElevation = 10,
+            )
             .combinedClickable(
                 onClick = {},
                 onLongClick = onLongPress,
@@ -2954,8 +2958,12 @@ internal fun SyntaxHighlightedCodeBlock(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(AetherSurfaceHigh)
+                    .aetherGlassPanel(
+                        shape = RoundedCornerShape(16.dp),
+                        tint = AetherSurfaceHigh,
+                        tintAlpha = 0.9f,
+                        shadowElevation = 8,
+                    )
                     .padding(horizontal = 12.dp, vertical = 10.dp)
                     .heightIn(max = maxHeight)
                     .verticalScroll(scrollState),
@@ -3098,8 +3106,12 @@ private fun AttachmentFilePreview(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
-            .background(AetherSurfaceHigh)
+            .aetherGlassPanel(
+                shape = RoundedCornerShape(24.dp),
+                tint = AetherSurfaceHigh,
+                tintAlpha = 0.9f,
+                shadowElevation = 8,
+            )
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {

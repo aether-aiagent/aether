@@ -37,6 +37,7 @@ enum class AetherHaptic {
 class AetherHapticsController(
     private val vibrator: Vibrator?,
     private val enabled: Boolean = true,
+    private val strength: Float = 1f,
 ) {
     private var lastPlayedAtMillis: Long = 0L
 
@@ -71,12 +72,17 @@ class AetherHapticsController(
         )
     }
 
-    private fun predefined(code: Int, amplitude: Int): VibrationEffect? = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ->
-            VibrationEffect.createPredefined(code)
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-            VibrationEffect.createOneShot(PredefinedFallbackMillis, amplitude)
-        else -> null
+    private fun predefined(code: Int, amplitude: Int): VibrationEffect? {
+        val scaled = (amplitude * strength).toInt().coerceIn(MinAmplitude, 255)
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && strength >= 1f ->
+                VibrationEffect.createPredefined(code)
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ->
+                VibrationEffect.createOneShot(PredefinedFallbackMillis, scaled)
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                VibrationEffect.createOneShot(PredefinedFallbackMillis, scaled)
+            else -> null
+        }
     }
 
     private fun composite(vararg steps: Pair<Int, Float>): VibrationEffect? {
@@ -85,13 +91,14 @@ class AetherHapticsController(
         }
         val composition = VibrationEffect.startComposition()
         steps.forEachIndexed { index, (primitive, scale) ->
-            if (index > 0) composition.addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, 0.4f, StepDelayMillis)
-            composition.addPrimitive(primitive, scale)
+            if (index > 0) composition.addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, 0.4f * strength, StepDelayMillis)
+            composition.addPrimitive(primitive, (scale * strength).coerceIn(0.05f, 1f))
         }
         return composition.compose()
     }
 
     private companion object {
+        const val MinAmplitude = 1
         const val MinIntervalMillis = 40L
         const val StepDelayMillis = 24
         const val PredefinedFallbackMillis = 14L
@@ -101,7 +108,9 @@ class AetherHapticsController(
 @Composable
 fun rememberAetherHaptics(enabled: Boolean = true): AetherHapticsController {
     val context = LocalContext.current
-    return remember(context, enabled) {
+    val appearance = rememberAetherAppearance()
+    val effectiveEnabled = enabled && appearance.hapticsEnabled
+    return remember(context, effectiveEnabled, appearance.hapticStrength) {
         val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
             manager?.defaultVibrator
@@ -109,12 +118,17 @@ fun rememberAetherHaptics(enabled: Boolean = true): AetherHapticsController {
             @Suppress("DEPRECATION")
             context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
         }
-        AetherHapticsController(vibrator = vibrator, enabled = enabled)
+        AetherHapticsController(
+            vibrator = vibrator,
+            enabled = effectiveEnabled,
+            strength = appearance.hapticStrength,
+        )
     }
 }
 
 /** Non-composable access for callbacks that already hold an application context. */
 fun aetherHaptics(context: Context, enabled: Boolean = true): AetherHapticsController {
+    val appearance = AetherAppearancePrefs.get(context)
     val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
         manager?.defaultVibrator
@@ -122,5 +136,9 @@ fun aetherHaptics(context: Context, enabled: Boolean = true): AetherHapticsContr
         @Suppress("DEPRECATION")
         context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
     }
-    return AetherHapticsController(vibrator = vibrator, enabled = enabled)
+    return AetherHapticsController(
+        vibrator = vibrator,
+        enabled = enabled && appearance.hapticsEnabled,
+        strength = appearance.hapticStrength,
+    )
 }

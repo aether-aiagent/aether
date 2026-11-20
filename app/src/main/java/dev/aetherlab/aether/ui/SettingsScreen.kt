@@ -50,6 +50,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowForwardIos
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.Code
@@ -209,6 +210,7 @@ import kotlinx.coroutines.launch
 private enum class SettingsPage {
     Hub,
     General,
+    Appearance,
     Providers,
     DefaultModels,
     DefaultChatModel,
@@ -247,6 +249,7 @@ private const val SettingsAutoRefreshIntervalMillis = 5_000L
 private fun SettingsPage.depth(): Int = when (this) {
     SettingsPage.Hub -> 0
     SettingsPage.General,
+    SettingsPage.Appearance,
     SettingsPage.Providers,
     SettingsPage.Personalization,
     SettingsPage.Reliability,
@@ -845,6 +848,10 @@ fun SettingsScreen(
                     onUpdateThemeMode(it)
                     persistSettings()
                 },
+                onBack = { currentPage = SettingsPage.Hub.name },
+            )
+
+            SettingsPage.Appearance -> AppearanceSettingsPage(
                 onBack = { currentPage = SettingsPage.Hub.name },
             )
 
@@ -1452,6 +1459,13 @@ private fun SettingsHub(
                         title = stringResource(R.string.settings_general),
                         subtitle = generalSettingsSummary.ifBlank { stringResource(R.string.settings_general_hint) },
                         onClick = { onNavigate(SettingsPage.General) },
+                    )
+                    CardDivider()
+                    SettingsNavRow(
+                        icon = Icons.Rounded.Tune,
+                        title = stringResource(R.string.settings_appearance_title),
+                        subtitle = stringResource(R.string.settings_appearance_hub_subtitle),
+                        onClick = { onNavigate(SettingsPage.Appearance) },
                     )
                 }
 
@@ -7502,4 +7516,191 @@ private fun RootAccessSettingsPage(
 
         Spacer(Modifier.height(32.dp))
     }
+}
+@Composable
+private fun AppearanceSettingsPage(
+    onBack: () -> Unit,
+) {
+    val appearance = rememberAetherAppearance()
+    val haptics = rememberAetherHaptics()
+
+    SubPageScaffold(
+        title = stringResource(R.string.settings_appearance_title),
+        onBack = onBack,
+        trailingIcon = Icons.Rounded.Check,
+        onTrailingAction = onBack,
+    ) {
+        Text(
+            text = stringResource(R.string.settings_appearance_section_feedback),
+            style = MaterialTheme.typography.labelLarge,
+            color = AetherOnSurface,
+            modifier = Modifier.padding(horizontal = 4.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+        SettingsCardGroup {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                SettingsToggleRow(
+                    title = stringResource(R.string.settings_haptics_enabled),
+                    subtitle = stringResource(R.string.settings_haptics_enabled_subtitle),
+                    checked = appearance.hapticsEnabled,
+                    onCheckedChange = {
+                        appearance.setHapticsEnabled(it)
+                        if (it) haptics.perform(AetherHaptic.Confirm)
+                    },
+                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.settings_haptic_strength),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (appearance.hapticsEnabled) AetherOnSurface else AetherOnSurfaceVariant,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Text(
+                            text = "${(appearance.hapticStrength * 100f).roundToInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AetherOnSurfaceVariant,
+                        )
+                    }
+                    Slider(
+                        value = appearance.hapticStrength,
+                        onValueChange = {
+                            appearance.setHapticStrength(it)
+                        },
+                        onValueChangeFinished = {
+                            haptics.perform(AetherHaptic.Confirm)
+                        },
+                        enabled = appearance.hapticsEnabled,
+                        valueRange = AetherAppearancePrefs.MinHapticStrength..1f,
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.settings_appearance_section_typing),
+            style = MaterialTheme.typography.labelLarge,
+            color = AetherOnSurface,
+            modifier = Modifier.padding(horizontal = 4.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+        SettingsCardGroup {
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                SettingsChoiceRow(
+                    title = stringResource(R.string.settings_typing_style_smooth),
+                    subtitle = stringResource(R.string.settings_typing_style_smooth_subtitle),
+                    selected = appearance.typingStyle == AetherTypingStyle.Smooth,
+                    onClick = { appearance.setTypingStyle(AetherTypingStyle.Smooth) },
+                )
+                SettingsChoiceRow(
+                    title = stringResource(R.string.settings_typing_style_typewriter),
+                    subtitle = stringResource(R.string.settings_typing_style_typewriter_subtitle),
+                    selected = appearance.typingStyle == AetherTypingStyle.Typewriter,
+                    onClick = { appearance.setTypingStyle(AetherTypingStyle.Typewriter) },
+                )
+                SettingsChoiceRow(
+                    title = stringResource(R.string.settings_typing_style_raw),
+                    subtitle = stringResource(R.string.settings_typing_style_raw_subtitle),
+                    selected = appearance.typingStyle == AetherTypingStyle.Raw,
+                    onClick = { appearance.setTypingStyle(AetherTypingStyle.Raw) },
+                )
+            }
+            CardDivider()
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.settings_typing_speed),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AetherOnSurface,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        text = stringResource(R.string.settings_typing_speed_value, appearance.typingSpeedCps),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AetherOnSurfaceVariant,
+                    )
+                }
+                Slider(
+                    value = appearance.typingSpeedCps.toFloat(),
+                    onValueChange = { appearance.setTypingSpeedCps(it.roundToInt()) },
+                    enabled = appearance.typingStyle != AetherTypingStyle.Raw,
+                    valueRange = AetherAppearancePrefs.MinTypingSpeedCps.toFloat()..
+                        AetherAppearancePrefs.MaxTypingSpeedCps.toFloat(),
+                )
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.settings_appearance_section_swipe),
+            style = MaterialTheme.typography.labelLarge,
+            color = AetherOnSurface,
+            modifier = Modifier.padding(horizontal = 4.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+        SettingsCardGroup {
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.settings_swipe_start),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = AetherOnSurface,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
+                )
+                AetherSwipeAction.entries.forEach { action ->
+                    SettingsChoiceRow(
+                        title = action.settingsLabel(),
+                        subtitle = "",
+                        selected = appearance.swipeStartAction == action,
+                        onClick = { appearance.setSwipeStartAction(action) },
+                    )
+                }
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.settings_swipe_end),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = AetherOnSurface,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
+                )
+                AetherSwipeAction.entries.forEach { action ->
+                    SettingsChoiceRow(
+                        title = action.settingsLabel(),
+                        subtitle = "",
+                        selected = appearance.swipeEndAction == action,
+                        onClick = { appearance.setSwipeEndAction(action) },
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(10.dp))
+        Text(
+            text = stringResource(R.string.settings_appearance_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = AetherOnSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 4.dp),
+        )
+    }
+}
+
+@Composable
+private fun AetherSwipeAction.settingsLabel(): String = when (this) {
+    AetherSwipeAction.None -> stringResource(R.string.settings_swipe_action_none)
+    AetherSwipeAction.Export -> stringResource(R.string.settings_swipe_action_export)
+    AetherSwipeAction.Trash -> stringResource(R.string.settings_swipe_action_trash)
 }

@@ -66,6 +66,8 @@ import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Cloud
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Menu
@@ -74,6 +76,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Button
@@ -180,6 +185,12 @@ private fun drawerOverlayTailGradient(background: Color): Brush = Brush.vertical
         1.0f to Color.Transparent,
     )
 )
+private fun AetherSwipeAction.toSharedDrawerSwipe(): SharedDrawerSwipeAction = when (this) {
+    AetherSwipeAction.None -> SharedDrawerSwipeAction.None
+    AetherSwipeAction.Export -> SharedDrawerSwipeAction.Export
+    AetherSwipeAction.Trash -> SharedDrawerSwipeAction.Trash
+}
+
 @Composable
 fun ConversationDrawer(
     sessions: List<ChatSession>,
@@ -193,8 +204,25 @@ fun ConversationDrawer(
     onDeleteSession: (String) -> Unit,
     onSettingsSelected: () -> Unit,
 ) {
+    val appearance = rememberAetherAppearance()
+    val haptics = rememberAetherHaptics()
+    val nowMillis = remember(sessions) { System.currentTimeMillis() }
     AetherConversationDrawer(
         sessions = sessions.map { session ->
+            val stamp = session.lastMessageAtMillis
+            val bucket = when {
+                stamp == null || stamp <= 0L -> 2
+                else -> when (chatDateBucket(stamp, nowMillis)) {
+                    ChatDateBucket.Today -> 0
+                    ChatDateBucket.Yesterday -> 1
+                    ChatDateBucket.Earlier -> 2
+                }
+            }
+            val ageDays = if (stamp == null || stamp <= 0L) {
+                Int.MAX_VALUE
+            } else {
+                ((nowMillis - stamp) / 86_400_000L).toInt().coerceAtLeast(0)
+            }
             SharedConversationSummary(
                 id = session.id,
                 title = session.title,
@@ -205,16 +233,41 @@ fun ConversationDrawer(
                         SharedConversationIndicator.UnviewedComplete
                     else -> SharedConversationIndicator.None
                 },
+                stampLabel = chatTimestampLabel(stamp),
+                dayBucket = bucket,
+                ageDays = ageDays,
             )
         },
+        folders = appearance.folders.map { SharedDrawerFolder(id = it.id, name = it.name) },
+        sessionFolderIds = appearance.sessionFolders,
+        onAssignFolder = { sessionId, folderId ->
+            haptics.perform(AetherHaptic.Tick)
+            appearance.assignSessionFolder(sessionId, folderId)
+        },
+        onCreateFolder = { name ->
+            haptics.perform(AetherHaptic.Confirm)
+            appearance.createFolder(name)
+        },
+        swipeStartAction = appearance.swipeStartAction.toSharedDrawerSwipe(),
+        swipeEndAction = appearance.swipeEndAction.toSharedDrawerSwipe(),
         selectedSessionId = selectedSessionId,
-        onNewChat = onNewChat,
-        onSessionSelected = onSessionSelected,
+        onNewChat = {
+            haptics.perform(AetherHaptic.Tap)
+            onNewChat()
+        },
+        onSessionSelected = { sessionId ->
+            haptics.perform(AetherHaptic.Tick)
+            onSessionSelected(sessionId)
+        },
         onRenameSession = onRenameSession,
         onExportSession = { sessionId ->
+            haptics.perform(AetherHaptic.Tap)
             sessions.firstOrNull { it.id == sessionId }?.let(onExportSession)
         },
-        onDeleteSession = onDeleteSession,
+        onDeleteSession = { sessionId ->
+            haptics.perform(AetherHaptic.Press)
+            onDeleteSession(sessionId)
+        },
         onSettingsSelected = onSettingsSelected,
         headerContent = {
             AetherExtensionSlot(AetherExtensionSlotDrawerHeader)
@@ -497,7 +550,6 @@ private fun DrawerDateHeader(bucket: ChatDateBucket) {
 }
 
 @Composable
-@Composable
 private fun DrawerFilterChips(
     selected: DrawerChatFilter,
     onSelect: (DrawerChatFilter) -> Unit,
@@ -569,6 +621,31 @@ private fun DrawerSessionRow(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val haptics = rememberAetherHaptics()
+    val appearance = rememberAetherAppearance()
+    val runSwipeAction: (AetherSwipeAction) -> Boolean = { action ->
+        when (action) {
+            AetherSwipeAction.None -> false
+            AetherSwipeAction.Export -> {
+                haptics.perform(AetherHaptic.Tap)
+                onExport()
+                false
+            }
+            AetherSwipeAction.Trash -> {
+                haptics.perform(AetherHaptic.Press)
+                onDelete()
+                false
+            }
+        }
+    }
+    val swipeState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            when (value) {
+                SwipeToDismissBoxValue.StartToEnd -> runSwipeAction(appearance.swipeStartAction)
+                SwipeToDismissBoxValue.EndToStart -> runSwipeAction(appearance.swipeEndAction)
+                else -> false
+            }
+        },
+    )
 
     fun commitRename() {
         val trimmed = titleValue.trim()
@@ -590,6 +667,53 @@ private fun DrawerSessionRow(
     }
 
     Box {
+        SwipeToDismissBox(
+            state = swipeState,
+            enableDismissFromStartToEnd = appearance.swipeStartAction != AetherSwipeAction.None,
+            enableDismissFromEndToStart = appearance.swipeEndAction != AetherSwipeAction.None,
+            backgroundContent = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(AetherSurfaceHigher)
+                        .padding(horizontal = 18.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    if (appearance.swipeStartAction != AetherSwipeAction.None) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = if (appearance.swipeStartAction == AetherSwipeAction.Trash) {
+                                    Icons.Rounded.Delete
+                                } else {
+                                    Icons.Rounded.Share
+                                },
+                                contentDescription = null,
+                                tint = AetherOnSurfaceVariant,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+                    if (appearance.swipeEndAction != AetherSwipeAction.None) {
+                        Icon(
+                            imageVector = if (appearance.swipeEndAction == AetherSwipeAction.Trash) {
+                                Icons.Rounded.Delete
+                            } else {
+                                Icons.Rounded.Share
+                            },
+                            contentDescription = null,
+                            tint = if (appearance.swipeEndAction == AetherSwipeAction.Trash) {
+                                Color(0xFFE5695F)
+                            } else {
+                                AetherOnSurfaceVariant
+                            },
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
+            },
+        ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -690,6 +814,7 @@ private fun DrawerSessionRow(
                         )
                 )
             }
+        }
         }
 
         DrawerSessionActionMenu(

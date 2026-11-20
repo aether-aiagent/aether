@@ -2205,19 +2205,28 @@ private fun ReasoningTypewriterText(
     text: String,
     styleColor: Color,
 ) {
-    var rendered by remember(text) { mutableStateOf("") }
-    LaunchedEffect(text) {
+    val appearance = rememberAetherAppearance()
+    val chunk = appearance.typingChunkChars()
+    val tickMillis = appearance.typingTickMillis()
+    var rendered by remember(text, chunk, tickMillis) {
+        mutableStateOf(if (chunk == Int.MAX_VALUE) text else "")
+    }
+    LaunchedEffect(text, chunk, tickMillis) {
         if (text.isBlank()) {
             rendered = ""
+            return@LaunchedEffect
+        }
+        if (chunk == Int.MAX_VALUE || tickMillis <= 0L) {
+            rendered = text
             return@LaunchedEffect
         }
         if (!text.startsWith(rendered)) {
             rendered = ""
         }
         while (rendered.length < text.length) {
-            val nextEnd = (rendered.length + 3).coerceAtMost(text.length)
+            val nextEnd = (rendered.length + chunk).coerceAtMost(text.length)
             rendered = text.substring(0, nextEnd)
-            delay(18)
+            delay(tickMillis)
         }
     }
     Text(

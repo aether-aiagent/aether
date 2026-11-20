@@ -7547,7 +7547,7 @@ private fun AppearanceSettingsPage(
                     subtitle = stringResource(R.string.settings_haptics_enabled_subtitle),
                     checked = appearance.hapticsEnabled,
                     onCheckedChange = {
-                        appearance.setHapticsEnabled(it)
+                        appearance.updateHapticsEnabled(it)
                         if (it) haptics.perform(AetherHaptic.Confirm)
                     },
                 )
@@ -7571,7 +7571,7 @@ private fun AppearanceSettingsPage(
                     Slider(
                         value = appearance.hapticStrength,
                         onValueChange = {
-                            appearance.setHapticStrength(it)
+                            appearance.updateHapticStrength(it)
                         },
                         onValueChangeFinished = {
                             haptics.perform(AetherHaptic.Confirm)
@@ -7600,19 +7600,19 @@ private fun AppearanceSettingsPage(
                     title = stringResource(R.string.settings_typing_style_smooth),
                     subtitle = stringResource(R.string.settings_typing_style_smooth_subtitle),
                     selected = appearance.typingStyle == AetherTypingStyle.Smooth,
-                    onClick = { appearance.setTypingStyle(AetherTypingStyle.Smooth) },
+                    onClick = { appearance.updateTypingStyle(AetherTypingStyle.Smooth) },
                 )
                 SettingsChoiceRow(
                     title = stringResource(R.string.settings_typing_style_typewriter),
                     subtitle = stringResource(R.string.settings_typing_style_typewriter_subtitle),
                     selected = appearance.typingStyle == AetherTypingStyle.Typewriter,
-                    onClick = { appearance.setTypingStyle(AetherTypingStyle.Typewriter) },
+                    onClick = { appearance.updateTypingStyle(AetherTypingStyle.Typewriter) },
                 )
                 SettingsChoiceRow(
                     title = stringResource(R.string.settings_typing_style_raw),
                     subtitle = stringResource(R.string.settings_typing_style_raw_subtitle),
                     selected = appearance.typingStyle == AetherTypingStyle.Raw,
-                    onClick = { appearance.setTypingStyle(AetherTypingStyle.Raw) },
+                    onClick = { appearance.updateTypingStyle(AetherTypingStyle.Raw) },
                 )
             }
             CardDivider()
@@ -7635,7 +7635,7 @@ private fun AppearanceSettingsPage(
                 }
                 Slider(
                     value = appearance.typingSpeedCps.toFloat(),
-                    onValueChange = { appearance.setTypingSpeedCps(it.roundToInt()) },
+                    onValueChange = { appearance.updateTypingSpeedCps(it.roundToInt()) },
                     enabled = appearance.typingStyle != AetherTypingStyle.Raw,
                     valueRange = AetherAppearancePrefs.MinTypingSpeedCps.toFloat()..
                         AetherAppearancePrefs.MaxTypingSpeedCps.toFloat(),
@@ -7667,7 +7667,7 @@ private fun AppearanceSettingsPage(
                         title = action.settingsLabel(),
                         subtitle = "",
                         selected = appearance.swipeStartAction == action,
-                        onClick = { appearance.setSwipeStartAction(action) },
+                        onClick = { appearance.updateSwipeStartAction(action) },
                     )
                 }
                 Spacer(Modifier.height(6.dp))
@@ -7682,7 +7682,7 @@ private fun AppearanceSettingsPage(
                         title = action.settingsLabel(),
                         subtitle = "",
                         selected = appearance.swipeEndAction == action,
-                        onClick = { appearance.setSwipeEndAction(action) },
+                        onClick = { appearance.updateSwipeEndAction(action) },
                     )
                 }
             }

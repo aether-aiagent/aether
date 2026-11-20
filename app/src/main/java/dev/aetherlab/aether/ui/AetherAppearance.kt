@@ -105,34 +105,34 @@ class AetherAppearancePrefs private constructor(context: Context) {
         prefs.edit().putString(KeySessionFolders, sessionFoldersToJson(updated)).apply()
     }
 
-    fun setHapticsEnabled(value: Boolean) {
+    fun updateHapticsEnabled(value: Boolean) {
         hapticsEnabled = value
         prefs.edit().putBoolean(KeyHapticsEnabled, value).apply()
     }
 
-    fun setHapticStrength(value: Float) {
+    fun updateHapticStrength(value: Float) {
         val clamped = value.coerceIn(MinHapticStrength, 1f)
         hapticStrength = clamped
         prefs.edit().putFloat(KeyHapticStrength, clamped).apply()
     }
 
-    fun setTypingStyle(style: AetherTypingStyle) {
+    fun updateTypingStyle(style: AetherTypingStyle) {
         typingStyle = style
         prefs.edit().putString(KeyTypingStyle, style.name).apply()
     }
 
-    fun setTypingSpeedCps(value: Int) {
+    fun updateTypingSpeedCps(value: Int) {
         val clamped = value.coerceIn(MinTypingSpeedCps, MaxTypingSpeedCps)
         typingSpeedCps = clamped
         prefs.edit().putInt(KeyTypingSpeed, clamped).apply()
     }
 
-    fun setSwipeStartAction(action: AetherSwipeAction) {
+    fun updateSwipeStartAction(action: AetherSwipeAction) {
         swipeStartAction = action
         prefs.edit().putString(KeySwipeStart, action.name).apply()
     }
 
-    fun setSwipeEndAction(action: AetherSwipeAction) {
+    fun updateSwipeEndAction(action: AetherSwipeAction) {
         swipeEndAction = action
         prefs.edit().putString(KeySwipeEnd, action.name).apply()
     }

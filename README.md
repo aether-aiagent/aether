@@ -30,6 +30,13 @@ OpenAI-совместимый API. Интерфейс и настройки — 
 Запросы к моделям и веб-сервисам требуют сети и настроенного провайдера; всё остальное
 (инструменты, файлы, среда, история) остаётся на устройстве.
 
+> **Aether — AI agent for Android.** An open-source Android AI agent app (Kotlin, Jetpack Compose)
+> that runs an LLM chat with real tools: bash, file read/write/edit, grep, find, ls, MCP servers,
+> subagents and a local Alpine Linux runtime via proot, plus optional Termux integration.
+> Signed APK builds ship from GitHub Releases. Keywords: android ai agent, local llm android,
+> on-device ai assistant, termux ai agent, shizuku automation, mcp client android,
+> open source chatgpt alternative for android, kotlin llm chat app.
+
 ## Возможности
 
 | Возможность | Что доступно |

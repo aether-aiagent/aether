@@ -1,5 +1,8 @@
 package dev.aetherlab.aether.ui
 
+import android.content.Intent
+import android.provider.Settings
+
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
@@ -27,6 +30,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
@@ -71,6 +75,7 @@ import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material.icons.rounded.WbSunny
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -89,6 +94,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -140,6 +146,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import kotlin.math.roundToInt
+import dev.aetherlab.aether.data.AetherAccessibilityService
 import dev.aetherlab.aether.data.AetherAppExtensionError
 import dev.aetherlab.aether.data.AgentModeAuthorizationIssue
 import dev.aetherlab.aether.data.AgentModeAuthorizationMethod
@@ -201,8 +208,10 @@ import dev.aetherlab.aether.ui.theme.AetherScrim
 import dev.aetherlab.aether.ui.theme.AetherSettingsBackground
 import dev.aetherlab.aether.ui.theme.AetherSurface
 import dev.aetherlab.aether.ui.theme.AetherSurfaceHigh
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // -----------------------------------------------------------------------------
 // Page enum - drives the local in-composable navigation
@@ -240,6 +249,7 @@ private enum class SettingsPage {
     AgentMode,
     Statistics,
     RootAccess,
+    DeviceControl,
     RootSetupProgress,
     Developer,
     About,
@@ -264,6 +274,7 @@ private fun SettingsPage.depth(): Int = when (this) {
     SettingsPage.AgentMode,
     SettingsPage.Statistics,
     SettingsPage.RootAccess,
+    SettingsPage.DeviceControl,
     SettingsPage.Developer,
     SettingsPage.About -> 1
     SettingsPage.DefaultModels,
@@ -1328,6 +1339,11 @@ fun SettingsScreen(
                 onBack = { currentPage = SettingsPage.Hub.name },
             )
 
+            SettingsPage.DeviceControl -> DeviceControlSettingsPage(
+                title = stringResource(R.string.settings_device_control),
+                onBack = { currentPage = SettingsPage.Hub.name },
+            )
+
             SettingsPage.RootSetupProgress -> RootSetupProgressPage(
                 rootSetupState = rootSetupState,
                 termuxSetupState = termuxSetupState,
@@ -1619,6 +1635,13 @@ private fun SettingsHub(
                     title = stringResource(R.string.settings_root_access),
                     subtitle = rootAccessSummary,
                     onClick = { onNavigate(SettingsPage.RootAccess) },
+                )
+                CardDivider()
+                SettingsNavRow(
+                    icon = LucideIcons.MousePointer2,
+                    title = stringResource(R.string.settings_device_control),
+                    subtitle = stringResource(R.string.settings_device_control_summary),
+                    onClick = { onNavigate(SettingsPage.DeviceControl) },
                 )
             }
 
@@ -7956,4 +7979,130 @@ private fun SettingsSectionLabel(text: String) {
         color = AetherOnSurfaceVariant,
         modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
     )
+}
+
+@Composable
+private fun DeviceControlSettingsPage(
+    title: String,
+    onBack: () -> Unit,
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var connected by remember { mutableStateOf(AetherAccessibilityService.isConnected()) }
+    var activePackage by remember { mutableStateOf(AetherAccessibilityService.currentPackage) }
+    var treePreview by remember { mutableStateOf<String?>(null) }
+    var working by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            connected = AetherAccessibilityService.isConnected()
+            activePackage = AetherAccessibilityService.currentPackage
+            delay(1_500L)
+        }
+    }
+    SubPageScaffold(title = title, onBack = onBack) {
+        SettingsCardGroup {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.settings_device_control_status),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = AetherOnSurface,
+                )
+                Text(
+                    text = if (connected) {
+                        stringResource(R.string.settings_device_control_on)
+                    } else {
+                        stringResource(R.string.settings_device_control_off)
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (connected) AetherPrimary else AetherOnSurfaceVariant,
+                )
+                if (connected && activePackage.isNotBlank()) {
+                    Text(
+                        text = stringResource(R.string.settings_device_control_active_app, activePackage),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AetherOnSurfaceVariant,
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.settings_device_control_explainer),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AetherOnSurfaceVariant,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    SettingsActionButton(
+                        label = stringResource(R.string.settings_device_control_open),
+                        onClick = {
+                            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            runCatching { context.startActivity(intent) }
+                        },
+                        modifier = Modifier.weight(1f),
+                    )
+                    SettingsActionButton(
+                        label = stringResource(R.string.settings_device_control_probe),
+                        enabled = connected && !working,
+                        onClick = {
+                            val service = AetherAccessibilityService.instance
+                            if (service != null) {
+                                working = true
+                                scope.launch {
+                                    val tree = withContext(Dispatchers.Default) { service.dumpScreenTree() }
+                                    treePreview = tree.ifBlank {
+                                        context.getString(R.string.settings_device_control_empty_tree)
+                                    }
+                                    working = false
+                                }
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(16.dp))
+        SettingsCardGroup {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.settings_device_control_capabilities),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = AetherOnSurface,
+                )
+                listOf(
+                    R.string.settings_device_control_cap_tree,
+                    R.string.settings_device_control_cap_tap,
+                    R.string.settings_device_control_cap_type,
+                    R.string.settings_device_control_cap_screenshot,
+                ).forEach { line ->
+                    Text(
+                        text = "• " + stringResource(line),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AetherOnSurfaceVariant,
+                    )
+                }
+            }
+        }
+    }
+    val preview = treePreview
+    if (preview != null) {
+        AlertDialog(
+            onDismissRequest = { treePreview = null },
+            confirmButton = {
+                TextButton(onClick = { treePreview = null }) {
+                    Text(text = stringResource(R.string.dialog_close))
+                }
+            },
+            title = { Text(text = stringResource(R.string.settings_device_control_probe_title)) },
+            text = {
+                Box(modifier = Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
+                    Text(text = preview, style = MaterialTheme.typography.bodySmall)
+                }
+            },
+        )
+    }
 }

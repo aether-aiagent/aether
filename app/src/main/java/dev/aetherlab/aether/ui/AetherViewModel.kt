@@ -4153,6 +4153,92 @@ class AetherViewModel(
             JSONObject().put("submitted", true)
         }
 
+        "device.status" -> JSONObject()
+            .put("connected", AetherAccessibilityService.isConnected())
+            .put("package", AetherAccessibilityService.currentPackage)
+            .put("connectedSinceMillis", AetherAccessibilityService.connectedSinceMillis)
+
+        "device.tree" -> AetherAccessibilityService.instance?.let { service ->
+            JSONObject()
+                .put("package", AetherAccessibilityService.currentPackage)
+                .put("tree", withContext(Dispatchers.Default) { service.dumpScreenTree() })
+        } ?: JSONObject().put("error", "accessibility_disabled")
+
+        "device.tap" -> AetherAccessibilityService.instance?.let { service ->
+            val x = args.optDouble("x", Double.NaN).toFloat()
+            val y = args.optDouble("y", Double.NaN).toFloat()
+            if (x.isNaN() || y.isNaN()) {
+                JSONObject().put("error", "x_and_y_required")
+            } else {
+                JSONObject().put(
+                    "performed",
+                    withContext(Dispatchers.Main.immediate) { service.tap(x, y) },
+                )
+            }
+        } ?: JSONObject().put("error", "accessibility_disabled")
+
+        "device.swipe" -> AetherAccessibilityService.instance?.let { service ->
+            val duration = args.optLong("durationMs", 320L).coerceIn(50L, 4_000L)
+            JSONObject().put(
+                "performed",
+                withContext(Dispatchers.Main.immediate) {
+                    service.swipe(
+                        fromX = args.optDouble("fromX", 0.0).toFloat(),
+                        fromY = args.optDouble("fromY", 0.0).toFloat(),
+                        toX = args.optDouble("toX", 0.0).toFloat(),
+                        toY = args.optDouble("toY", 0.0).toFloat(),
+                        durationMs = duration,
+                    )
+                },
+            )
+        } ?: JSONObject().put("error", "accessibility_disabled")
+
+        "device.type" -> AetherAccessibilityService.instance?.let { service ->
+            JSONObject().put(
+                "performed",
+                withContext(Dispatchers.Main.immediate) { service.typeText(args.optString("text")) },
+            )
+        } ?: JSONObject().put("error", "accessibility_disabled")
+
+        "device.clickText" -> AetherAccessibilityService.instance?.let { service ->
+            JSONObject().put(
+                "performed",
+                withContext(Dispatchers.Main.immediate) { service.clickOnText(args.optString("text")) },
+            )
+        } ?: JSONObject().put("error", "accessibility_disabled")
+
+        "device.back" -> JSONObject().put(
+            "performed",
+            withContext(Dispatchers.Main.immediate) {
+                AetherAccessibilityService.instance?.globalBack() ?: false
+            },
+        )
+
+        "device.home" -> JSONObject().put(
+            "performed",
+            withContext(Dispatchers.Main.immediate) {
+                AetherAccessibilityService.instance?.globalHome() ?: false
+            },
+        )
+
+        "device.recents" -> JSONObject().put(
+            "performed",
+            withContext(Dispatchers.Main.immediate) {
+                AetherAccessibilityService.instance?.globalRecents() ?: false
+            },
+        )
+
+        "device.screenshot" -> AetherAccessibilityService.instance?.let { service ->
+            val target = File(
+                File(application.cacheDir, "device-control").apply { mkdirs() },
+                "aether-screen-${System.currentTimeMillis()}.png",
+            )
+            val saved = withContext(Dispatchers.IO) { service.screenshotToFile(target) }
+            JSONObject()
+                .put("saved", saved)
+                .put("path", if (saved) target.absolutePath else "")
+        } ?: JSONObject().put("error", "accessibility_disabled")
+
         "app.appendCustomMessage" -> {
             val type = args.optString("type").trim()
             require(type.isNotBlank()) { "Custom messages require a type." }

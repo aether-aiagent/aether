@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_label">Aether device control</string>
+    <string name="accessibility_service_description">Lets the Aether agent read the current screen, tap buttons and type text. Used only while you keep this service enabled.</string>
+</resources>

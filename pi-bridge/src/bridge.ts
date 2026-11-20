@@ -1710,6 +1710,7 @@ const AETHER_HOST_TOOL_NAMES = new Set([
   "aether_runtime_check",
   "aether_runtime_kill",
   "agent_display",
+  "device_control",
 ]);
 
 function runtimeForPayload(payload: JsonObject): "alpine" | "termux" {

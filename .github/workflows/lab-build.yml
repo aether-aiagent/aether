@@ -1,0 +1,175 @@
+name: Lab Build APK
+
+# Manual + branch build for work-in-progress branches (lab/*, feat/*).
+# Produces an installable debug APK as a workflow artifact so the Lab can be
+# tested on a device without a local Android SDK.
+#
+# Gate order is cheapest-first so a Kotlin error fails the run before unit tests
+# or packaging work is spent: compile -> unit tests -> assembleDebug.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_suffix:
+        description: Extra version name suffix
+        required: false
+        default: ''
+# Push builds disabled: the Nightly workflow already builds every push to
+# lab/power-ui. Running both doubled CI time on the 2-core private runner.
+# Use workflow_dispatch for ad-hoc debug APKs.
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lab-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Required: the :app module builds pi-bridge with npm during asset generation.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.19.0'
+          cache: npm
+          cache-dependency-path: pi-bridge/package-lock.json
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: enhanced
+          cache-read-only: false
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
+
+      # app/compileSdk = 36; install it explicitly so the compile gate does not
+      # depend on AGP's on-demand SDK download. build-tools are resolved by AGP.
+      - name: Install Android SDK platform 36
+        shell: bash
+        run: sdkmanager "platforms;android-36"
+
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Version metadata
+        id: meta
+        shell: bash
+        run: |
+          short_sha="${GITHUB_SHA::12}"
+          ref_name="${GITHUB_REF_NAME//\//-}"
+          suffix="${{ inputs.version_suffix }}"
+          echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
+          echo "version_name=Lab ${ref_name} ${short_sha}${suffix:+ $suffix}" >> "$GITHUB_OUTPUT"
+
+      # Cheapest gate: Kotlin compile only (no dexing, no packaging).
+      - name: Compile shared and Android sources
+        run: ./gradlew :shared:compileDebugKotlinAndroid :app:compileDebugKotlin --stacktrace
+
+      - name: Unit tests
+        run: ./gradlew :shared:testDebugUnitTest :app:testDebugUnitTest --stacktrace
+
+      # Keep the debug applicationId (.debug) but sign with the same persistent
+      # key as nightly when available. This prevents future CI runs from creating
+      # a different random Android debug certificate each time.
+      #
+      # Signing key resolution order:
+      #   1. NIGHTLY_KEYSTORE_* secrets (if the owner configures them).
+      #   2. Repo-committed signing/aether-nightly.keystore + signing/aether-nightly.properties
+      #      (the stable path — same key on every future build).
+      #   3. Bootstrap: generate a fresh keystore with keytool, sign with it, and
+      #      upload it as the "nightly-keystore" artifact so it can be committed
+      #      to the repo once and reused forever after.
+      - name: Resolve signing key
+        id: signing
+        shell: bash
+        env:
+          NIGHTLY_KEYSTORE_BASE64: ${{ secrets.NIGHTLY_KEYSTORE_BASE64 }}
+          NIGHTLY_KEYSTORE_PASSWORD: ${{ secrets.NIGHTLY_KEYSTORE_PASSWORD }}
+          NIGHTLY_KEY_ALIAS: ${{ secrets.NIGHTLY_KEY_ALIAS }}
+          NIGHTLY_KEY_PASSWORD: ${{ secrets.NIGHTLY_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/aether-signing"
+          KEY="$RUNNER_TEMP/aether-signing/aether-nightly.jks"
+          if [[ -n "$NIGHTLY_KEYSTORE_BASE64" && -n "$NIGHTLY_KEYSTORE_PASSWORD" && -n "$NIGHTLY_KEY_ALIAS" && -n "$NIGHTLY_KEY_PASSWORD" ]]; then
+            echo "$NIGHTLY_KEYSTORE_BASE64" | base64 --decode > "$KEY"
+            echo "source=secrets" >> "$GITHUB_OUTPUT"
+          elif [[ -f signing/aether-nightly.keystore ]]; then
+            cp signing/aether-nightly.keystore "$KEY"
+            # shellcheck disable=SC1091
+            source signing/aether-nightly.properties
+            echo "STORE_PASSWORD=${NIGHTLY_KEYSTORE_PASSWORD:?}" >> "$GITHUB_ENV"
+            echo "KEY_ALIAS=${NIGHTLY_KEY_ALIAS:?}" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=${NIGHTLY_KEY_PASSWORD:?}" >> "$GITHUB_ENV"
+            echo "source=repo" >> "$GITHUB_OUTPUT"
+          else
+            keytool -genkeypair -v \
+              -keystore "$KEY" \
+              -storetype JKS \
+              -storepass 'AetherNightly2026!' \
+              -keypass 'AetherNightly2026!' \
+              -alias aether-nightly \
+              -keyalg RSA -keysize 4096 -validity 10950 \
+              -dname "CN=Aether Lab Nightly, OU=Aether, O=Aether, L=Local, S=Local, C=XX"
+            echo "source=bootstrap" >> "$GITHUB_OUTPUT"
+          fi
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+          echo "keystore=$KEY" >> "$GITHUB_OUTPUT"
+          SHA256=$(keytool -list -v -keystore "$KEY" -storepass 'AetherNightly2026!' 2>/dev/null | grep 'SHA256:' | head -1 | sed 's/^ *//' || true)
+          echo "fingerprint=$SHA256" >> "$GITHUB_OUTPUT"
+          echo "Signing key source: $(cat "$GITHUB_OUTPUT" | grep '^source=' | cut -d= -f2)"
+          echo "Certificate: $SHA256"
+
+      - name: Upload bootstrap signing key for one-time commit
+        if: steps.signing.outputs.source == 'bootstrap'
+        uses: actions/upload-artifact@v7
+        with:
+          name: nightly-keystore
+          path: ${{ steps.signing.outputs.keystore }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Assemble debug APK with persistent signing key
+        env:
+          NIGHTLY_KEYSTORE_FILE: ${{ steps.signing.outputs.keystore }}
+          NIGHTLY_KEYSTORE_PASSWORD: ${{ secrets.NIGHTLY_KEYSTORE_PASSWORD || env.STORE_PASSWORD || 'AetherNightly2026!' }}
+          NIGHTLY_KEY_ALIAS: ${{ secrets.NIGHTLY_KEY_ALIAS || env.KEY_ALIAS || 'aether-nightly' }}
+          NIGHTLY_KEY_PASSWORD: ${{ secrets.NIGHTLY_KEY_PASSWORD || env.KEY_PASSWORD || 'AetherNightly2026!' }}
+          VERSION_NAME: ${{ steps.meta.outputs.version_name }}
+        run: ./gradlew :app:assembleDebug --stacktrace -Paether.versionName="$VERSION_NAME"
+
+      - name: Stage APK
+        shell: bash
+        env:
+          SHORT_SHA: ${{ steps.meta.outputs.short_sha }}
+          SIGNED: ${{ steps.signing.outputs.enabled }}
+        run: |
+          mkdir -p dist/lab
+          cp app/build/outputs/apk/debug/app-debug.apk "dist/lab/Aether-lab-${SHORT_SHA}-debug.apk"
+          ls -l dist/lab
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: Aether-lab-${{ steps.meta.outputs.short_sha }}
+          path: dist/lab/*.apk
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,248 @@
+name: Build Nightly APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - 'shared/**'
+      - 'extensions/**'
+      - 'pi-bridge/**'
+      - 'packages/extension-api/**'
+      - 'third_party/termux/terminal-emulator/**'
+      - 'third_party/termux/terminal-view/**'
+      - 'signing/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - 'gradle/**'
+      - 'gradlew'
+      - '.github/workflows/build-nightly-apk.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.19.0'
+          cache: npm
+          cache-dependency-path: pi-bridge/package-lock.json
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: enhanced
+          cache-read-only: false
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
+
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Prepare Nightly Metadata
+        id: nightly
+        shell: bash
+        run: |
+          short_sha="${GITHUB_SHA::12}"
+          echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
+          version="$(tr -d '[:space:]' < VERSION)"
+          echo "version_name=${version}" >> "$GITHUB_OUTPUT"
+          echo "release_tag=v${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Test shared and Android code
+        run: ./gradlew :shared:testDebugUnitTest :app:testDebugUnitTest --stacktrace
+
+      # Signing key resolution, in order:
+      #   1. repository secrets NIGHTLY_KEYSTORE_BASE64 / NIGHTLY_KEYSTORE_PASSWORD / NIGHTLY_KEY_ALIAS / NIGHTLY_KEY_PASSWORD
+      #   2. the key committed in signing/ (aether-nightly.keystore + aether-nightly.properties) — main path
+      #   3. bootstrap: generate a fresh key, build with it and publish it as the `nightly-keystore` artifact
+      - name: Resolve signing key
+        id: signing
+        shell: bash
+        env:
+          NIGHTLY_KEYSTORE_BASE64: ${{ secrets.NIGHTLY_KEYSTORE_BASE64 }}
+          NIGHTLY_KEYSTORE_PASSWORD: ${{ secrets.NIGHTLY_KEYSTORE_PASSWORD }}
+          NIGHTLY_KEY_ALIAS: ${{ secrets.NIGHTLY_KEY_ALIAS }}
+          NIGHTLY_KEY_PASSWORD: ${{ secrets.NIGHTLY_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          store="${RUNNER_TEMP}/aether-signing/aether-nightly.jks"
+          mkdir -p "${RUNNER_TEMP}/aether-signing"
+
+          store_pass=""
+          alias_pass=""
+          alias_name=""
+          source_kind=""
+
+          if [[ -n "${NIGHTLY_KEYSTORE_BASE64}" && -n "${NIGHTLY_KEYSTORE_PASSWORD}" && -n "${NIGHTLY_KEY_ALIAS}" && -n "${NIGHTLY_KEY_PASSWORD}" ]]; then
+            echo "${NIGHTLY_KEYSTORE_BASE64}" | base64 --decode > "$store"
+            store_pass="${NIGHTLY_KEYSTORE_PASSWORD}"
+            alias_name="${NIGHTLY_KEY_ALIAS}"
+            alias_pass="${NIGHTLY_KEY_PASSWORD}"
+            source_kind="secrets"
+          elif [[ -f signing/aether-nightly.keystore && -f signing/aether-nightly.properties ]]; then
+            cp signing/aether-nightly.keystore "$store"
+            # Parse the shell-style properties file without executing it.
+            while IFS='=' read -r key value; do
+              key="$(echo "$key" | tr -d '[:space:]')"
+              value="$(echo "$value" | sed -e "s/^['\"]//" -e "s/['\"]$//")"
+              case "$key" in
+                NIGHTLY_KEYSTORE_PASSWORD) store_pass="$value" ;;
+                NIGHTLY_KEY_ALIAS) alias_name="$value" ;;
+                NIGHTLY_KEY_PASSWORD) alias_pass="$value" ;;
+              esac
+            done < signing/aether-nightly.properties
+            source_kind="repository"
+          fi
+
+          if [[ -z "$store_pass" || -z "$alias_name" || -z "$alias_pass" ]]; then
+            echo "::warning::No signing key configured — generating a bootstrap nightly keystore."
+            store_pass="$(openssl rand -hex 24)"
+            alias_name="aether-nightly"
+            alias_pass="$store_pass"
+            keytool -genkeypair \
+              -keystore "$store" \
+              -storetype JKS \
+              -alias "$alias_name" \
+              -keyalg RSA \
+              -keysize 4096 \
+              -validity 10950 \
+              -storepass "$store_pass" \
+              -keypass "$alias_pass" \
+              -dname "CN=Aether Lab Nightly, OU=Aether, O=Aether, L=Local, S=Local, C=XX"
+            source_kind="bootstrap"
+            {
+              echo "NIGHTLY_KEYSTORE_PASSWORD='${store_pass}'"
+              echo "NIGHTLY_KEY_ALIAS='${alias_name}'"
+              echo "NIGHTLY_KEY_PASSWORD='${alias_pass}'"
+            } > "${RUNNER_TEMP}/aether-signing/aether-nightly.properties"
+          fi
+
+          echo "Signing key source: ${source_kind}"
+          keytool -list -v -keystore "$store" -storepass "$store_pass" -alias "$alias_name" \
+            | grep -E "SHA256:|Alias name:|Valid from:" || true
+
+          {
+            echo "path=$store"
+            echo "store_password=$store_pass"
+            echo "key_alias=$alias_name"
+            echo "key_password=$alias_pass"
+            echo "source=$source_kind"
+            echo "generated=$([[ "$source_kind" == "bootstrap" ]] && echo true || echo false)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build Nightly APK
+        env:
+          NIGHTLY_KEYSTORE_FILE: ${{ steps.signing.outputs.path }}
+          NIGHTLY_KEYSTORE_PASSWORD: ${{ steps.signing.outputs.store_password }}
+          NIGHTLY_KEY_ALIAS: ${{ steps.signing.outputs.key_alias }}
+          NIGHTLY_KEY_PASSWORD: ${{ steps.signing.outputs.key_password }}
+          VERSION_NAME: ${{ steps.nightly.outputs.version_name }}
+        run: ./gradlew :app:assembleNightly --stacktrace -Paether.versionName="$VERSION_NAME" -Paether.versionCode="$((GITHUB_RUN_NUMBER + 100))"
+
+      - name: Verify APK signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="app/build/outputs/apk/nightly/app-nightly.apk"
+          test -f "$apk"
+          apksigner="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}" -name apksigner -type f | sort | tail -n 1)"
+          if [[ -n "$apksigner" ]]; then
+            "$apksigner" verify --print-certs "$apk"
+          else
+            echo "apksigner not found, skipping verification"
+          fi
+
+      - name: Rename Nightly APK
+        shell: bash
+        env:
+          SHORT_SHA: ${{ steps.nightly.outputs.short_sha }}
+        run: |
+          mkdir -p dist/nightly
+          cp app/build/outputs/apk/nightly/app-nightly.apk "dist/nightly/Aether-nightly-${SHORT_SHA}.apk"
+
+      - name: Upload Nightly APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: Aether-nightly
+          path: dist/nightly/*.apk
+
+      - name: Publish release to public repository
+        if: github.ref == 'refs/heads/lab/power-ui' || github.ref == 'refs/heads/main'
+        env:
+          PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.nightly.outputs.release_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="dist/nightly/Aether-nightly-${{ steps.nightly.outputs.short_sha }}.apk"
+          test -f "$apk"
+          # In the public repo we publish directly with GITHUB_TOKEN (4-core runners);
+          # from the private lab repo we publish cross-repo with PUBLIC_REPO_TOKEN.
+          if [ -n "$PUBLIC_REPO_TOKEN" ]; then
+            token="$PUBLIC_REPO_TOKEN"; repo="jcufyr6d5djj-beep/aether"
+          elif [ "$GITHUB_REPOSITORY" = "jcufyr6d5djj-beep/aether" ]; then
+            token="$GITHUB_TOKEN"; repo="$GITHUB_REPOSITORY"
+          else
+            echo "No publishing token available, skipping release publishing"
+            exit 0
+          fi
+          api="https://api.github.com/repos/$repo"
+          auth=(-H "Authorization: Bearer $token" -H "Accept: application/vnd.github+json" -H "User-Agent: aether-ci")
+          # Reuse the release for this version if it already exists, replacing the APK asset.
+          release_json="$(curl -sf "${auth[@]}" "$api/releases/tags/$RELEASE_TAG" || true)"
+          if [ -z "$release_json" ]; then
+            release_json="$(curl -sf -X POST "${auth[@]}" "$api/releases" \
+              -d "{\"tag_name\":\"$RELEASE_TAG\",\"name\":\"Aether $RELEASE_TAG\",\"body\":\"Aether ${RELEASE_TAG}. Обновление устанавливается поверх предыдущей версии. Telegram владельца: https://t.me/AetherAIAgent\",\"make_latest\":\"true\"}")"
+          else
+            release_id="$(printf '%s' "$release_json" | jq -r '.id')"
+            asset_id="$(printf '%s' "$release_json" | jq -r --arg n "Aether-$RELEASE_TAG.apk" '.assets[] | select(.name == $n) | .id')"
+            if [ -n "$asset_id" ] && [ "$asset_id" != "null" ]; then
+              curl -sf -X DELETE "${auth[@]}" "$api/releases/assets/$asset_id" > /dev/null
+            fi
+            curl -sf -X PATCH "${auth[@]}" "$api/releases/$release_id" \
+              -d "{\"name\":\"Aether $RELEASE_TAG\",\"make_latest\":\"true\",\"prerelease\":false}" > /dev/null
+          fi
+          upload_url="$(printf '%s' "$release_json" | jq -r '.upload_url' | sed 's/{?name,label}//')"
+          test -n "$upload_url" && test "$upload_url" != "null"
+          curl -sf -X POST \
+            -H "Authorization: Bearer $token" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/vnd.android.package-archive" \
+            --data-binary "@$apk" \
+            "${upload_url}?name=Aether-$RELEASE_TAG.apk" > /dev/null
+          echo "Published $RELEASE_TAG to $repo"
+
+      - name: Upload bootstrap signing key
+        if: steps.signing.outputs.generated == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: nightly-keystore
+          path: |
+            ${{ runner.temp }}/aether-signing/aether-nightly.jks
+            ${{ runner.temp }}/aether-signing/aether-nightly.properties

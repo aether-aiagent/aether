@@ -1,0 +1,35 @@
+name: Ошибка
+description: Сообщить об ошибке в Aether Android RU
+title: '[BUG] '
+labels: [bug]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Что произошло
+      description: Опишите ошибку и ожидаемый результат.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Как повторить
+      description: Перечислите шаги, которые приводят к ошибке.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Устройство и версия
+      value: |
+        Версия Aether:
+        Модель устройства:
+        Версия Android:
+        Провайдер и модель AI:
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Логи и скриншоты
+      description: Удалите API-ключи и личные данные перед публикацией.

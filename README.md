@@ -19,6 +19,8 @@
 
 <p align="center"><b>AI-агент на Android с русским интерфейсом.</b><br/>Чат, инструменты, расширения и локальная среда выполнения — на вашем устройстве.</p>
 
+> **Официальные сборки** — только в разделе [Releases](https://github.com/aether-aiagent/aether/releases) этого репозитория. APK подписан ключом проекта, `versionCode` растёт монотонно, поэтому обновления ставятся поверх без потери чатов. Любые сборки с других аккаунтов, форков и сторонних сайтов — не наши: подпись там другая, обновиться поверх официальной версии не получится.
+
 <p align="center"><a href="https://github.com/aether-aiagent/aether/releases/latest"><b>Скачать APK</b></a> · <a href="https://aether-aiagent.github.io/aether/"><b>Сайт проекта</b></a> · <a href="https://t.me/AetherAIAgent"><b>Telegram владельца</b></a> · <a href="CHANGELOG.md">Изменения</a> · <a href="docs/AETHER_EXTENSIONS.md">Расширения</a> · <a href="https://github.com/aether-aiagent/aether/issues">Сообщить об ошибке</a></p>
 
 <p align="center"><sub>

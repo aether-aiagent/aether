@@ -1180,4 +1180,7 @@
     <string name="drawer_folder_move">В папку</string>
     <string name="drawer_folder_none">Без папки</string>
     <string name="drawer_folder_create">Создать</string>
+    <string name="drawer_archive">Архив</string>
+    <string name="drawer_unarchive">Вернуть из архива</string>
+    <string name="settings_swipe_action_archive">В архив</string>
 </resources>

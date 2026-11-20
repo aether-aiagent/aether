@@ -188,6 +188,7 @@ private fun drawerOverlayTailGradient(background: Color): Brush = Brush.vertical
 private fun AetherSwipeAction.toSharedDrawerSwipe(): SharedDrawerSwipeAction = when (this) {
     AetherSwipeAction.None -> SharedDrawerSwipeAction.None
     AetherSwipeAction.Export -> SharedDrawerSwipeAction.Export
+    AetherSwipeAction.Archive -> SharedDrawerSwipeAction.Archive
     AetherSwipeAction.Trash -> SharedDrawerSwipeAction.Trash
 }
 
@@ -236,6 +237,7 @@ fun ConversationDrawer(
                 stampLabel = chatTimestampLabel(stamp),
                 dayBucket = bucket,
                 ageDays = ageDays,
+                archived = appearance.archivedSessionIds.contains(session.id),
             )
         },
         folders = appearance.folders.map { SharedDrawerFolder(id = it.id, name = it.name) },
@@ -250,6 +252,14 @@ fun ConversationDrawer(
         },
         swipeStartAction = appearance.swipeStartAction.toSharedDrawerSwipe(),
         swipeEndAction = appearance.swipeEndAction.toSharedDrawerSwipe(),
+        onArchiveSession = { sessionId ->
+            haptics.perform(AetherHaptic.Confirm)
+            appearance.archiveSession(sessionId)
+        },
+        onUnarchiveSession = { sessionId ->
+            haptics.perform(AetherHaptic.Tick)
+            appearance.unarchiveSession(sessionId)
+        },
         selectedSessionId = selectedSessionId,
         onNewChat = {
             haptics.perform(AetherHaptic.Tap)

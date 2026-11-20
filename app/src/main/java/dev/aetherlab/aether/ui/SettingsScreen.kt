@@ -7702,5 +7702,6 @@ private fun AppearanceSettingsPage(
 private fun AetherSwipeAction.settingsLabel(): String = when (this) {
     AetherSwipeAction.None -> stringResource(R.string.settings_swipe_action_none)
     AetherSwipeAction.Export -> stringResource(R.string.settings_swipe_action_export)
+    AetherSwipeAction.Archive -> stringResource(R.string.settings_swipe_action_archive)
     AetherSwipeAction.Trash -> stringResource(R.string.settings_swipe_action_trash)
 }

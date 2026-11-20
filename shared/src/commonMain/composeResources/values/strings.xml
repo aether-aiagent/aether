@@ -1201,4 +1201,7 @@
     <string name="drawer_folder_move">Move to folder</string>
     <string name="drawer_folder_none">No folder</string>
     <string name="drawer_folder_create">Create</string>
+    <string name="drawer_archive">Archive</string>
+    <string name="drawer_unarchive">Restore</string>
+    <string name="settings_swipe_action_archive">Archive</string>
 </resources>

@@ -1007,4 +1007,7 @@
     <string name="drawer_folder_move">انتقال به پوشه</string>
     <string name="drawer_folder_none">بدون پوشه</string>
     <string name="drawer_folder_create">ایجاد</string>
+    <string name="drawer_archive">بایگانی</string>
+    <string name="drawer_unarchive">بازگرداندن</string>
+    <string name="settings_swipe_action_archive">بایگانی</string>
 </resources>

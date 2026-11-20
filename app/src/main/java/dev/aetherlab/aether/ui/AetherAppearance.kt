@@ -24,6 +24,7 @@ enum class AetherTypingStyle {
 enum class AetherSwipeAction {
     None,
     Export,
+    Archive,
     Trash,
 }
 
@@ -60,6 +61,20 @@ class AetherAppearancePrefs private constructor(context: Context) {
         private set
     var sessionFolders by mutableStateOf(readSessionFolders())
         private set
+    var archivedSessionIds by mutableStateOf(readArchivedSessions())
+        private set
+
+    fun archiveSession(sessionId: String) {
+        if (sessionId.isBlank() || sessionId in archivedSessionIds) return
+        archivedSessionIds = archivedSessionIds + sessionId
+        prefs.edit().putString(KeyArchivedSessions, archivedSessionsToJson(archivedSessionIds)).apply()
+    }
+
+    fun unarchiveSession(sessionId: String) {
+        if (sessionId !in archivedSessionIds) return
+        archivedSessionIds = archivedSessionIds - sessionId
+        prefs.edit().putString(KeyArchivedSessions, archivedSessionsToJson(archivedSessionIds)).apply()
+    }
 
     fun createFolder(name: String): AetherChatFolder? {
         val trimmed = name.trim()
@@ -155,6 +170,25 @@ class AetherAppearancePrefs private constructor(context: Context) {
         }.getOrDefault(emptyList())
     }
 
+    private fun readArchivedSessions(): Set<String> {
+        val raw = prefs.getString(KeyArchivedSessions, null) ?: return emptySet()
+        return runCatching {
+            val array = org.json.JSONArray(raw)
+            buildSet {
+                for (index in 0 until array.length()) {
+                    val id = array.optString(index)
+                    if (id.isNotBlank()) add(id)
+                }
+            }
+        }.getOrDefault(emptySet())
+    }
+
+    private fun archivedSessionsToJson(value: Set<String>): String {
+        val array = org.json.JSONArray()
+        value.forEach { array.put(it) }
+        return array.toString()
+    }
+
     private fun readSessionFolders(): Map<String, String> {
         val raw = prefs.getString(KeySessionFolders, null) ?: return emptyMap()
         return runCatching {
@@ -192,6 +226,7 @@ class AetherAppearancePrefs private constructor(context: Context) {
         private const val KeySwipeEnd = "swipe_end_action"
         private const val KeyFolders = "chat_folders"
         private const val KeySessionFolders = "chat_session_folders"
+        private const val KeyArchivedSessions = "chat_archived_sessions"
 
         const val DefaultHapticStrength = 0.85f
         const val MinHapticStrength = 0.15f

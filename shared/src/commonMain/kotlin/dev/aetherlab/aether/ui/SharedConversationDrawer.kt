@@ -115,6 +115,8 @@ data class SharedConversationSummary(
     val dayBucket: Int = 2,
     /** How many whole days passed since the last message. Drives the age filter chips. */
     val ageDays: Int = Int.MAX_VALUE,
+    /** Archived chats are hidden from the main list and only shown on the archive shelf. */
+    val archived: Boolean = false,
 )
 
 enum class SharedConversationIndicator {
@@ -131,8 +133,12 @@ data class SharedDrawerFolder(
 enum class SharedDrawerSwipeAction {
     None,
     Export,
+    Archive,
     Trash,
 }
+
+/** Sentinel folder id used for the archive shelf. */
+internal const val SharedDrawerArchiveFolderId = "__aether_archive__"
 
 enum class SharedDrawerFilter {
     All,
@@ -204,6 +210,8 @@ fun AetherConversationDrawer(
     onCreateFolder: ((String) -> Unit)? = null,
     swipeStartAction: SharedDrawerSwipeAction = SharedDrawerSwipeAction.None,
     swipeEndAction: SharedDrawerSwipeAction = SharedDrawerSwipeAction.None,
+    onArchiveSession: ((String) -> Unit)? = null,
+    onUnarchiveSession: ((String) -> Unit)? = null,
 ) {
     var searchExpanded by rememberSaveable { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
@@ -221,8 +229,13 @@ fun AetherConversationDrawer(
     val listBottomPadding = 96.dp + with(density) { footerHeightPx.toDp() }
     val filteredSessions = remember(sessions, searchQuery, activeFilter, activeFolderId, sessionFolderIds) {
         val query = searchQuery.trim().lowercase()
+        val archiveShelf = activeFolderId == SharedDrawerArchiveFolderId
         sessions.filter { session ->
-            val folderOk = activeFolderId.isEmpty() || sessionFolderIds[session.id] == activeFolderId
+            val folderOk = when {
+                archiveShelf -> session.archived
+                activeFolderId.isEmpty() -> !session.archived
+                else -> !session.archived && sessionFolderIds[session.id] == activeFolderId
+            }
             folderOk &&
                 session.matchesAgeFilter(activeFilter) &&
                 (query.isBlank() || session.title.lowercase().contains(query) ||
@@ -230,6 +243,7 @@ fun AetherConversationDrawer(
         }
     }
     val entries = remember(filteredSessions) { sharedDrawerEntries(filteredSessions) }
+    val archivedCount = sessions.count { it.archived }
     val dismissSearch = {
         searchExpanded = false
         searchQuery = ""
@@ -263,6 +277,8 @@ fun AetherConversationDrawer(
                             activeFolderId = activeFolderId,
                             onFolderSelected = { activeFolderId = it },
                             onCreateFolder = { creatingFolder = true },
+                            archivedCount = archivedCount,
+                            onArchiveSelected = { activeFolderId = SharedDrawerArchiveFolderId },
                         )
                         SharedDrawerFilterChips(
                             activeFilter = activeFilter,
@@ -301,6 +317,8 @@ fun AetherConversationDrawer(
                                 activeFolderId = activeFolderId,
                                 onFolderSelected = { activeFolderId = it },
                                 onCreateFolder = { creatingFolder = true },
+                                archivedCount = archivedCount,
+                                onArchiveSelected = { activeFolderId = SharedDrawerArchiveFolderId },
                             )
                             SharedDrawerFilterChips(
                                 activeFilter = activeFilter,
@@ -335,6 +353,13 @@ fun AetherConversationDrawer(
                                     onAssignFolder?.invoke(entry.summary.id, folderId)
                                 },
                                 currentFolderId = sessionFolderIds[entry.summary.id],
+                                archived = entry.summary.archived,
+                                onArchive = onArchiveSession?.let { archive ->
+                                    { archive(entry.summary.id) }
+                                },
+                                onUnarchive = onUnarchiveSession?.let { restore ->
+                                    { restore(entry.summary.id) }
+                                },
                             )
                         }
                     }
@@ -489,6 +514,8 @@ private fun SharedDrawerFolderChips(
     activeFolderId: String,
     onFolderSelected: (String) -> Unit,
     onCreateFolder: () -> Unit,
+    archivedCount: Int = 0,
+    onArchiveSelected: (() -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier
@@ -506,6 +533,13 @@ private fun SharedDrawerFolderChips(
                 label = folder.name,
                 active = activeFolderId == folder.id,
                 onClick = { onFolderSelected(folder.id) },
+            )
+        }
+        if (onArchiveSelected != null && archivedCount > 0) {
+            SharedDrawerPill(
+                label = stringResource(Res.string.drawer_archive) + " " + archivedCount.toString(),
+                active = activeFolderId == SharedDrawerArchiveFolderId,
+                onClick = onArchiveSelected,
             )
         }
         SharedDrawerPill(
@@ -678,6 +712,9 @@ private fun SharedDrawerSessionRow(
     onExport: () -> Unit,
     onDelete: () -> Unit,
     onAssignFolder: (String?) -> Unit,
+    archived: Boolean = false,
+    onArchive: (() -> Unit)? = null,
+    onUnarchive: (() -> Unit)? = null,
 ) {
     val newChatTitle = stringResource(Res.string.common_new_chat)
     var menuExpanded by remember { mutableStateOf(false) }
@@ -702,6 +739,7 @@ private fun SharedDrawerSessionRow(
         when (action) {
             SharedDrawerSwipeAction.None -> Unit
             SharedDrawerSwipeAction.Export -> onExport()
+            SharedDrawerSwipeAction.Archive -> onArchive?.invoke() ?: onExport()
             SharedDrawerSwipeAction.Trash -> onDelete()
         }
     }
@@ -862,6 +900,9 @@ private fun SharedDrawerSessionRow(
         SharedDrawerActionMenu(
             expanded = menuExpanded,
             canMoveToFolder = canMoveToFolder,
+            archived = archived,
+            onArchive = onArchive,
+            onUnarchive = onUnarchive,
             onDismiss = { menuExpanded = false },
             onRename = {
                 menuExpanded = false
@@ -952,6 +993,9 @@ private fun SharedDrawerFolderPicker(
 private fun SharedDrawerActionMenu(
     expanded: Boolean,
     canMoveToFolder: Boolean,
+    archived: Boolean = false,
+    onArchive: (() -> Unit)? = null,
+    onUnarchive: (() -> Unit)? = null,
     onDismiss: () -> Unit,
     onRename: () -> Unit,
     onExport: () -> Unit,
@@ -987,6 +1031,17 @@ private fun SharedDrawerActionMenu(
             ) {
                 if (canMoveToFolder) {
                     SharedDrawerActionRow(stringResource(Res.string.drawer_folder_move), onMoveToFolder)
+                }
+                if (archived) {
+                    if (onUnarchive != null) {
+                        SharedDrawerActionRow(stringResource(Res.string.drawer_unarchive)) {
+                            onUnarchive()
+                        }
+                    }
+                } else if (onArchive != null) {
+                    SharedDrawerActionRow(stringResource(Res.string.drawer_archive)) {
+                        onArchive()
+                    }
                 }
                 SharedDrawerActionRow(stringResource(Res.string.common_rename), onRename)
                 SharedDrawerActionRow(stringResource(Res.string.common_export), onExport)

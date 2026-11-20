@@ -1118,4 +1118,7 @@
     <string name="drawer_folder_move">移到文件夹</string>
     <string name="drawer_folder_none">无文件夹</string>
     <string name="drawer_folder_create">创建</string>
+    <string name="drawer_archive">归档</string>
+    <string name="drawer_unarchive">恢复</string>
+    <string name="settings_swipe_action_archive">归档</string>
 </resources>

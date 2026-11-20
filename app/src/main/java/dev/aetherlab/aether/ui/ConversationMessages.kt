@@ -2770,6 +2770,21 @@ fun ReconnectingStatusCard(
 }
 
 @Composable
+internal fun formatToolInvocationDurationLabel(
+    startedAtMillis: Long,
+    completedAtMillis: Long?,
+): String? {
+    if (startedAtMillis <= 0L) return null
+    val end = completedAtMillis ?: return null
+    val millis = end - startedAtMillis
+    if (millis < 0L) return null
+    return if (millis >= 1_000L) {
+        java.util.Locale.US.let { locale -> String.format(locale, "%.1fs", millis / 1_000.0) }
+    } else {
+        "${millis}ms"
+    }
+}
+
 fun ToolInvocationCard(
     toolInvocation: ChatToolInvocation,
     topPadding: Dp = 6.dp,
@@ -2843,11 +2858,33 @@ fun ToolInvocationCard(
                 pauseDurationMillis = 1000,
             )
         } else {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium,
-                color = AetherOnSurfaceVariant,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = AetherOnSurfaceVariant,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+                val toolDurationLabel = remember(
+                    toolInvocation.startedAtMillis,
+                    toolInvocation.completedAtMillis,
+                ) {
+                    formatToolInvocationDurationLabel(
+                        startedAtMillis = toolInvocation.startedAtMillis,
+                        completedAtMillis = toolInvocation.completedAtMillis,
+                    )
+                }
+                if (toolDurationLabel != null) {
+                    Text(
+                        text = toolDurationLabel,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AetherOnSurfaceVariant.copy(alpha = 0.7f),
+                    )
+                }
+            }
         }
         AnimatedVisibility(
             visible = expanded && detail.command.isNotBlank(),

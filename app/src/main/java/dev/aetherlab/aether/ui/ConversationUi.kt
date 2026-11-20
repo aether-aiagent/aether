@@ -84,6 +84,8 @@ import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SmallFloatingActionButton
@@ -410,6 +412,12 @@ fun ConversationScreen(
     val sessionTotalTokens = remember(messages) {
         messages.sumOf { message -> message.usageStatistics?.totalTokens ?: 0L }
             .takeIf { it > 0L }
+    }
+    val modelChipLabel = remember(modelOptions, selectedModelKey) {
+        modelOptions
+            .firstOrNull { it.key == selectedModelKey }
+            ?.chatLabel
+            ?.takeIf { it.isNotBlank() }
     }
     val contextUsageLabel = sessionTotalTokens?.let { tokens ->
         val percent = (tokens * 100L / ContextWindowHintTokens).coerceIn(0L, 100L)
@@ -787,6 +795,24 @@ fun ConversationScreen(
                     Icon(
                         imageVector = Icons.Rounded.KeyboardArrowDown,
                         contentDescription = stringResource(R.string.chat_scroll_to_bottom),
+                    )
+                }
+            }
+
+            if (modelChipLabel != null) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(
+                            start = 20.dp,
+                            bottom = composerBodyHeight + animatedImeBottom + 30.dp,
+                        ),
+                ) {
+                    ConversationModelChip(
+                        options = modelOptions,
+                        selectedModelKey = selectedModelKey,
+                        label = modelChipLabel,
+                        onSelected = onModelSelected,
                     )
                 }
             }
@@ -4094,4 +4120,75 @@ private fun shortTokenLabel(tokens: Long): String = when {
     tokens >= 1_000_000L -> String.format(java.util.Locale.US, "%.1fM", tokens / 1_000_000.0)
     tokens >= 1_000L -> String.format(java.util.Locale.US, "%.1fk", tokens / 1_000.0)
     else -> tokens.toString()
+}
+
+
+@Composable
+private fun ConversationModelChip(
+    options: List<ProviderModelOption>,
+    selectedModelKey: String,
+    label: String,
+    onSelected: (String, (Boolean) -> Unit) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(50))
+                .background(AetherSurfaceHigh)
+                .clickable { expanded = true }
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = AetherOnSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.widthIn(max = 220.dp),
+            )
+            Icon(
+                imageVector = Icons.Rounded.ArrowDropDown,
+                contentDescription = null,
+                tint = AetherOnSurfaceVariant,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = option.chatLabel,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = AetherOnSurface,
+                        )
+                    },
+                    trailingIcon = if (option.key == selectedModelKey) {
+                        {
+                            Icon(
+                                imageVector = Icons.Rounded.Check,
+                                contentDescription = null,
+                                tint = AetherPrimary,
+                                modifier = Modifier.size(18.dp),
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                    onClick = {
+                        expanded = false
+                        if (option.key != selectedModelKey) {
+                            onSelected(option.key) {}
+                        }
+                    },
+                )
+            }
+        }
+    }
 }

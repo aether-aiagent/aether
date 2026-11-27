@@ -257,7 +257,7 @@ class UpdateManager(
     }
 
     companion object {
-        const val RELEASES_API = "https://api.github.com/repos/jcufyr6d5djj-beep/aether-android/releases"
+        const val RELEASES_API = "https://api.github.com/repos/aether-aiagent/aether/releases"
         const val NEED_INSTALL_PERMISSION =
             "Allow installs from this source to continue. Grant it, then tap Update again."
 

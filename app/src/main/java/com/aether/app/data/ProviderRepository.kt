@@ -86,6 +86,9 @@ class ProviderRepository(
             .toMap().toMutableMap()
 
         catalogMap[AetherProvider.ID] = aetherModels(prefs)
+        if (catalogMap[KaminetProvider.ID].isNullOrEmpty()) {
+            catalogMap[KaminetProvider.ID] = listOf(ModelEntry(KaminetProvider.DEFAULT_MODEL, note = "Интарк"))
+        }
 
         prefs.asMap().asSequence()
             .filter { it.key.name.startsWith(CUSTOM_MODELS_PREFIX) }

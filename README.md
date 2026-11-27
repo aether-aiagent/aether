@@ -9,13 +9,13 @@
 No PC needed. No root needed.
 
 <p>
-  <a href="https://github.com/jcufyr6d5djj-beep/aether-android"><img src=".github/assets/download-from-github.png" alt="Download from GitHub" height="54"></a>
+  <a href="https://github.com/aether-aiagent/aether"><img src=".github/assets/download-from-github.png" alt="Download from GitHub" height="54"></a>
   <a href="https://play.google.com/store/apps/details?id=com.aether.app"><img src=".github/assets/google-play.png" alt="Get it on Google Play" height="54"></a>
   <a href="https://discord.gg/NdC5K3XeWF"><img src=".github/assets/join-discord.png" alt="Join our Discord" height="54"></a>
 </p>
 
-[![Debug build](https://github.com/jcufyr6d5djj-beep/aether-android/actions/workflows/nightly.yml/badge.svg)](https://github.com/jcufyr6d5djj-beep/aether-android/actions/workflows/nightly.yml)
-[![Version](https://img.shields.io/badge/version-4.1-blue)](https://github.com/jcufyr6d5djj-beep/aether-android/releases/latest)
+[![Debug build](https://github.com/aether-aiagent/aether/actions/workflows/nightly.yml/badge.svg)](https://github.com/aether-aiagent/aether/actions/workflows/nightly.yml)
+[![Version](https://img.shields.io/badge/version-4.1-blue)](https://github.com/aether-aiagent/aether/releases/latest)
 [![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-3ddc84)](https://developer.android.com/about/versions/oreo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -79,7 +79,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full release notes.
 
 ## Getting started
 
-1. Install the app from [Google Play](https://play.google.com/store/apps/details?id=com.aether.app) or [GitHub Releases](https://github.com/jcufyr6d5djj-beep/aether-android/releases/latest), or build it from source.
+1. Install the app from [Google Play](https://play.google.com/store/apps/details?id=com.aether.app) or [GitHub Releases](https://github.com/aether-aiagent/aether/releases/latest), or build it from source.
 2. Grant file access if you want it. All files access lets the shell and file tools use real paths; without it the app works in its own folder and asks when a task needs your files.
 3. Pick a model. Use the built-in keyless provider, add an API key in Settings, or download a model in Settings → Local models.
 4. Recommended: install [Shizuku](https://github.com/RikkaApps/Shizuku), pair Wireless ADB in Settings → Terminal & device, or install the Linux environment from inside the app. This lets shell commands run with proper permissions. Rooted devices can also turn on direct root there.
@@ -208,7 +208,7 @@ Register a [GitHub OAuth app](https://github.com/settings/developers), turn on *
 - [FEATURES.md](FEATURES.md): the complete feature reference
 - [Configuration guide](docs/configuration/README.md) and [JSON Schema](docs/aether.schema.json) for `aether.json`
 - [Plugin guide](docs/configuration/plugin-manager.md)
-- [Developer repo wiki](https://github.com/jcufyr6d5djj-beep/aether-android/tree/main/repowiki): architecture of the agent engine, tools, providers, MCP and workspaces
+- [Developer repo wiki](https://github.com/aether-aiagent/aether/tree/main/repowiki): architecture of the agent engine, tools, providers, MCP and workspaces
 - [CHANGELOG.md](CHANGELOG.md), [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md)
 
 ## Contributing

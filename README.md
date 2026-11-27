@@ -15,7 +15,7 @@ No PC needed. No root needed.
 </p>
 
 [![Debug build](https://github.com/aether-aiagent/aether/actions/workflows/nightly.yml/badge.svg)](https://github.com/aether-aiagent/aether/actions/workflows/nightly.yml)
-[![Version](https://img.shields.io/badge/version-4.1-blue)](https://github.com/aether-aiagent/aether/releases/latest)
+[![Version](https://img.shields.io/badge/version-3.0-blue)](https://github.com/aether-aiagent/aether/releases/latest)
 [![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-3ddc84)](https://developer.android.com/about/versions/oreo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -66,7 +66,7 @@ You can start for free with the built-in provider, which needs no account, or ru
 - **Safe by default.** The agent stays inside the workspace, sensitive actions ask for approval, phone control is approved once per chat while destructive changes ask every time, and every change can be reviewed as a diff and undone.
 - **21 languages.** Switch the app language at any time without a restart.
 
-## What's new in 4.1
+## What's new in 3.0
 
 - **Your assistant over any app.** Set Aether as your digital assistant and ask about what is on screen, by voice or typing, without leaving the app you are in. Models that cannot see images can now read the text inside pictures on the phone.
 - **Goals that keep going.** `/goal` turns a task into a loop that keeps taking turns until a separate check agrees it is done, with a turn limit, an optional check command, a budget, named parts, a per-turn change summary and a Resume that keeps its progress. Keep improving can push past done.

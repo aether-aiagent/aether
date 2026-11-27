@@ -62,8 +62,8 @@ android {
         applicationId = "com.aether.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 41
-        versionName = "4.1"
+        versionCode = 42
+        versionName = "3.0"
         buildConfigField("String", "GITHUB_CLIENT_ID", "\"$githubClientId\"")
         buildConfigField("boolean", "PLAY_DISTRIBUTION", (distributionChannel == "play").toString())
         if (hasNdk) {

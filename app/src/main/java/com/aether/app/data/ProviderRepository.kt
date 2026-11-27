@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.aether.app.llm.AetherProvider
+import com.aether.app.llm.KaminetProvider
 import com.aether.app.llm.ModelCatalog
 import com.aether.app.llm.ModelEntry
 import com.aether.app.llm.ProviderApiKey
@@ -53,7 +54,10 @@ class ProviderRepository(
         }?.map { it.id }?.toSet().orEmpty()
         AetherProvider.customModelIds = aetherCustom
         accounts.accounts.filter { it.connected && it.models.isNotEmpty() }.map { it.config() } +
-            listOf(AetherProvider.config.copy(model = AetherProvider.sanitize(saved.firstOrNull { it.id == AetherProvider.ID }?.model, aetherCustom))) + saved.filterNot { it.id == AetherProvider.ID || com.aether.app.chatgpt.ChatGptProtocol.isProvider(it.id) || com.aether.app.local.LocalModelCatalog.isLocal(it.id) || it.baseUrl.startsWith("local://") } + localModels.configs(installed)
+            listOf(
+                KaminetProvider.config,
+                AetherProvider.config.copy(model = AetherProvider.sanitize(saved.firstOrNull { it.id == AetherProvider.ID }?.model, aetherCustom)),
+            ) + saved.filterNot { it.id == AetherProvider.ID || it.id == KaminetProvider.ID || com.aether.app.chatgpt.ChatGptProtocol.isProvider(it.id) || com.aether.app.local.LocalModelCatalog.isLocal(it.id) || it.baseUrl.startsWith("local://") } + localModels.configs(installed)
     }.combine(settings.settings) { available, saved ->
         ProviderListPreferences.apply(available.map { config ->
             if (com.aether.app.llm.ProviderHeaders.editable(config)) config.copy(headers = keys.providerHeaders(config.id)) else config
@@ -333,6 +337,7 @@ class ProviderRepository(
             if (chatGpt.state.value.accounts.any { it.providerId == providerId && it.connected }) "managed-oauth" else null
         com.aether.app.local.LocalModelCatalog.isLocal(providerId) -> "local"
         providerId == AetherProvider.ID -> AetherProvider.KEYLESS
+        providerId == KaminetProvider.ID -> keys.getKey(providerId)?.takeIf { it.isNotBlank() } ?: KaminetProvider.API_KEY
         else -> keys.getKey(providerId)
     }
 

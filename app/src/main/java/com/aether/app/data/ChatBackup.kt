@@ -175,7 +175,7 @@ object ChatBackupCodec {
         } catch (e: Exception) {
             throw ChatBackupException("Not a chat backup file")
         }
-        if (file.format != FORMAT) throw ChatBackupException("Not a chat backup file")
+        if (file.format != FORMAT && file.format != "harness-chats") throw ChatBackupException("Not a chat backup file")
         if (file.version > VERSION) {
             throw ChatBackupException("This backup was written by a newer version of the app")
         }
@@ -192,7 +192,7 @@ object ChatBackupCodec {
         } catch (e: Exception) {
             throw ChatBackupException("Not a chat backup file")
         }
-        if (file.format != FORMAT) throw ChatBackupException("Not a chat backup file")
+        if (file.format != FORMAT && file.format != "harness-chats") throw ChatBackupException("Not a chat backup file")
         if (file.version > VERSION) throw ChatBackupException("This backup was written by a newer version of the app")
         return file
     }

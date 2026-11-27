@@ -150,7 +150,7 @@ object ChatBackupArchive {
                     if (name != MANIFEST) throw ChatBackupException("Not a backup file")
                     sawManifest = true
                     val manifest = decode(zip, BackupManifest.serializer(), "Not a backup file")
-                    if (manifest.format != FORMAT) throw ChatBackupException("Not a backup file")
+                    if (manifest.format != FORMAT && manifest.format != "harness-backup") throw ChatBackupException("Not a backup file")
                     if (manifest.version > VERSION) throw ChatBackupException("This backup was written by a newer version of the app")
                     if (!visitor.manifest(manifest)) return
                     continue

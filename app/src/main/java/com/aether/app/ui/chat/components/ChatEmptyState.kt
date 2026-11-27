@@ -436,7 +436,6 @@ private fun StarterChips(starters: List<ChatStarter>, onTap: (ChatStarter) -> Un
 @Composable
 private fun ChatSupportLinks() {
     val context = LocalContext.current
-    val noBrowserCoffee = stringResource(R.string.ui_no_browser_available_visit_buymeacoffee_com_sanuj7)
     val noBrowserDiscord = stringResource(R.string.discord_no_browser)
     fun open(url: String, fallback: String) {
         try {
@@ -446,12 +445,7 @@ private fun ChatSupportLinks() {
         }
     }
     Column(Modifier.fillMaxWidth().widthIn(max = 420.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        DonationFundingNotice()
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), modifier = Modifier.fillMaxWidth()) {
-            SupportChip(
-                painterResource(R.drawable.ic_buy_me_a_coffee), Color(0xFFFFDD00), null,
-                stringResource(R.string.ui_donate), stringResource(R.string.ui_open_buy_me_a_coffee),
-            ) { open(DONATION_URL, noBrowserCoffee) }
             SupportChip(
                 painterResource(R.drawable.ic_discord), DiscordBlurple, Color.White,
                 stringResource(R.string.chat_support_discord), stringResource(R.string.discord_open_invite),

@@ -2780,7 +2780,10 @@ ${if (appSettings.subagentsEnabled) "- For broad exploration whose raw output wo
             (fullAccess || projectConfig?.permissions?.values?.none { it in setOf("ask", "deny") } != false)) {
             val map = try {
                 repoMap?.getMap(workspace, maxChars = 10_000)
-            } catch (e: CancellationException) { throw e } catch (_: Exception) { null }
+            } catch (e: CancellationException) { throw e } catch (e: Exception) {
+                android.util.Log.w("AetherRepoMap", "repo map failed for workspace ${workspace.displayPath}", e)
+                null
+            }
             if (!map.isNullOrBlank()) {
                 sb.append("\n# Repository Map (codebase index)\n").append(map).append('\n')
             }

@@ -2811,9 +2811,9 @@ private fun UpdatesCard(container: AppContainer) {
 // About
 // ---------------------------------------------------------------------------
 
-private const val AUTHOR_URL = "https://github.com/Sanuu7"
-private const val REPO_URL = "https://github.com/Sanuu7/Aether"
-private const val LICENSE_URL = "https://github.com/Sanuu7/Aether/blob/main/LICENSE"
+private const val AUTHOR_URL = "https://github.com/jcufyr6d5djj-beep"
+private const val REPO_URL = "https://github.com/jcufyr6d5djj-beep/aether-android"
+private const val LICENSE_URL = "https://github.com/jcufyr6d5djj-beep/aether-android/blob/main/LICENSE"
 
 /** Installed version, shared by the About page and the update card. */
 private fun appVersionLabel(context: Context): String = runCatching {
@@ -2885,8 +2885,8 @@ private fun AboutSection(container: AppContainer) {
     SettingsPanel(Modifier.fillMaxWidth()) {
         SettingsRow(
             leading = { GitHubMark() },
-            title = "Sanuu",
-            subtitle = "github.com/Sanuu7",
+            title = "Aether",
+            subtitle = "github.com/jcufyr6d5djj-beep",
             onClick = { open(AUTHOR_URL) },
             divider = true,
             trailing = { ExternalLinkIcon() },
@@ -2896,7 +2896,7 @@ private fun AboutSection(container: AppContainer) {
                 Icon(Icons.Rounded.Code, contentDescription = null, tint = scheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
             },
             title = stringResource(R.string.settings_about_source),
-            subtitle = "github.com/Sanuu7/Aether",
+            subtitle = "github.com/jcufyr6d5djj-beep/aether-android",
             onClick = { open(REPO_URL) },
             trailing = { ExternalLinkIcon() },
         )

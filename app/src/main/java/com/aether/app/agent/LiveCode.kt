@@ -226,7 +226,10 @@ internal class LiveCodeTracker(private val now: () -> Long = System::nanoTime) {
                     val node = workspace.resolve(path)
                     if (!node.exists) "" else if (node.isFile && node.length <= 80_000) node.readText() else null
                 } catch (e: CancellationException) { throw e }
-                catch (_: Exception) { null }
+                catch (e: Exception) {
+                    android.util.Log.w("AetherLiveCode", "baseline read failed for $path", e)
+                    null
+                }
             }
         }
         val draft = LiveCodePreview.build(id, tool, arguments, complete, baselines[path], chars) ?: return null

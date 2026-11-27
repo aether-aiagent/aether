@@ -1,4 +1,5 @@
 package com.aether.app.ui.chat
+import android.util.Log
 
 import android.content.Context
 import android.content.Intent
@@ -447,7 +448,11 @@ class VoiceInputController(
         try {
             mediaRecorder?.reset()
             mediaRecorder?.release()
-        } catch (_: Exception) { }
+        } catch (e: Exception) {
+            // Releasing an already-released recorder is common when a recording is
+            // stopped twice; log it so a real recorder failure stays diagnosable.
+            android.util.Log.w("VoiceInput", "recorder cleanup failed: ${e.message}")
+        }
         mediaRecorder = null
         rmsDb = 0f
         recordingDurationMs = 0L

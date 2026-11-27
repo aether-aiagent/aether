@@ -1,4 +1,5 @@
 package com.aether.app.telegram
+import android.util.Log
 
 import java.util.UUID
 import kotlinx.coroutines.*
@@ -52,7 +53,11 @@ internal class TelegramGateway(
             val transport = api(c.token)
             check(!transport.webhookActive()) { "This bot uses a webhook elsewhere. Remove it there or use a separate bot." }
             // Registering commands is cosmetic; a transient failure must not disable receiving.
-            try { transport.registerCommands() } catch (e: CancellationException) { throw e } catch (_: Exception) { }
+            try { transport.registerCommands() }
+            catch (e: CancellationException) { throw e }
+            catch (e: Exception) {
+                android.util.Log.w("TelegramGateway", "setMyCommands failed: ${e.message}")
+            }
             launch { receiveLoop() }
             launch { processLoop() }
             launch { workLoop() }
@@ -286,7 +291,13 @@ internal class TelegramGateway(
         } catch (e: Exception) { acknowledge(callback.id, safe(e.message ?: "Could not finish this action.")); throw e }
     }
     private suspend fun acknowledge(id: String, message: String) {
-        try { api(current().token).answerCallback(id, message) } catch (e: CancellationException) { throw e } catch (_: Exception) { }
+        try { api(current().token).answerCallback(id, message) }
+        catch (e: CancellationException) { throw e }
+        catch (e: Exception) {
+            // The user already sees the result in chat; a failed acknowledgement only
+            // leaves the button spinning, so keep it out of the error path but log it.
+            android.util.Log.w("TelegramGateway", "answerCallback failed: ${e.message}")
+        }
     }
 
     suspend fun retry(id: Long) = controls.withLock {

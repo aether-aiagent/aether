@@ -1,4 +1,5 @@
 package com.aether.app.data.transfer
+import android.util.Log
 
 import java.io.*
 import java.net.*
@@ -47,10 +48,17 @@ internal class FtpShareServer(
                 sockets += socket
                 pool.execute {
                     clientsChanged(count.incrementAndGet())
-                    try { socket.use { Session(it).serve() } } catch (_: IOException) { }
+                    try { socket.use { Session(it).serve() } }
+                    catch (e: IOException) {
+                        // A dropped client is normal for a share server; log at debug so
+                        // a real serving failure can still be traced.
+                        android.util.Log.d("FtpShareServer", "client session ended: ${e.message}")
+                    }
                     finally { sockets -= socket; slots.release(); clientsChanged(count.decrementAndGet()) }
                 }
-            } } catch (_: SocketException) { }
+            } } catch (_: SocketException) {
+                // close() closes the listener socket, which ends this accept loop by design.
+            }
         }, "FTP-share-listener").apply { isDaemon = true; start() }
     }
     override fun close() {

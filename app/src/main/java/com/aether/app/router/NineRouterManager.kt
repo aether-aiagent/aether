@@ -1,4 +1,5 @@
 package com.aether.app.router
+import android.util.Log
 
 import android.content.Context
 import android.os.Build
@@ -246,7 +247,11 @@ class NineRouterManager(
         try { child.inputStream.bufferedReader().useLines { lines -> lines.forEach { line ->
             synchronized(tail) { tail.appendLine(line); if (tail.length > 6000) tail.delete(0, tail.length - 6000) }
             logState.update { (it + SecretRedactor.redact(line) + "\n").takeLast(24_000) }
-        } } } catch (_: java.io.IOException) { }
+        } } }
+        catch (e: java.io.IOException) {
+            // The child exiting closes the pipe, which is the normal way this loop ends.
+            android.util.Log.d("NineRouterManager", "router log stream closed: ${e.message}")
+        }
     }
     private fun portOpen() = runCatching { Socket().use { it.connect(InetSocketAddress("127.0.0.1", PORT), 500) }; true }.getOrDefault(false)
     companion object {

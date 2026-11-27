@@ -1,4 +1,5 @@
 package com.aether.app.ui.github
+import android.util.Log
 
 import com.aether.app.R
 import com.aether.app.ui.common.AppLinearProgressIndicator
@@ -199,7 +200,11 @@ fun GitHubPublishDialog(container: AppContainer, projectId: String, projectName:
                 // A commit can succeed even when its push fails. Refresh HEAD for an immediate push retry.
                 try { refresh() }
                 catch (cancelled: CancellationException) { throw cancelled }
-                catch (_: Exception) { }
+                catch (refreshError: Exception) {
+                    // Keep the original push failure: the refresh is only a best-effort HEAD update,
+                    // and reporting its error instead would hide why the push failed.
+                    android.util.Log.w("GitHubDialogs", "HEAD refresh after failed push: ${refreshError.message}")
+                }
                 message = failure
             }
             finally { busy = false }

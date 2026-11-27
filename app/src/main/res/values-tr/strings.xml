@@ -1257,7 +1257,7 @@
     <string name="slash_env_title">"Linux ortamı"</string>
     <string name="slash_env_hint">"Denetle, güncelle, kur veya onar"</string>
     <string name="slash_doctor_title">"Aether doktoru"</string>
-    <string name="slash_doctor_hint">"Tüm aether araçlarını kendi kendine test et"</string>
+    <string name="slash_doctor_hint">"Tüm Aether araçlarını kendi kendine test et"</string>
     <string name="slash_usage_skill">"talimatlar, isteğe bağlı"</string>
     <string name="slash_snippet_hint">"Kayıtlı istem parçacığı"</string>
     <string name="slash_usage_snippet">"$ARG için metin"</string>

@@ -1256,8 +1256,8 @@
     <string name="slash_init_hint">"AGENTS.md লিখুন বা নবায়ন করুন"</string>
     <string name="slash_env_title">"লিনাক্স পরিবেশ"</string>
     <string name="slash_env_hint">"পরীক্ষা, হালনাগাদ, ইনস্টল বা মেরামত করুন"</string>
-    <string name="slash_doctor_title">"হার্নেস ডক্টর"</string>
-    <string name="slash_doctor_hint">"প্রতিটি হার্নেস টুল স্ব-পরীক্ষা করুন"</string>
+    <string name="slash_doctor_title">"Aether ডক্টর"</string>
+    <string name="slash_doctor_hint">"প্রতিটি Aether টুল স্ব-পরীক্ষা করুন"</string>
     <string name="slash_usage_skill">"নির্দেশনা, ঐচ্ছিক"</string>
     <string name="slash_snippet_hint">"সংরক্ষিত প্রম্পট স্নিপেট"</string>
     <string name="slash_usage_snippet">"$ARG এর জন্য টেক্সট"</string>

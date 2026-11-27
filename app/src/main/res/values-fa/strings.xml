@@ -24,7 +24,7 @@
     <string name="settings_page_agent_desc">"مجوزها، محدودیت های زمینه و دستورالعمل های پروژه"</string>
     <string name="settings_page_chat_title">گفتگوی کدنویسی و فرمان‌ها</string>
     <string name="settings_page_chat_desc">کد زنده، نقشه پروژه و فرمان‌ها</string>
-    <string name="settings_page_codegraph_title">"کد گراف"</string>
+    <string name="settings_page_codegraph_title">"CodeGraph"</string>
     <string name="settings_page_codegraph_desc">"CodeGraph را نصب کنید و فهرست های پروژه را مدیریت کنید"</string>
     <string name="settings_page_caveman_title">"غارنشین"</string>
     <string name="settings_page_caveman_desc">"پاسخ های کوتاه تر، مهارت های کدگذاری اختیاری و گزارش های رمزی"</string>
@@ -92,7 +92,7 @@
     <string name="settings_search_show_live_code_desc">"گفتگوی و دستورات · پیش نمایش تولید کد و تغییرات خط"</string>
     <string name="settings_search_repo_map_title">"فهرست کد فضای کاری (نقشه Repo)"</string>
     <string name="settings_search_repo_map_desc">"گفتگوی و دستورات · نمادهای پروژه فهرست برای زمینه عامل"</string>
-    <string name="settings_search_codegraph_title">"کد گراف"</string>
+    <string name="settings_search_codegraph_title">"CodeGraph"</string>
     <string name="settings_search_codegraph_desc">"هوش کد · CodeGraph را نصب کنید و نمایه های معنایی را در هر فضای کاری فعال کنید"</string>
     <string name="settings_search_codegraph_index_title">"فهرست فضای کاری CodeGraph"</string>
     <string name="settings_search_codegraph_index_desc">"هوش کد · فعال کردن، همگام سازی یا بازسازی نمایه پروژه فعال"</string>
@@ -316,7 +316,7 @@
     <string name="settings_fallback_stay_provider">"در ارائه دهنده انتخاب شده بمانید"</string>
     <string name="settings_fallback_automatic">"برگشت های خودکار"</string>
     <string name="settings_fallback_order_note">"مدل انتخابی شما ابتدا اجرا می شود. این مدل ها در ادامه به ترتیب امتحان می شوند."</string>
-    <string name="settings_github_copy_code_note">"این کد را کپی کرده و در گیت هاب وارد کنید. پس از تأیید دسترسی به اینجا برگردید."</string>
+    <string name="settings_github_copy_code_note">"این کد را کپی کرده و در GitHub وارد کنید. پس از تأیید دسترسی به اینجا برگردید."</string>
     <string name="settings_github_copy_open">"کد را کپی و GitHub را باز کنید"</string>
     <string name="settings_github_signin_unavailable">"ورود به سیستم GitHub در این ساختنی در دسترس نیست. می توانید از رمز دسترسی شخصی استفاده کنید."</string>
     <string name="settings_github_allow_workflows">"اجازه ویرایش گردش‌های کاری GitHub Actions را بدهید"</string>
@@ -335,7 +335,7 @@
     <string name="settings_action_disconnect">"قطع کن"</string>
     <string name="settings_local_models_on_device">"روی این گوشی"</string>
     <string name="settings_local_models_system_tools">"دستورالعمل ها و ابزارهای سیستم"</string>
-    <string name="settings_local_models_system_tools_desc">"به طور پیش فرض خاموش است. مدل های محلی فقط پیام های گفتگوی شما را دریافت می کنند. روشن کنید تا به آنها اجازه دهید از دستورالعمل ها و ابزار هارنس برای کار روی پروژه شما استفاده کنند."</string>
+    <string name="settings_local_models_system_tools_desc">"به طور پیش فرض خاموش است. مدل های محلی فقط پیام های گفتگوی شما را دریافت می کنند. روشن کنید تا به آنها اجازه دهید از دستورالعمل ها و ابزار Aether برای کار روی پروژه شما استفاده کنند."</string>
     <string name="settings_local_models_system_tools_warning">"فعال کردن این گزینه ورودی زیادی را اضافه می‌کند، از حافظه و قدرت پردازش بیشتری استفاده می‌کند، و ممکن است چند دقیقه قبل از شروع پاسخ طول بکشد. تغییرات در پاسخ بعدی اعمال می شود."</string>
     <string name="settings_local_models_yours">"مدل های شما"</string>
     <string name="settings_local_models_empty_title">"هنوز مدلی اضافه نشده است"</string>
@@ -484,7 +484,7 @@
     <string name="settings_storage_no_manifest">"این نصب قدیمی مانیفست فایلی ندارد. مالکیت، اندازه و استفاده از فضای کاری ناشناخته است. حذف محافظت می شود."</string>
     <string name="settings_storage_unverified">"برخی از فایل های متعلق به تأیید نشد. این بسته محافظت می شود."</string>
     <string name="settings_storage_release_confirm">"شرط انتشار"</string>
-    <string name="settings_storage_release_note">"استفاده های ضبط شده ممکن است شامل دستوراتی نباشد که خارج از هارنس شروع شده اند. برای هر فضای کاری که هنوز از این ابزار استفاده می کند، یک الزام داشته باشید."</string>
+    <string name="settings_storage_release_note">"استفاده های ضبط شده ممکن است شامل دستوراتی نباشد که خارج از Aether شروع شده اند. برای هر فضای کاری که هنوز از این ابزار استفاده می کند، یک الزام داشته باشید."</string>
     <string name="settings_storage_cleanup_skip_note">"فایل های تغییر یافته یا پیوند داده شده نادیده گرفته می شوند. پوشه های منبع، مدل ها و داده های بازیابی حفظ می شوند."</string>
     <string name="settings_subagent_choose_model">"مدل فرعی را انتخاب کنید"</string>
     <string name="settings_subagent_use_main">"از مدل عامل اصلی استفاده کنید"</string>

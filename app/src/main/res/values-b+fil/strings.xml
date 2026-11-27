@@ -1257,7 +1257,7 @@
     <string name="slash_env_title">"Linux na kapaligiran"</string>
     <string name="slash_env_hint">"Suriin, i-update, i-install o ayusin ito"</string>
     <string name="slash_doctor_title">"Aether doctor"</string>
-    <string name="slash_doctor_hint">"Sariling pagsubok sa lahat ng tool ng aether"</string>
+    <string name="slash_doctor_hint">"Sariling pagsubok sa lahat ng tool ng Aether"</string>
     <string name="slash_usage_skill">"mga tagubilin, opsyonal"</string>
     <string name="slash_snippet_hint">"Naka-save na prompt snippet"</string>
     <string name="slash_usage_snippet">"teksto para sa $ARG"</string>

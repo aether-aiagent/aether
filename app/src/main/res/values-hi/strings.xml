@@ -1256,8 +1256,8 @@
     <string name="slash_init_hint">"AGENTS.md लिखें या ताज़ा करें"</string>
     <string name="slash_env_title">"लिनक्स वातावरण"</string>
     <string name="slash_env_hint">"जाँचें, अपडेट करें, इंस्टॉल करें या ठीक करें"</string>
-    <string name="slash_doctor_title">"हार्नेस डॉक्टर"</string>
-    <string name="slash_doctor_hint">"हर हार्नेस टूल का स्व-परीक्षण"</string>
+    <string name="slash_doctor_title">"Aether डॉक्टर"</string>
+    <string name="slash_doctor_hint">"हर Aether टूल का स्व-परीक्षण"</string>
     <string name="slash_usage_skill">"निर्देश, वैकल्पिक"</string>
     <string name="slash_snippet_hint">"सहेजा गया प्रॉम्प्ट स्निपेट"</string>
     <string name="slash_usage_snippet">"$ARG के लिए टेक्स्ट"</string>

@@ -675,11 +675,12 @@ class LocalModelManager(private val context: Context) {
                 val bytes = Channel<ByteArray>(32)
                 var result: IntArray? = null
                 val worker = launch(Dispatchers.IO) {
+                    val workerContext = coroutineContext
                     try {
                         result = LocalNative.generate(handle, store.file(id).absolutePath.toByteArray(Charsets.UTF_8), roles, contents,
                             limits.context, limits.input, minOf(limits.output, outputCap.coerceAtLeast(1)),
                             limits.threads, object : LocalNative.Callback {
-                                override fun onToken(data: ByteArray): Boolean = kotlinx.coroutines.runBlocking {
+                                override fun onToken(data: ByteArray): Boolean = kotlinx.coroutines.runBlocking(workerContext) {
                                     try { bytes.send(data); true } catch (_: CancellationException) { false }
                                 }
                             })
@@ -743,7 +744,11 @@ class LocalModelManager(private val context: Context) {
                             (if (model.projector != null) store.projectorFile(id).absolutePath else "").toByteArray(Charsets.UTF_8),
                             request, images, limits.context, limits.input, minOf(limits.output, outputCap.coerceAtLeast(1)),
                             limits.threads, limits.promptThreads ?: limits.threads, useGpu, cacheKey.orEmpty().toByteArray(Charsets.UTF_8), object : LocalNative.ChatCallback {
-                                override fun onEvent(data: ByteArray): Boolean = kotlinx.coroutines.runBlocking {
+                                // The native callback is synchronous and has no suspend
+                                // context, so it has to block. Use the caller's worker
+                                // context rather than a fresh runBlocking scope, which
+                                // would create a scope per token.
+                                override fun onEvent(data: ByteArray): Boolean = kotlinx.coroutines.runBlocking(workerContext) {
                                     try {
                                         val event = kotlinx.serialization.json.Json.parseToJsonElement(data.toString(Charsets.UTF_8)) as kotlinx.serialization.json.JsonObject
                                         (event["status"] as? kotlinx.serialization.json.JsonPrimitive)?.content?.let { setStatus(id, it) }

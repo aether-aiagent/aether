@@ -1257,7 +1257,7 @@
     <string name="slash_env_title">"Ambiente Linux"</string>
     <string name="slash_env_hint">"Verificar, atualizar, instalar ou reparar"</string>
     <string name="slash_doctor_title">"Doutor do Aether"</string>
-    <string name="slash_doctor_hint">"Autoteste de todas as ferramentas"</string>
+    <string name="slash_doctor_hint">"Autoteste de todas as ferramentas do Aether"</string>
     <string name="slash_usage_skill">"instruções, opcional"</string>
     <string name="slash_snippet_hint">"Trecho de prompt salvo"</string>
     <string name="slash_usage_snippet">"texto para $ARG"</string>

@@ -8,7 +8,6 @@ import com.aether.app.data.env.PackageInstallPhase
 import com.aether.app.data.env.PackageInstallStatus
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -79,15 +78,19 @@ class AndroidSdkInstallTool(
 
             val label = "Android SDK platform ${plan.api}"
             val alreadyHadPlatform = platformInstalled(plan.api)
+            // installPlatform is blocking and reports progress from its own worker
+            // thread, so the suspend callback cannot be awaited inline. Buffer the
+            // latest status and emit it from this coroutine instead of blocking a
+            // thread per download chunk with runBlocking.
+            var pendingProgress: PackageInstallStatus? = null
             val jar = installPlatform(plan.api) { downloaded, total ->
-                runBlocking {
-                    ctx.onPackageProgress(PackageInstallStatus(
-                        requested = plan.packages + label, phase = PackageInstallPhase.DOWNLOADING,
-                        packages = plan.packages + label, completed = plan.packages,
-                        currentPackage = label, downloadedBytes = downloaded, totalBytes = total,
-                    ))
-                }
+                pendingProgress = PackageInstallStatus(
+                    requested = plan.packages + label, phase = PackageInstallPhase.DOWNLOADING,
+                    packages = plan.packages + label, completed = plan.packages,
+                    currentPackage = label, downloadedBytes = downloaded, totalBytes = total,
+                )
             }
+            pendingProgress?.let { ctx.onPackageProgress(it) }
             afterInstall()
 
             val added = plan.packages.filter { it !in before }

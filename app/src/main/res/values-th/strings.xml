@@ -1246,7 +1246,7 @@
     <string name="slash_env_title">"สภาพแวดล้อมลินุกซ์"</string>
     <string name="slash_env_hint">"ตรวจสอบ อัปเดต ติดตั้ง หรือซ่อมแซม"</string>
     <string name="slash_doctor_title">"Aether doctor"</string>
-    <string name="slash_doctor_hint">"ทดสอบตัวเองทุกเครื่องมือของฮาร์เนส"</string>
+    <string name="slash_doctor_hint">"ทดสอบตัวเองทุกเครื่องมือของAether"</string>
     <string name="slash_usage_skill">"คำแนะนำ ไม่บังคับ"</string>
     <string name="slash_snippet_hint">"สแน็ปเป็ตพรอมป์ที่บันทึกไว้"</string>
     <string name="slash_usage_snippet">"ข้อความสำหรับ $ARG"</string>

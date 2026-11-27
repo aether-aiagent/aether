@@ -1257,7 +1257,7 @@
     <string name="slash_env_title">"லினக்ஸ் சூழல்"</string>
     <string name="slash_env_hint">"சரிபார்க்க, புதுப்பிக்க, நிறுவ அல்லது சரிசெய்ய"</string>
     <string name="slash_doctor_title">"Aether மருத்துவர்"</string>
-    <string name="slash_doctor_hint">"எல்லா ஹார்னஸ் கருவிகளையும் சுயசோதனை செய்"</string>
+    <string name="slash_doctor_hint">"எல்லா Aether கருவிகளையும் சுயசோதனை செய்"</string>
     <string name="slash_usage_skill">"வழிமுறைகள், விருப்பம்"</string>
     <string name="slash_snippet_hint">"சேமித்த ப்ராம்ப்ட் துணுக்கு"</string>
     <string name="slash_usage_snippet">"$ARG க்கான உரை"</string>

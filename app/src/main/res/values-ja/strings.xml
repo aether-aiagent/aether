@@ -1246,7 +1246,7 @@
     <string name="slash_env_title">"Linux 環境"</string>
     <string name="slash_env_hint">"確認、更新、インストール、修復"</string>
     <string name="slash_doctor_title">"Aether ドクター"</string>
-    <string name="slash_doctor_hint">"すべてのハーネスツールを自己診断"</string>
+    <string name="slash_doctor_hint">"すべての Aether ツールを自己診断"</string>
     <string name="slash_usage_skill">"指示、任意"</string>
     <string name="slash_snippet_hint">"保存済みのプロンプトスニペット"</string>
     <string name="slash_usage_snippet">"$ARG に入るテキスト"</string>

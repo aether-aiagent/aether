@@ -1277,7 +1277,7 @@
     <string name="slash_env_title">"Linux 环境"</string>
     <string name="slash_env_hint">"检查、更新、安装或修复"</string>
     <string name="slash_doctor_title">"Aether 诊断"</string>
-    <string name="slash_doctor_hint">"自检所有 aether 工具"</string>
+    <string name="slash_doctor_hint">"自检所有 Aether 工具"</string>
     <string name="slash_usage_skill">"说明，可选"</string>
     <string name="slash_snippet_hint">"已保存的提示片段"</string>
     <string name="slash_usage_snippet">"$ARG 的文本"</string>

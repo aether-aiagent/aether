@@ -1246,7 +1246,7 @@
     <string name="slash_env_title">"Persekitaran Linux"</string>
     <string name="slash_env_hint">"Semak, kemas kini, pasang atau baiki"</string>
     <string name="slash_doctor_title">"Doktor Aether"</string>
-    <string name="slash_doctor_hint">"Uji sendiri setiap alat aether"</string>
+    <string name="slash_doctor_hint">"Uji sendiri setiap alat Aether"</string>
     <string name="slash_usage_skill">"arahan, pilihan"</string>
     <string name="slash_snippet_hint">"Coretan prompt tersimpan"</string>
     <string name="slash_usage_snippet">"teks untuk $ARG"</string>

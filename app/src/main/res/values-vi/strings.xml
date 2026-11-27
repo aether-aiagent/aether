@@ -980,7 +980,7 @@
     <string name="dhizuku_denied">"Truy cập bị từ chối · cấp quyền truy cập ở Dhizuku"</string>
     <string name="dhizuku_error">"Kết nối không thành công · kiểm tra Dhizuku và thử lại"</string>
     <string name="settings_language_sinhala">"සිංහල"</string>
-    <string name="glass_title">"Kính khai thác (Thử nghiệm)"</string>
+    <string name="glass_title">"Aether Glass (Thử nghiệm)"</string>
     <string name="glass_description">"Hiệu ứng kính cho điều hướng, điều khiển và thẻ."</string>
     <string name="glass_enable">"Kính mờ"</string>
     <string name="glass_enable_hint">"Sử dụng các bề mặt mờ với nền mờ nhẹ nhàng."</string>
@@ -1246,7 +1246,7 @@
     <string name="slash_env_title">"Môi trường Linux"</string>
     <string name="slash_env_hint">"Kiểm tra, cập nhật, cài đặt hoặc sửa chữa"</string>
     <string name="slash_doctor_title">"Bác sĩ Aether"</string>
-    <string name="slash_doctor_hint">"Tự kiểm tra mọi công cụ aether"</string>
+    <string name="slash_doctor_hint">"Tự kiểm tra mọi công cụ Aether"</string>
     <string name="slash_usage_skill">"hướng dẫn, tùy chọn"</string>
     <string name="slash_snippet_hint">"Đoạn lưu lời nhắc đã lưu"</string>
     <string name="slash_usage_snippet">"văn bản cho $ARG"</string>

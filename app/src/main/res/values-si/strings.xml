@@ -1257,7 +1257,7 @@
     <string name="slash_env_title">"ලිනක්ස් පරිසරය"</string>
     <string name="slash_env_hint">"පරීක්ෂා කරන්න, යාවත්කාලීන කරන්න, ස්ථාපනය කරන්න හෝ අලුත්වැඩියා කරන්න"</string>
     <string name="slash_doctor_title">"Aether දොස්තර"</string>
-    <string name="slash_doctor_hint">"සියලු aether මෙවලම් ස්වයං පරීක්ෂා කරන්න"</string>
+    <string name="slash_doctor_hint">"සියලු Aether මෙවලම් ස්වයං පරීක්ෂා කරන්න"</string>
     <string name="slash_usage_skill">"උපදෙස්, අත්‍යවශ්‍ය නොවේ"</string>
     <string name="slash_snippet_hint">"සුරකින ලද ප්‍රොම්ප්ට් ස්නිපට්"</string>
     <string name="slash_usage_snippet">"$ARG සඳහා පෙළ"</string>

@@ -88,7 +88,7 @@
     <string name="storage_role_canvas">Canvas</string>
     <string name="storage_role_canvas_note">Canvas 보드와 해당 이미지</string>
     <string name="storage_role_settings">설정 및 구성</string>
-    <string name="storage_role_settings_note">환경설정 및 하네스 구성</string>
+    <string name="storage_role_settings_note">환경설정 및 Aether 구성</string>
     <string name="storage_role_scratch">셸 임시 공간</string>
     <string name="storage_role_scratch_note">셸 명령용 임시 작업 폴더</string>
     <string name="storage_role_router">9router</string>

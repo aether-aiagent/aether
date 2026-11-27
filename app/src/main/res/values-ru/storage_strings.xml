@@ -97,7 +97,7 @@
     <string name="storage_role_canvas">Canvas</string>
     <string name="storage_role_canvas_note">Доски Canvas и их изображения</string>
     <string name="storage_role_settings">Настройки и конфигурация</string>
-    <string name="storage_role_settings_note">Параметры и конфигурация среды</string>
+    <string name="storage_role_settings_note">Параметры и конфигурация Aether</string>
     <string name="storage_role_scratch">Временное пространство оболочки</string>
     <string name="storage_role_scratch_note">Временные рабочие папки для команд оболочки</string>
     <string name="storage_role_router">9router</string>

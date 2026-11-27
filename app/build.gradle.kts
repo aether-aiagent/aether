@@ -321,6 +321,19 @@ abstract class PrepareGpuRuntime @Inject constructor(private val execOps: ExecOp
     }
 }
 
+// Gradle points a test JVM's java.io.tmpdir at <project>/build/tmp, which is
+// inside the checkout. Tests that shell out to git and assert "this directory
+// is not a repository" then see Aether's own repository and fail. CI passes
+// -PtestScratch to move test scratch outside the working tree; local runs keep
+// the default so path-sensitive tests behave as before.
+providers.gradleProperty("testScratch").orNull?.let { scratch ->
+    tasks.withType<Test>().configureEach {
+        val dir = file(scratch)
+        doFirst { dir.mkdirs() }
+        systemProperty("java.io.tmpdir", dir.absolutePath)
+    }
+}
+
 if (hasNdk) androidComponents.onVariants { variant ->
     val capital = variant.name.replaceFirstChar { it.uppercaseChar() }
     val sdk = githubBuildProperties.getProperty("sdk.dir") ?: System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")

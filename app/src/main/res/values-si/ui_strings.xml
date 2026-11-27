@@ -1047,14 +1047,14 @@
     <string name="ui_ready">"සූදානම්"</string>
     <string name="ui_local_semantic_code_graph_for_symbols_callers">"සංකේත, ඇමතුම්කරුවන්, බලපෑම් සහ බලපෑම් ඇති පරීක්ෂණ සඳහා දේශීය සංඛ්යාත කේත ග්රැෆික්"</string>
     <string name="ui_working">"වැඩ කරන්න..."</string>
-    <string name="ui_aether_installs_codegraph_into_its_private_linux">"හර්නස් Install CodeGraph ඔහුගේ පෞද්ගලික Linux පරිසරය, About 170 MB Node Runtime එක අවශ් යයි.No Termux app එකක් නෑ Shizuku වෙනසක් නැත CodeGraph ඔබේ නියෝජිතයන් සඳහා සකස් කරන්න."</string>
+    <string name="ui_aether_installs_codegraph_into_its_private_linux">"Aether CodeGraph ඔහුගේ පෞද්ගලික Linux පරිසරයේ ස්ථාපිත කරයි. අවශ්ය Node Runtime සමඟ මෙගාබයිට් 170ක් පමණ වේ. ඔබේ නියෝජිතයන් සඳහා Termux යෙදුමක්, Shizuku හෝ වෙනම CodeGraph සැකසුමක් අවශ්ය නොවේ."</string>
     <string name="ui_no_workspace">"වැඩපිළිවෙළක් නැත"</string>
     <string name="ui_this_workspace_does_not_expose_a_real">"මෙම වැඩපිළිවෙළ සැබෑ ගොනු පද්ධතිය මාර්ගය පෙන්වා දෙන්නේ නැත"</string>
     <string name="ui_indexed">"දර්ශකයක්"</string>
     <string name="ui_not_indexed">"indexed නැත"</string>
     <string name="ui_codegraph_needs_a_shell_capable_workspace_with">"CodeGraph සැබෑ උපකරණ මාර්ගය සමඟ shell-capable වැඩපිළිවෙලක් අවශ්ය වේ."</string>
     <string name="ui_install_codegraph_first_then_enable_it_for">"ස්ථාපනය කරන්න CodeGraph පළමුවෙන්ම, එවිට මෙම වැඩපිළිවෙළ සඳහා එය ක්‍රියාත්මක කරන්න."</string>
-    <string name="ui_when_this_workspace_is_indexed_aether_exposes">"මෙම වැඩපිළිවෙළ indexed විට, හර්නස් exposes CodeGraph පරීක්ෂා කරන්න, නඩත්තු, බලපෑම්, බලපෑම් පරීක්ෂා කිරීම සහ කේතය නියෝජිතයා වෙත සංකේත කිරීම මෙවලම්."</string>
+    <string name="ui_when_this_workspace_is_indexed_aether_exposes">"මෙම වැඩබිම දර්ශකගත කළ විට, Aether CodeGraph ගවේෂණ, නෝඩ්, බලපෑම්, පරීක්ෂණ සහ පාලන මෙවලම් එකතු කරයි. aether.json හරහා පෙළ පහළින් බලන්න."</string>
     <string name="ui_keyless">"යතුරක් රහිත"</string>
     <string name="ui_public_search_engines_no_setup">"පොදු සෙවුම් එන්ජිම, කිසිදු ස්ථාපනය"</string>
     <string name="ui_key_saved">"%1$s · යතුර ඉතිරි කර ඇත"</string>
@@ -1261,7 +1261,7 @@
     <string name="ui_optional_keeps_long_runs_alive_on_aggressive">"විකල්පය: ආක්රමීය OEM මත දිගු ධාවනය තබා"</string>
     <string name="ui_ready_to_begin">"ආරම්භ කිරීමට සූදානම්"</string>
     <string name="ui_allow_storage_access_to_begin">"ගබඩා කිරීමේ ප්‍රවේශය ආරම්භ කිරීමට ඉඩ දෙන්න"</string>
-    <string name="ui_start_aether">"හර්නස් ආරම්භ කරන්න"</string>
+    <string name="ui_start_aether">"Aether ආරම්භ කරන්න"</string>
     <string name="ui_optional">"විකල්පයි"</string>
     <string name="ui_model_activity_and_ai_code_changes">"ආකෘති ක්‍රියාකාරකම් සහ AI කේත වෙනස්කම්"</string>
     <string name="ui_model_activity">"ආකෘතිය ක්‍රියාකාරකම්"</string>

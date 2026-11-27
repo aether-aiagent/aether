@@ -91,7 +91,7 @@
     <string name="storage_role_canvas">Canvas</string>
     <string name="storage_role_canvas_note">تخته‌های Canvas و تصاویر آن‌ها</string>
     <string name="storage_role_settings">تنظیمات و پیکربندی</string>
-    <string name="storage_role_settings_note">ترجیحات و پیکربندی محیط اجرا</string>
+    <string name="storage_role_settings_note">ترجیحات و پیکربندی Aether</string>
     <string name="storage_role_scratch">فضای موقت پوسته</string>
     <string name="storage_role_scratch_note">پوشه‌های کاری موقت برای فرمان‌های پوسته</string>
     <string name="storage_role_router">9router</string>

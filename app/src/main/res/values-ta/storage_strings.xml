@@ -91,7 +91,7 @@
     <string name="storage_role_canvas">Canvas</string>
     <string name="storage_role_canvas_note">Canvas பலகைகள் மற்றும் அவற்றின் படங்கள்</string>
     <string name="storage_role_settings">அமைப்புகள் மற்றும் உள்ளமைவு</string>
-    <string name="storage_role_settings_note">விருப்பங்கள் மற்றும் ஹார்னஸ் உள்ளமைவு</string>
+    <string name="storage_role_settings_note">விருப்பங்கள் மற்றும் Aether உள்ளமைவு</string>
     <string name="storage_role_scratch">ஷெல் தற்காலிக இடம்</string>
     <string name="storage_role_scratch_note">ஷெல் கட்டளைகளுக்கான தற்காலிக வேலைக் கோப்புறைகள்</string>
     <string name="storage_role_router">9router</string>

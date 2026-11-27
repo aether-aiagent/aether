@@ -103,7 +103,7 @@
     <string name="storage_role_canvas">Canvas</string>
     <string name="storage_role_canvas_note">لوحات Canvas وصورها</string>
     <string name="storage_role_settings">الإعدادات والتكوين</string>
-    <string name="storage_role_settings_note">التفضيلات وتكوين البيئة</string>
+    <string name="storage_role_settings_note">التفضيلات وتهيئة Aether</string>
     <string name="storage_role_scratch">مساحة عمل مؤقتة للصدفة</string>
     <string name="storage_role_scratch_note">مجلدات عمل مؤقتة لأوامر الصدفة</string>
     <string name="storage_role_router">9router</string>

@@ -44,7 +44,7 @@
     <string name="tip_repo_map">"에이전트가 프로젝트 기호의 색인을 얻을 수 있도록 저장소 맵을 켜십시오."</string>
     <string name="tip_caveman">"Caveman는 더 짧은 응답과 토큰 보고서를 제공하여 출력 토큰을 저장합니다."</string>
     <string name="tip_telegram">"Telegram 봇을 페어링하여 Telegram에서 채팅을 계속하고 프로젝트를 편집하세요."</string>
-    <string name="tip_config">"Aether.json을 통해 프로젝트 설정을 리포지토리와 공유하세요."</string>
+    <string name="tip_config">"aether.json을 통해 프로젝트 설정을 리포지토리와 공유하세요."</string>
     <string name="tip_shizuku">"에이전트가 장치에서 향상된 셸 액세스를 사용할 수 있도록 Shizuku를 설정합니다."</string>
     <string name="tip_plugins">"기술과 도구를 추가하려면 플러그인 페이지에서 플러그인 번들을 설치하세요."</string>
     <string name="tip_language">"Aether는 11개 언어로 제공됩니다. 언어 설정에서 변경하세요."</string>

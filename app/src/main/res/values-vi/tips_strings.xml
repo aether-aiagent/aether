@@ -44,7 +44,7 @@
     <string name="tip_repo_map">"Bật bản đồ kho lưu trữ để trợ lý nhận được chỉ mục các ký hiệu của dự án của bạn."</string>
     <string name="tip_caveman">"Caveman đưa ra các câu trả lời ngắn hơn và báo cáo token, giúp lưu token đầu ra."</string>
     <string name="tip_telegram">"Ghép nối bot Telegram để tiếp tục trò chuyện và chỉnh sửa dự án từ Telegram."</string>
-    <string name="tip_config">"Chia sẻ cài đặt dự án với repo của bạn thông quan Aether.json."</string>
+    <string name="tip_config">"Chia sẻ cài đặt dự án với repo của bạn thông quan aether.json."</string>
     <string name="tip_shizuku">"Thiết lập Shizuku để trợ lý có thể sử dụng quyền truy cập shell nâng cao trên thiết bị của bạn."</string>
     <string name="tip_plugins">"Cài đặt gói plugin từ trang Plugin để thêm các kỹ năng và công cụ."</string>
     <string name="tip_language">"Aether có sẵn trong 11 ngôn ngữ. Thay đổi nó trong cài đặt Ngôn ngữ."</string>

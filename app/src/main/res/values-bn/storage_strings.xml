@@ -91,7 +91,7 @@
     <string name="storage_role_canvas">Canvas</string>
     <string name="storage_role_canvas_note">Canvas বোর্ড এবং তাদের ছবি</string>
     <string name="storage_role_settings">সেটিংস ও কনফিগারেশন</string>
-    <string name="storage_role_settings_note">পছন্দসমূহ এবং হার্নেস কনফিগারেশন</string>
+    <string name="storage_role_settings_note">পছন্দসমূহ এবং Aether কনফিগারেশন</string>
     <string name="storage_role_scratch">শেল অস্থায়ী স্থান</string>
     <string name="storage_role_scratch_note">শেল কমান্ডের জন্য অস্থায়ী কাজের ফোল্ডার</string>
     <string name="storage_role_router">9router</string>

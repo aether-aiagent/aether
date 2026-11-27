@@ -91,7 +91,7 @@
     <string name="storage_role_canvas">Canvas</string>
     <string name="storage_role_canvas_note">Canvas बोर्ड और उनकी छवियाँ</string>
     <string name="storage_role_settings">सेटिंग्स और कॉन्फ़िगरेशन</string>
-    <string name="storage_role_settings_note">प्राथमिकताएँ और हार्नेस कॉन्फ़िगरेशन</string>
+    <string name="storage_role_settings_note">प्राथमिकताएँ और Aether कॉन्फ़िगरेशन</string>
     <string name="storage_role_scratch">शेल स्क्रैच स्थान</string>
     <string name="storage_role_scratch_note">शेल कमांड के लिए अस्थायी कार्य फ़ोल्डर</string>
     <string name="storage_role_router">9router</string>

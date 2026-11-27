@@ -47,7 +47,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y glslc
 
       - name: Run unit tests
-        run: ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace
+        run: ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace -PtestScratch="$RUNNER_TEMP/aether-tests"
 
       - name: Upload test report (on failure)
         if: failure()
@@ -66,7 +66,7 @@ jobs:
           SHA=$(git rev-parse --short HEAD)
           NAME="Aether-${STAMP}-${SHA}-debug.apk"
           mkdir dist && cp app/build/outputs/apk/debug/app-debug.apk "dist/${NAME}"
-          cp app/build/outputs/gpuRuntime/debug/*.gz dist/
+          if ls app/build/outputs/gpuRuntime/debug/*.gz >/dev/null 2>&1; then cp app/build/outputs/gpuRuntime/debug/*.gz dist/; fi
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
 
       - name: Publish matching optional GPU packages

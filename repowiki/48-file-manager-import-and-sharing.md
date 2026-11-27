@@ -56,7 +56,7 @@ Sharing differs by selection size. A single item's action sheet offers Share and
 8. `FileOps.move` uses a direct rename when both paths share a parent; otherwise it copies with `preserveAll = true` and deletes the source (`ui/files/FileOps.kt:43`).
 9. `FileOps.shareMany` creates a ZIP for directory selections or calls `stageForShare` per file, then starts `ACTION_SEND` or `ACTION_SEND_MULTIPLE` (`ui/files/FileOps.kt:140`).
 10. `FileOps.openWith` stages the file and starts `ACTION_VIEW` with the MIME type derived by `mimeForName` (`ui/files/FileOps.kt:228`).
-11. Chat attachment import enters `ChatViewModel.importAttachment`, which reads the display name and size from the content resolver, rejects files over `FileAttachments.COPY_BYTE_LIMIT` (64 MB), then either imports an image or copies a non-text file into `.harness/attachments` (`ui/chat/ChatViewModel.kt:1221`).
+11. Chat attachment import enters `ChatViewModel.importAttachment`, which reads the display name and size from the content resolver, rejects files over `FileAttachments.COPY_BYTE_LIMIT` (64 MB), then either imports an image or copies a non-text file into `.aether/attachments` (`ui/chat/ChatViewModel.kt:1221`).
 
 ## Key State and Data Structures
 
@@ -65,7 +65,7 @@ Sharing differs by selection size. A single item's action sheet offers Share and
 - **`NameDialog`**: Tracks `value`, `trimmed`, `isDuplicate`, and `illegal`. Duplicates are case-sensitive; illegal names are blank, contain `/` or `\`, or equal `.` or `..` (`ui/files/FilesScreen.kt:1026`).
 - **`DestinationPickerDialog`**: Holds `dir` and `dirs`. `isInsideForbidden` normalizes the candidate and compares it against each forbidden base. The confirm button is disabled while the current directory is forbidden (`ui/files/DestinationPickerDialog.kt:41`).
 - **`FileOps.uniqueChildName`**: Appends ` (2)`, ` (3)`, and so on before the extension until the name is free (`ui/files/FileOps.kt:282`).
-- **`TransferEntry`**: `path`, `directory`, `size`, `modified`. `LocalTransferFiles.list` sorts by path and filters symlinks, control characters, backslashes, and `.harness-transfer-` temporaries (`data/transfer/TransferFiles.kt:14`).
+- **`TransferEntry`**: `path`, `directory`, `size`, `modified`. `LocalTransferFiles.list` sorts by path and filters symlinks, control characters, backslashes, and `.aether-transfer-` temporaries (`data/transfer/TransferFiles.kt:14`).
 - **`SyncPlan` and `SyncResult`**: `SyncPlan` carries direction, changes, directories, and unchanged count. `SyncEngine.apply` rechecks the destination hash and source digest immediately before publishing (`data/transfer/TransferFiles.kt:130`).
 
 ## Boundary Conditions
@@ -81,7 +81,7 @@ Sharing differs by selection size. A single item's action sheet offers Share and
 - **Import names are sanitized.** `importName` replaces slashes and NULs, trims, and falls back to `file` for empty, `.`, or `..` names. Duplicate names inside one import batch receive the same ` (n)` suffix used by copy.
 - **Import progress is indeterminate.** `importing` renders `AppLinearProgressIndicator` without a fraction; the only count is the completion toast. `FileOps.importDocuments` has no per-byte callback.
 - **Imported folders recurse without a depth guard.** `importDocument` walks `DocumentFile.listFiles()` recursively and sanitizes each child name with `importName`.
-- **Attachment limits differ from file manager limits.** Chat attachment import rejects files over 64 MB, reads text-like files up to `FileAttachments.INLINE_CHAR_LIMIT` (32,000 characters), and copies other files into `.harness/attachments` under a timestamp and import id. In Chat mode, a file that is neither readable text nor a readable PDF becomes `UNSUPPORTED` instead of silently disappearing; in Code mode it is copied into the workspace.
+- **Attachment limits differ from file manager limits.** Chat attachment import rejects files over 64 MB, reads text-like files up to `FileAttachments.INLINE_CHAR_LIMIT` (32,000 characters), and copies other files into `.aether/attachments` under a timestamp and import id. In Chat mode, a file that is neither readable text nor a readable PDF becomes `UNSUPPORTED` instead of silently disappearing; in Code mode it is copied into the workspace.
 - **The editor is not the file manager.** Files above `MAX_EDIT_BYTES` (16,000,000 bytes) are handled by `CodeEditorScreen` as share or open-with cases, not by `FilesScreen`.
 
 ## Presentation
@@ -96,16 +96,16 @@ Sharing differs by selection size. A single item's action sheet offers Share and
 - **`TransferFiles` is the substitution point for remote transports.** FTP and SFTP implement the same `stat`, `list`, `read`, `mkdir`, and `writeAtomic` contract.
 - **`ChatViewModel.importAttachment` is the shared attachment entry.** `attachImage`, `attachFile`, and `attachSharedFile` all delegate to it, so progress and failure states stay consistent.
 
-Sources: [app/src/main/java/com/androidharness/app/ui/files/FilesScreen.kt](../app/src/main/java/com/androidharness/app/ui/files/FilesScreen.kt)#L113-L1078), [app/src/main/java/com/androidharness/app/ui/files/FileOps.kt](../app/src/main/java/com/androidharness/app/ui/files/FileOps.kt)#L20-L311), [app/src/main/java/com/androidharness/app/ui/files/DestinationPickerDialog.kt](../app/src/main/java/com/androidharness/app/ui/files/DestinationPickerDialog.kt)#L41-L154), [app/src/main/java/com/androidharness/app/data/transfer/TransferFiles.kt](../app/src/main/java/com/androidharness/app/data/transfer/TransferFiles.kt)#L11-L184)
+Sources: [app/src/main/java/com/aether/app/ui/files/FilesScreen.kt](../app/src/main/java/com/aether/app/ui/files/FilesScreen.kt)#L113-L1078), [app/src/main/java/com/aether/app/ui/files/FileOps.kt](../app/src/main/java/com/aether/app/ui/files/FileOps.kt)#L20-L311), [app/src/main/java/com/aether/app/ui/files/DestinationPickerDialog.kt](../app/src/main/java/com/aether/app/ui/files/DestinationPickerDialog.kt)#L41-L154), [app/src/main/java/com/aether/app/data/transfer/TransferFiles.kt](../app/src/main/java/com/aether/app/data/transfer/TransferFiles.kt)#L11-L184)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/ui/files/FilesScreen.kt`
-- `app/src/main/java/com/androidharness/app/ui/files/FileOps.kt`
-- `app/src/main/java/com/androidharness/app/ui/files/DestinationPickerDialog.kt`
-- `app/src/main/java/com/androidharness/app/data/transfer/TransferFiles.kt`
-- `app/src/main/java/com/androidharness/app/data/transfer/FtpShareManager.kt`
-- `app/src/main/java/com/androidharness/app/data/transfer/SyncManager.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/FileAttachments.kt`
-- `app/src/main/java/com/androidharness/app/ui/AppNav.kt`
+- `app/src/main/java/com/aether/app/ui/files/FilesScreen.kt`
+- `app/src/main/java/com/aether/app/ui/files/FileOps.kt`
+- `app/src/main/java/com/aether/app/ui/files/DestinationPickerDialog.kt`
+- `app/src/main/java/com/aether/app/data/transfer/TransferFiles.kt`
+- `app/src/main/java/com/aether/app/data/transfer/FtpShareManager.kt`
+- `app/src/main/java/com/aether/app/data/transfer/SyncManager.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt`
+- `app/src/main/java/com/aether/app/ui/chat/FileAttachments.kt`
+- `app/src/main/java/com/aether/app/ui/AppNav.kt`

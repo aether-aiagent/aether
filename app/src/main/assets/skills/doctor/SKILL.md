@@ -1,15 +1,15 @@
 ---
 name: doctor
-description: Run a self-test battery of every harness tool family and report pass/fail.
+description: Run a self-test battery of every Aether tool family and report pass/fail.
 category: software-development
 ---
 
-# Harness Doctor
+# Aether Doctor
 
 Self-test battery verifying every tool family, sandbox bounds, regressions, and subagents.
 
 ## When to use
-- After any change to the harness core or tools
+- After any change to the Aether core or tools
 - When verifying device environment, shell, git, or network capabilities
 - Triggered directly with `/doctor` in chat or via skill invocation
 
@@ -70,12 +70,12 @@ Run the self-test battery checks in order:
 
 10. GIT:
     - git init -q → must produce NO template warning (GIT_TEMPLATE_DIR set)
-    - git_commit one fixture → succeeds (Bug E regression: if it fails with "Author identity unknown", FAIL, harness should auto-configure or explain)
+    - git_commit one fixture → succeeds (Bug E regression: if it fails with "Author identity unknown", FAIL, Aether should auto-configure or explain)
     - git_status / git_diff return clean output
     NOTE: repo dirs created by the Shizuku shell user are owned uid=2000 while the app is u0_aXXX,
     so PLAIN shell git commands inside such a repo may print "detected dubious ownership".
-    That is a git 2.35.2+ safety feature, not a harness bug; use `git -c safe.directory='*' ...`
-    in shell probes (the harness now exports GIT_CONFIG_GLOBAL with [safe] directory=* into every
+    That is a git 2.35.2+ safety feature, not an Aether bug; use `git -c safe.directory='*' ...`
+    in shell probes (Aether now exports GIT_CONFIG_GLOBAL with [safe] directory=* into every
     shell, so this should no longer appear at all). The git_commit tool handles identity +
     ownership automatically.
 
@@ -89,7 +89,7 @@ Run the self-test battery checks in order:
     - two task() calls in ONE block → both complete, consistent workspace view
 
 13. MEMORY & SKILLS:
-    - memory_write (append) a test line, read back .harness/memory.md
+    - memory_write (append) a test line, read back .aether/memory.md
     - skills_list returns the catalog; skill_view a known skill succeeds
 
 14. SHELL SANDBOX (Bug A regression; must be BLOCKED; SKIP when FULL ACCESS mode is on, record as DEVIATION):

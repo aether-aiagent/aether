@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">"مرحباً بك في AndroidHarness"</string>
+    <string name="setup_welcome_title">"مرحباً بك في Aether"</string>
     <string name="setup_welcome_body">"وكيل البرمجة الخاص بك، مباشرة على هاتفك. لنقم بإعداده."</string>
     <string name="setup_start_fresh">"البدء من جديد"</string>
-    <string name="setup_start_fresh_body">"إعداد AndroidHarness جديد تماماً"</string>
-    <string name="setup_restore">"استعادة AndroidHarness"</string>
+    <string name="setup_start_fresh_body">"إعداد Aether جديد تماماً"</string>
+    <string name="setup_restore">"استعادة Aether"</string>
     <string name="setup_restore_body">"أعد محادثاتك وإعداداتك من ملف نسخة احتياطية"</string>
 
     <string name="setup_storage_title">"السماح بالوصول إلى الملفات"</string>
-    <string name="setup_storage_body">"اختياري. بدونه يعمل AndroidHarness في مجلده الخاص ويسأل عندما تحتاج مهمة إلى ملفاتك."</string>
+    <string name="setup_storage_body">"اختياري. بدونه يعمل Aether في مجلده الخاص ويسأل عندما تحتاج مهمة إلى ملفاتك."</string>
     <string name="setup_storage_all_files">"الوصول إلى جميع الملفات"</string>
     <string name="setup_storage_all_files_body">"اقرأ أي مجلد وعدّله كما تتوقع المحطة الطرفية وأدوات الملفات. الأفضل للبرمجة."</string>
     <string name="setup_storage_legacy">"إذن التخزين"</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">"استعد بياناتك"</string>
     <string name="setup_restore_subtitle">"اختر ملفات النسخ الاحتياطي من هاتفك القديم. استعد واحداً أو كليهما أو لا شيء."</string>
     <string name="setup_restore_chats">"المحادثات"</string>
-    <string name="setup_restore_chats_body">"ملف .harnessbackup يحتوي على محادثاتك وصورها وإحصاءات استخدامها وذكرياتها ومقتطفاتها"</string>
+    <string name="setup_restore_chats_body">"ملف .aetherbackup يحتوي على محادثاتك وصورها وإحصاءات استخدامها وذكرياتها ومقتطفاتها"</string>
     <string name="setup_restore_settings">"الإعدادات والمزوّدون"</string>
     <string name="setup_restore_settings_body">"ملف .hbackup محمي بكلمة مرور يحتوي على مزوّديك ومفاتيح API وتفضيلاتك"</string>
     <string name="setup_restore_choose">"اختيار ملف"</string>

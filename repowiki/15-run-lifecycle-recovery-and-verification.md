@@ -56,7 +56,7 @@ stateDiagram-v2
 
 **Cancel.** `stop` records the session in `stoppedSubagentSessions`, cancels subagent follow-ups, stops subagents, stops follow-ups, cancels the successor job, and cancels the main job (lines 1116 to 1123). `stopAndJoin` additionally awaits cleanup so a new run cannot race the old `finally` (lines 1148 to 1157). `stopAllAndJoin` does this for every active run (lines 1131 to 1142). Inside the job, cancellation sets `cancelled = true`, rethrows, and the `finally` block treats `completed || cancelled` as `"idle"`.
 
-**Resume.** `resumeTask` requires no running job, `saved.resumable`, a saved provider, passing `TaskBudget.check()`, and the original workspace path. It calls `startRun` with `resume = true` and `onlyIfIdle = true` (lines 1262 to 1275). Chat-side `resumeTaskNow` handles a Harness free-limit notice by applying a newly chosen provider, resolves the API key, and fails when the key is blank (`ChatViewModel.kt` lines 969 to 999). A resume inserts a user message built from `RunRecovery.resolvePrompt`, which prefers the chat's prompt, then the app setting, then `CONTINUE_PROMPT` (`TaskControl.kt` lines 129 to 135; `RunManager.kt` lines 507 to 509).
+**Resume.** `resumeTask` requires no running job, `saved.resumable`, a saved provider, passing `TaskBudget.check()`, and the original workspace path. It calls `startRun` with `resume = true` and `onlyIfIdle = true` (lines 1262 to 1275). Chat-side `resumeTaskNow` handles a Aether free-limit notice by applying a newly chosen provider, resolves the API key, and fails when the key is blank (`ChatViewModel.kt` lines 969 to 999). A resume inserts a user message built from `RunRecovery.resolvePrompt`, which prefers the chat's prompt, then the app setting, then `CONTINUE_PROMPT` (`TaskControl.kt` lines 129 to 135; `RunManager.kt` lines 507 to 509).
 
 **Auto-continue.** `RunFollowUps.next` runs only after the job completes, under the run-start mutex. It refuses if the run id is stale or already handled. A completed run with `finishedNotification` and `"idle"` status sends the first queued prompt. Otherwise continuation needs `recoverableInterruption`, status `"paused"` or `"interrupted"`, `autoContinue` on, and attempts below `autoContinueLimit` coerced to 1 through 5. It increments and persists attempts before returning `Continue` (lines 30 to 46). `RunManager` delays the successor by `RetryPolicy.delayMs(attempts + 1)` for recoverable interruptions (line 734), then starts a new run with `resume = true` and the previous provider. If starting fails, the chat is set to `"paused"` with an explanatory reason and a notification is posted (lines 750 to 755).
 
@@ -112,16 +112,16 @@ Notification actions call the same completors as the UI: `approve` with or witho
 - `KeepaliveTracker` accepts any acquire, release, and active-change callbacks.
 - `VerificationEvidence` is a pure function over `List<ChatMessage>`, also used by the GitHub pull request body and tool.
 
-Sources: [app/src/main/java/com/androidharness/app/agent/RunManager.kt](../app/src/main/java/com/androidharness/app/agent/RunManager.kt)#L538-L770)
+Sources: [app/src/main/java/com/aether/app/agent/RunManager.kt](../app/src/main/java/com/aether/app/agent/RunManager.kt)#L538-L770)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/agent/RunManager.kt`
-- `app/src/main/java/com/androidharness/app/agent/RunCompletionStore.kt`
-- `app/src/main/java/com/androidharness/app/agent/RunFollowUps.kt`
-- `app/src/main/java/com/androidharness/app/agent/TaskControl.kt`
-- `app/src/main/java/com/androidharness/app/agent/KeepaliveTracker.kt`
-- `app/src/main/java/com/androidharness/app/agent/VerificationEvidence.kt`
-- `app/src/main/java/com/androidharness/app/data/CheckpointStore.kt`
-- `app/src/main/java/com/androidharness/app/agent/NotificationActionReceiver.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/VerificationCard.kt`
+- `app/src/main/java/com/aether/app/agent/RunManager.kt`
+- `app/src/main/java/com/aether/app/agent/RunCompletionStore.kt`
+- `app/src/main/java/com/aether/app/agent/RunFollowUps.kt`
+- `app/src/main/java/com/aether/app/agent/TaskControl.kt`
+- `app/src/main/java/com/aether/app/agent/KeepaliveTracker.kt`
+- `app/src/main/java/com/aether/app/agent/VerificationEvidence.kt`
+- `app/src/main/java/com/aether/app/data/CheckpointStore.kt`
+- `app/src/main/java/com/aether/app/agent/NotificationActionReceiver.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/VerificationCard.kt`

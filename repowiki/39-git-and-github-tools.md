@@ -46,11 +46,11 @@ Authentication reaches git without a credential helper. `GitHubProvision.gitConf
 ## Invocation Chain
 
 1. `ToolRegistry.default` registers the git tools (`tools/Tool.kt:123` to `133`) and, when a publisher is present, appends `GitHubCreatePullRequestTool` (`tools/Tool.kt:162`).
-2. `HarnessApp` constructs `GitHubAuth` with `BuildConfig.GITHUB_CLIENT_ID`, the encrypted credential getter and setter, and `refreshGitHubAuth` (`HarnessApp.kt:275`). It constructs `GitHubWorkspaces(this)` at `HarnessApp.kt:353` and exposes it as `pullRequests` at `HarnessApp.kt:270`.
-3. `GitCommitTool.execute` builds `gitCommitCmd`. That command first removes any `.harness` directory at any depth from the index, then runs `git add -A` with exclude pathspecs for the same paths, then removes them again, then commits (`tools/GitTools.kt:63`). If the commit fails with an unknown identity, the tool sets a repository-local identity and retries, falling back to global config (`tools/GitTools.kt:335`).
+2. `AetherApp` constructs `GitHubAuth` with `BuildConfig.GITHUB_CLIENT_ID`, the encrypted credential getter and setter, and `refreshGitHubAuth` (`AetherApp.kt:275`). It constructs `GitHubWorkspaces(this)` at `AetherApp.kt:353` and exposes it as `pullRequests` at `AetherApp.kt:270`.
+3. `GitCommitTool.execute` builds `gitCommitCmd`. That command first removes any `.aether` directory at any depth from the index, then runs `git add -A` with exclude pathspecs for the same paths, then removes them again, then commits (`tools/GitTools.kt:63`). If the commit fails with an unknown identity, the tool sets a repository-local identity and retries, falling back to global config (`tools/GitTools.kt:335`).
 4. `GitPushTool.execute` resolves the current branch with `rev-parse --abbrev-ref HEAD`, reads `branch.<branch>.merge`, and only pushes without `-u` when that value equals `refs/heads/<branch>`. Otherwise it pushes with `-u` and notes the repair (`tools/GitTools.kt:539`).
 5. `GitPullTool.execute` maps `mode` to `pull --ff-only`, `pull`, or `pull --rebase` and appends conflict guidance when output contains `CONFLICT` (`tools/GitTools.kt:588`).
-6. `GitHubReadClient.get` normalizes the path, reads the saved token, sends `Authorization: Bearer`, and maps HTTP failures to actionable text (`tools/GitHubTools.kt:51`). `github_api`, `github_search` and `github_file` are chat-only tools, registered in `HarnessApp.kt:334` to `336`.
+6. `GitHubReadClient.get` normalizes the path, reads the saved token, sends `Authorization: Bearer`, and maps HTTP failures to actionable text (`tools/GitHubTools.kt:51`). `github_api`, `github_search` and `github_file` are chat-only tools, registered in `AetherApp.kt:334` to `336`.
 7. `GitHubWorkspaces.preparePullRequest` resolves the origin repository, asks GitHub for the default branch, compares the local branch with it, and looks for an existing open PR (`github/GitHubWorkspaces.kt:27`).
 8. `GitHubCreatePullRequestTool.execute` rejects an empty ahead count and an unpushed branch, builds the body, and calls `openPullRequest` (`tools/GitHubPullRequestTool.kt:83`).
 9. `GitHubPublishDialog` refreshes repository state, renders `GitHubChangePicker`, and calls `publish` with the selected paths; the footer calls the same method with `commit=true` (`ui/github/GitHubDialogs.kt:228` to `236`).
@@ -75,7 +75,7 @@ Persistence split: credentials live in encrypted preferences, repository content
 - Exit code 127 with "not found" produces a specific install message for the Linux environment or the SSH host.
 - Dubious ownership is repaired by persisting `safe.directory '*'` globally once and re-running the command; the result carries a note (`tools/GitTools.kt:201`).
 - `runGitWithRetry` retries only on `index.lock` or "another git process seems to be running", up to three times with 200, 400 and 800 ms delays (`tools/GitTools.kt:258`).
-- `git_commit` never stages `.harness` at any depth, using glob pathspecs because a plain `*` stops at a path separator (`tools/GitTools.kt:53` to `61`).
+- `git_commit` never stages `.aether` at any depth, using glob pathspecs because a plain `*` stops at a path separator (`tools/GitTools.kt:53` to `61`).
 - `GitHubRepository.inspect` requires the repository root: `rev-parse --show-prefix` must be blank. It also rejects a non-HTTPS origin, a differing `remote.origin.pushurl`, a detached HEAD, and any unmerged status pair (`DD`, `AU`, `UD`, `UA`, `DU`, `AA`, `UU`) (`github/GitHubRepository.kt:76`).
 - `publish` re-inspects and requires the branch, remote URL and HEAD to equal the reviewed state. It stages only paths whose worktree status needs it, commits with `--only`, pushes the exact SHA to `refs/heads/<branch>`, then verifies with `ls-remote` that the remote head equals the local head (`github/GitHubRepository.kt:118`). It never force-pushes.
 - pull request creation refuses when `ahead == 0` or `pushed` is false, and returns an existing open PR instead of a duplicate. The REST `create` call also converts a 422 "already exists" into `findOpen` (`github/GitHubPullRequests.kt:73`).
@@ -97,24 +97,24 @@ Persistence split: credentials live in encrypted preferences, repository content
 - FEATURES.md line 73 lists git status, diff, commit, log, show, branch, checkout, push and pull but does not mention branch deletion or pull request creation. Both exist here (`git_branch_manage` and `github_create_pull_request`), so the feature list is incomplete rather than the implementation.
 - The Commit & push sheet has no merge or rebase action. `git` conflicts are reported and the user must resolve them with the agent or a terminal; only `git_pull` exposes merge and rebase modes.
 
-Sources: [app/src/main/java/com/androidharness/app/tools/GitTools.kt](../app/src/main/java/com/androidharness/app/tools/GitTools.kt)#L25-L273), [app/src/main/java/com/androidharness/app/github/GitHubRepository.kt](../app/src/main/java/com/androidharness/app/github/GitHubRepository.kt)#L69-L196), [app/src/main/java/com/androidharness/app/github/GitHubWorkspaces.kt](../app/src/main/java/com/androidharness/app/github/GitHubWorkspaces.kt)#L18-L139), [app/src/main/java/com/androidharness/app/data/env/GitHubProvision.kt](../app/src/main/java/com/androidharness/app/data/env/GitHubProvision.kt)#L23-L114)
+Sources: [app/src/main/java/com/aether/app/tools/GitTools.kt](../app/src/main/java/com/aether/app/tools/GitTools.kt)#L25-L273), [app/src/main/java/com/aether/app/github/GitHubRepository.kt](../app/src/main/java/com/aether/app/github/GitHubRepository.kt)#L69-L196), [app/src/main/java/com/aether/app/github/GitHubWorkspaces.kt](../app/src/main/java/com/aether/app/github/GitHubWorkspaces.kt)#L18-L139), [app/src/main/java/com/aether/app/data/env/GitHubProvision.kt](../app/src/main/java/com/aether/app/data/env/GitHubProvision.kt)#L23-L114)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/GitTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/GitHubTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/GitHubPullRequestTool.kt`
-- `app/src/main/java/com/androidharness/app/github/GitHubAuth.kt`
-- `app/src/main/java/com/androidharness/app/github/GitHubRepository.kt`
-- `app/src/main/java/com/androidharness/app/github/GitHubWorkspaces.kt`
-- `app/src/main/java/com/androidharness/app/github/GitHubPullRequests.kt`
-- `app/src/main/java/com/androidharness/app/github/GitChangeTree.kt`
-- `app/src/main/java/com/androidharness/app/ui/github/GitHubDialogs.kt`
-- `app/src/main/java/com/androidharness/app/ui/github/GitHubChangePicker.kt`
-- `app/src/main/java/com/androidharness/app/ui/github/GitHubImportPicker.kt`
-- `app/src/main/java/com/androidharness/app/ui/github/PullRequestUi.kt`
-- `app/src/main/java/com/androidharness/app/data/env/GitHubProvision.kt`
-- `app/src/main/java/com/androidharness/app/data/env/LinuxEnvironment.kt`
-- `app/src/main/java/com/androidharness/app/HarnessApp.kt`
-- `app/src/main/java/com/androidharness/app/tools/Tool.kt`
-- `app/src/main/java/com/androidharness/app/automation/AutomationManager.kt`
+- `app/src/main/java/com/aether/app/tools/GitTools.kt`
+- `app/src/main/java/com/aether/app/tools/GitHubTools.kt`
+- `app/src/main/java/com/aether/app/tools/GitHubPullRequestTool.kt`
+- `app/src/main/java/com/aether/app/github/GitHubAuth.kt`
+- `app/src/main/java/com/aether/app/github/GitHubRepository.kt`
+- `app/src/main/java/com/aether/app/github/GitHubWorkspaces.kt`
+- `app/src/main/java/com/aether/app/github/GitHubPullRequests.kt`
+- `app/src/main/java/com/aether/app/github/GitChangeTree.kt`
+- `app/src/main/java/com/aether/app/ui/github/GitHubDialogs.kt`
+- `app/src/main/java/com/aether/app/ui/github/GitHubChangePicker.kt`
+- `app/src/main/java/com/aether/app/ui/github/GitHubImportPicker.kt`
+- `app/src/main/java/com/aether/app/ui/github/PullRequestUi.kt`
+- `app/src/main/java/com/aether/app/data/env/GitHubProvision.kt`
+- `app/src/main/java/com/aether/app/data/env/LinuxEnvironment.kt`
+- `app/src/main/java/com/aether/app/AetherApp.kt`
+- `app/src/main/java/com/aether/app/tools/Tool.kt`
+- `app/src/main/java/com/aether/app/automation/AutomationManager.kt`

@@ -16,7 +16,7 @@ await mkdir(out, { recursive: true });
 await build({
   absWorkingDir: here, entryPoints: ['engine.js'], bundle: true, minify: true,
   outfile: path.join(out, 'engine.js'), platform: 'browser', format: 'iife', target: 'chrome80',
-  define: { HARNESS_STANDARD_LIBRARIES: JSON.stringify(libraries) },
+  define: { AETHER_STANDARD_LIBRARIES: JSON.stringify(libraries) },
   external: ['fs', 'path', 'os', 'crypto', 'inspector', 'perf_hooks', 'buffer', 'source-map-support'],
   legalComments: 'none',
 });

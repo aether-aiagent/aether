@@ -1,8 +1,8 @@
 # Rich Responses and Interactive Components
 
-> The assistant response protocol: `harness-ui` JSON components, raw `harness-svg` and `harness-html` visual fences, offline sandboxed rendering, artifacts, and the `visual_guide` tool.
+> The assistant response protocol: `aether-ui` JSON components, raw `aether-svg` and `aether-html` visual fences, offline sandboxed rendering, artifacts, and the `visual_guide` tool.
 
-`RichResponse` is a presentation protocol embedded in assistant text. A model writes markdown plus fenced blocks whose language is `harness-ui` (JSON components), `harness-svg` (a static SVG), or `harness-html` (a self-contained interactive document). Recognized fences become native Compose components or a sandboxed WebView; every other fence stays an ordinary code block.
+`RichResponse` is a presentation protocol embedded in assistant text. A model writes markdown plus fenced blocks whose language is `aether-ui` (JSON components), `aether-svg` (a static SVG), or `aether-html` (a self-contained interactive document). Recognized fences become native Compose components or a sandboxed WebView; every other fence stays an ordinary code block.
 
 ## Module Responsibilities
 
@@ -33,11 +33,11 @@ flowchart TD
 
 ### Fence recognition and streaming
 
-`RichResponse` declares the three languages and the limits (lines 8 to 14): 96,000 JSON characters and 64,000 visual characters. `hasRichFence` also treats streaming text containing "```harness" as rich (lines 26 to 27).
+`RichResponse` declares the three languages and the limits (lines 8 to 14): 96,000 JSON characters and 64,000 visual characters. `hasRichFence` also treats streaming text containing "```aether" as rich (lines 26 to 27).
 
-`parse` (lines 95 to 137) withholds a fence whose language is still being typed, such as `harness-h`, as `Part.Pending`; leaves unknown languages in the markdown buffer so a normal code fence is never reinterpreted; returns `Part.Unavailable` for a complete fence that fails validation or an unterminated fence that is not streaming; and returns `Part.PendingVisual(title, loading)` for an open visual fence, using `fenceAttributes` (lines 29 to 35, 114 to 129).
+`parse` (lines 95 to 137) withholds a fence whose language is still being typed, such as `aether-h`, as `Part.Pending`; leaves unknown languages in the markdown buffer so a normal code fence is never reinterpreted; returns `Part.Unavailable` for a complete fence that fails validation or an unterminated fence that is not streaming; and returns `Part.PendingVisual(title, loading)` for an open visual fence, using `fenceAttributes` (lines 29 to 35, 114 to 129).
 
-`fenceAttributes` accepts quoted attributes such as `title="Orbit" loading="Placing planets"`, or a bare title after the language, capped at 80 characters. `isBuildingVisual` (lines 86 to 92) reports whether the last `harness` fence is still open.
+`fenceAttributes` accepts quoted attributes such as `title="Orbit" loading="Placing planets"`, or a bare title after the language, capped at 80 characters. `isBuildingVisual` (lines 86 to 92) reports whether the last `aether` fence is still open.
 
 ### JSON decoding and validation
 
@@ -51,7 +51,7 @@ Values that fail validation do not partially render. The whole component becomes
 
 ### Raw visual fences
 
-`visualNode` (lines 37 to 47) handles `harness-html` and `harness-svg`. An SVG body must start with `<svg` and end with `</svg>` and is wrapped in a `div class="hx-svg"`; an HTML body is passed through. Both become `Node.Preview(title, html)`, which `RichResponseContent` dispatches to `InlineResponsePreview`. The title defaults to "Diagram" for SVG and "Interactive visual" otherwise.
+`visualNode` (lines 37 to 47) handles `aether-html` and `aether-svg`. An SVG body must start with `<svg` and end with `</svg>` and is wrapped in a `div class="hx-svg"`; an HTML body is passed through. Both become `Node.Preview(title, html)`, which `RichResponseContent` dispatches to `InlineResponsePreview`. The title defaults to "Diagram" for SVG and "Interactive visual" otherwise.
 
 Visual fences are raw markup, not escaped JSON. Size is bounded at 64,000 characters, while a saved artifact is limited to 256 KB of UTF-8 HTML.
 
@@ -65,7 +65,7 @@ Visual fences are raw markup, not escaped JSON. Size is bounded at 64,000 charac
 
 `ResponseNode` (lines 113 to 226) maps each node. Text, callout, card, and details render markdown inside a panel or tinted surface. Metrics use adaptive 1 or 2 columns at 360 dp times font scale (`AdaptiveItems`, lines 229 to 240). Charts, calculators, tables, tabs, galleries, profiles, evidence, diffs, and writing use the renderers below. Choices keep a remembered radio selection with a "Discuss selection" follow-up. Steps are numbered unless `checkable`, then offer "Continue from here". Link shows a host and open action, Preview uses `InlineResponsePreview`, Layout stacks or distributes children, and Divider draws a rule.
 
-Interactive state changes flow through `LocalResponseContext` (declared in `ResponseDataComponents.kt` line 37 and provided in `ChatScreen.kt` lines 1374 to 1377). A control reports the latest meaningful state, Chat stores it as a `ResponseAttachment`, and the next user message carries it inside `[[harness-response]]` wrappers (`core/response/ResponseAttachment.kt` lines 13 to 29). The composer shows it as a removable chip; `UserMessageContent.visibleText` hides it from the editable text area.
+Interactive state changes flow through `LocalResponseContext` (declared in `ResponseDataComponents.kt` line 37 and provided in `ChatScreen.kt` lines 1374 to 1377). A control reports the latest meaningful state, Chat stores it as a `ResponseAttachment`, and the next user message carries it inside `[[aether-response]]` wrappers (`core/response/ResponseAttachment.kt` lines 13 to 29). The composer shows it as a removable chip; `UserMessageContent.visibleText` hides it from the editable text area.
 
 ### Charts and calculator
 
@@ -81,7 +81,7 @@ Interactive state changes flow through `LocalResponseContext` (declared in `Resp
 
 ### Inline previews
 
-`InlineResponsePreview` (lines 33 to 103) creates an in-memory `ChatArtifact` from the node title and HTML, so an inline visual gets the same sandbox as a saved artifact. It uses `ArtifactWebView` with `responseLayout = true`, so the sandbox measures the document and reports its height and `harness.state` summary through the page title. Inline content is 100 to 900 dp tall from that measurement, starting at 220 dp, with a progress bar while loading, a reload action on error, and an unavailable state without WebView. Expanding opens a dialog over 92 percent of the screen and reparents the live page instead of reloading. The "Ask about this" follow-up sends the last summary.
+`InlineResponsePreview` (lines 33 to 103) creates an in-memory `ChatArtifact` from the node title and HTML, so an inline visual gets the same sandbox as a saved artifact. It uses `ArtifactWebView` with `responseLayout = true`, so the sandbox measures the document and reports its height and `aether.state` summary through the page title. Inline content is 100 to 900 dp tall from that measurement, starting at 220 dp, with a progress bar while loading, a reload action on error, and an unavailable state without WebView. Expanding opens a dialog over 92 percent of the screen and reparents the live page instead of reloading. The "Ask about this" follow-up sends the last summary.
 
 ### Artifacts
 
@@ -101,11 +101,11 @@ Theme values come from `rememberArtifactTheme` (`ui/chat/rich/ArtifactThemeState
 
 ### Visual guide
 
-`VisualGuideTool` (lines 124 to 147) is read-only and available in both sections. It takes a `modules` array and returns `VisualGuide.read` (lines 13 to 30). `basics` is always included and covers fences, theme tokens, the `hx-*` kit, the `harness` helper, and phone-first rules. Optional modules are `diagram`, `chart`, `interactive`, `mockup`, and `art`. An unknown module raises `ToolFailure`.
+`VisualGuideTool` (lines 124 to 147) is read-only and available in both sections. It takes a `modules` array and returns `VisualGuide.read` (lines 13 to 30). `basics` is always included and covers fences, theme tokens, the `hx-*` kit, the `aether` helper, and phone-first rules. Optional modules are `diagram`, `chart`, `interactive`, `mockup`, and `art`. An unknown module raises `ToolFailure`.
 
 ## Invocation Chain
 
-1. The assistant emits a `harness-ui`, `harness-svg`, or `harness-html` fence.
+1. The assistant emits a `aether-ui`, `aether-svg`, or `aether-html` fence.
 2. `AssistantText` calls `RichResponseContent` (`components/Bubbles.kt` line 214).
 3. In Chat, `ChatRichResponse.normalize` runs first (`ChatScreen.kt` lines 1877 and 2258).
 4. `RichResponse.parse` produces parts, and `ResponseNode` renders them.
@@ -142,29 +142,29 @@ Theme values come from `rememberArtifactTheme` (`ui/chat/rich/ArtifactThemeState
 - `FEATURES.md` line 13 says Chat does not create saved artifacts, and line 32 says existing artifacts remain available. Confirmed: `create_artifact` is absent from `ChatExperience.tools`, and `ArtifactCard` still renders stored `artifactJson`.
 - `FEATURES.md` line 34 says a titled placeholder holds the space while a visual streams. Confirmed by `Part.PendingVisual` and `PendingVisualCard`.
 
-Sources: [app/src/main/java/com/androidharness/app/core/response/RichResponse.kt](../app/src/main/java/com/androidharness/app/core/response/RichResponse.kt)#L8-L137), [app/src/main/java/com/androidharness/app/ui/chat/rich/RichResponseContent.kt](../app/src/main/java/com/androidharness/app/ui/chat/rich/RichResponseContent.kt)#L58-L226), [app/src/main/java/com/androidharness/app/ui/chat/rich/InlineResponsePreview.kt](../app/src/main/java/com/androidharness/app/ui/chat/rich/InlineResponsePreview.kt)#L33-L103), [app/src/main/java/com/androidharness/app/artifacts/ArtifactSandbox.kt](../app/src/main/java/com/androidharness/app/artifacts/ArtifactSandbox.kt)#L4-L55)
+Sources: [app/src/main/java/com/aether/app/core/response/RichResponse.kt](../app/src/main/java/com/aether/app/core/response/RichResponse.kt)#L8-L137), [app/src/main/java/com/aether/app/ui/chat/rich/RichResponseContent.kt](../app/src/main/java/com/aether/app/ui/chat/rich/RichResponseContent.kt)#L58-L226), [app/src/main/java/com/aether/app/ui/chat/rich/InlineResponsePreview.kt](../app/src/main/java/com/aether/app/ui/chat/rich/InlineResponsePreview.kt)#L33-L103), [app/src/main/java/com/aether/app/artifacts/ArtifactSandbox.kt](../app/src/main/java/com/aether/app/artifacts/ArtifactSandbox.kt)#L4-L55)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/core/response/RichResponse.kt`
-- `app/src/main/java/com/androidharness/app/core/response/ChatRichResponse.kt`
-- `app/src/main/java/com/androidharness/app/core/response/CalculatorMath.kt`
-- `app/src/main/java/com/androidharness/app/core/response/ResponseAttachment.kt`
-- `app/src/main/java/com/androidharness/app/core/response/ResponseTableData.kt`
-- `app/src/main/java/com/androidharness/app/core/response/ResponseDiff.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/rich/RichResponseContent.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/rich/ResponseChart.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/rich/ResponseCalculator.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/rich/ResponseDataComponents.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/rich/ResponseMediaComponents.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/rich/ResponseProfile.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/rich/InlineResponsePreview.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/rich/ArtifactThemeState.kt`
-- `app/src/main/java/com/androidharness/app/artifacts/ArtifactSandbox.kt`
-- `app/src/main/java/com/androidharness/app/artifacts/ArtifactTheme.kt`
-- `app/src/main/java/com/androidharness/app/artifacts/ArtifactWebView.kt`
-- `app/src/main/java/com/androidharness/app/artifacts/ChatArtifact.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/ArtifactCard.kt`
-- `app/src/main/java/com/androidharness/app/tools/ArtifactTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/VisualGuideTool.kt`
-- `app/src/main/java/com/androidharness/app/core/ChatExperience.kt`
+- `app/src/main/java/com/aether/app/core/response/RichResponse.kt`
+- `app/src/main/java/com/aether/app/core/response/ChatRichResponse.kt`
+- `app/src/main/java/com/aether/app/core/response/CalculatorMath.kt`
+- `app/src/main/java/com/aether/app/core/response/ResponseAttachment.kt`
+- `app/src/main/java/com/aether/app/core/response/ResponseTableData.kt`
+- `app/src/main/java/com/aether/app/core/response/ResponseDiff.kt`
+- `app/src/main/java/com/aether/app/ui/chat/rich/RichResponseContent.kt`
+- `app/src/main/java/com/aether/app/ui/chat/rich/ResponseChart.kt`
+- `app/src/main/java/com/aether/app/ui/chat/rich/ResponseCalculator.kt`
+- `app/src/main/java/com/aether/app/ui/chat/rich/ResponseDataComponents.kt`
+- `app/src/main/java/com/aether/app/ui/chat/rich/ResponseMediaComponents.kt`
+- `app/src/main/java/com/aether/app/ui/chat/rich/ResponseProfile.kt`
+- `app/src/main/java/com/aether/app/ui/chat/rich/InlineResponsePreview.kt`
+- `app/src/main/java/com/aether/app/ui/chat/rich/ArtifactThemeState.kt`
+- `app/src/main/java/com/aether/app/artifacts/ArtifactSandbox.kt`
+- `app/src/main/java/com/aether/app/artifacts/ArtifactTheme.kt`
+- `app/src/main/java/com/aether/app/artifacts/ArtifactWebView.kt`
+- `app/src/main/java/com/aether/app/artifacts/ChatArtifact.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/ArtifactCard.kt`
+- `app/src/main/java/com/aether/app/tools/ArtifactTools.kt`
+- `app/src/main/java/com/aether/app/tools/VisualGuideTool.kt`
+- `app/src/main/java/com/aether/app/core/ChatExperience.kt`

@@ -4,14 +4,14 @@ description: Deep self-test battery, 25 checks across 9 phases. Superset of doct
 category: software-development
 ---
 
-# Harness Deep Test (asstest)
+# Aether Deep Test (asstest)
 
 25 checks in 9 phases. Superset of /doctor: byte-exact round-trips, patch atomicity,
 grep semantics, uid-split ownership, git branch ops, HTTP edge cases, and parallel
 write races. Use /doctor for a quick pass, this for a full sweep.
 
 ## When to use
-- Before or after harness core / tool changes
+- Before or after aether core / tool changes
 - Verifying a new device or environment combination end to end
 - Triggered with /asstest in chat or via skill invocation
 
@@ -53,7 +53,7 @@ PHASE 4: SHELL + ENVIRONMENT (checks 10-13)
     /data/data/com.termux/...". Old bug: dead Termux shim scripts (bin/pm, bin/cmd, bin/am)
     shadowed /system binaries because the toolchain bin dir is first on PATH. Probe
     `pm path com.android.shell` (exit 0 or normal "not found" for debuggable check) and `which pm cmd am`.
-13. Shell env audit: `env | grep -E "GIT_CONFIG_GLOBAL|GIT_EXEC_PATH|SSL_CERT_FILE|HARNESS_SCRATCH"`
+13. Shell env audit: `env | grep -E "GIT_CONFIG_GLOBAL|GIT_EXEC_PATH|SSL_CERT_FILE|AETHER_SCRATCH"`
     lists GIT_CONFIG_GLOBAL; the file it points at exists and contains "[safe]" with
     "directory = *" (cat it to confirm).
 
@@ -62,7 +62,7 @@ PHASE 5: OWNERSHIP + GIT (checks 14-16)
     u0_aXXX; a file the shell creates inside an app-owned dir is owned by uid 2000. Record
     the observed split; DEVIATION only if a tool misreports it.
 15. Plain shell git in a shell-created repo: `git init -q`, `git switch -c feat`,
-    `git branch` all succeed and "detected dubious ownership" does NOT appear (the harness
+    `git branch` all succeed and "detected dubious ownership" does NOT appear (Aether
     exports GIT_CONFIG_GLOBAL with [safe] directory=*). If it appears, the check FAILS
     (regression); `git -c safe.directory='*' ...` remains the manual workaround.
 16. git_commit auto-configures identity (no "Author identity unknown") and commits.

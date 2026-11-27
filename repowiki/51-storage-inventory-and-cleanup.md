@@ -96,7 +96,7 @@ A `Task` can measure roots, an explicit file list, or neither. `optional` omits 
 - **Package eligibility is conservative.** `reason` blocks the app toolchain, unknown dependency states, incomplete ownership, any recorded requirement, installed dependents, and packages that share files with another installed package.
 - **Stop discards an unfinished scan.** `StorageSection.stop` cancels the job, clears progress, and sets `stopped`. `StorageManager.scan` keeps nothing from a cancelled run; `_last` changes only after a complete scan.
 - **The total is measured bytes only.** Not measured items are listed and excluded. `StorageSummary` shows the Not measured count as an error pill and states that the total excludes them. Partial items are shown separately.
-- **Undo checkpoint storage is split.** The `UNDO_CHECKPOINTS` item measures `files/task-controls` (`data/storage/StorageScanner.kt:293`), which is `TaskControlStore`'s task record directory. The `checkpoints` Room table lives inside `harness.db` and is counted under the chat database item (`CHAT_DATABASE`).
+- **Undo checkpoint storage is split.** The `UNDO_CHECKPOINTS` item measures `files/task-controls` (`data/storage/StorageScanner.kt:293`), which is `TaskControlStore`'s task record directory. The `checkpoints` Room table lives inside `aether.db` and is counted under the chat database item (`CHAT_DATABASE`).
 
 ## Extension Points
 
@@ -108,17 +108,17 @@ A `Task` can measure roots, an explicit file list, or neither. `optional` omits 
 - **`StorageFiles`**: `contained`, `snapshot`, `candidate`, and `clean` form a reusable reviewed-deletion primitive for any local tree.
 - **`SharedToolStore`**: `preview`, `remove`, `recover`, and `reason` are the package lifecycle boundary used by `LinuxEnvironmentManager`.
 
-Sources: [app/src/main/java/com/androidharness/app/data/storage/StorageScanner.kt](../app/src/main/java/com/androidharness/app/data/storage/StorageScanner.kt)#L130-L372), [app/src/main/java/com/androidharness/app/data/storage/StorageFiles.kt](../app/src/main/java/com/androidharness/app/data/storage/StorageFiles.kt)#L16-L226), [app/src/main/java/com/androidharness/app/data/storage/StorageReport.kt](../app/src/main/java/com/androidharness/app/data/storage/StorageReport.kt)#L4-L161), [app/src/main/java/com/androidharness/app/data/storage/StorageManager.kt](../app/src/main/java/com/androidharness/app/data/storage/StorageManager.kt)#L14-L162), [app/src/main/java/com/androidharness/app/ui/settings/StorageSection.kt](../app/src/main/java/com/androidharness/app/ui/settings/StorageSection.kt)#L69-L585)
+Sources: [app/src/main/java/com/aether/app/data/storage/StorageScanner.kt](../app/src/main/java/com/aether/app/data/storage/StorageScanner.kt)#L130-L372), [app/src/main/java/com/aether/app/data/storage/StorageFiles.kt](../app/src/main/java/com/aether/app/data/storage/StorageFiles.kt)#L16-L226), [app/src/main/java/com/aether/app/data/storage/StorageReport.kt](../app/src/main/java/com/aether/app/data/storage/StorageReport.kt)#L4-L161), [app/src/main/java/com/aether/app/data/storage/StorageManager.kt](../app/src/main/java/com/aether/app/data/storage/StorageManager.kt)#L14-L162), [app/src/main/java/com/aether/app/ui/settings/StorageSection.kt](../app/src/main/java/com/aether/app/ui/settings/StorageSection.kt)#L69-L585)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/data/storage/StorageScanner.kt`
-- `app/src/main/java/com/androidharness/app/data/storage/StorageReport.kt`
-- `app/src/main/java/com/androidharness/app/data/storage/StorageFiles.kt`
-- `app/src/main/java/com/androidharness/app/data/storage/StorageManager.kt`
-- `app/src/main/java/com/androidharness/app/data/storage/SharedToolStore.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/StorageSection.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/StorageLabels.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/SettingsScreen.kt`
-- `app/src/main/java/com/androidharness/app/data/env/LinuxEnvironment.kt`
-- `app/src/main/java/com/androidharness/app/agent/TaskControl.kt`
+- `app/src/main/java/com/aether/app/data/storage/StorageScanner.kt`
+- `app/src/main/java/com/aether/app/data/storage/StorageReport.kt`
+- `app/src/main/java/com/aether/app/data/storage/StorageFiles.kt`
+- `app/src/main/java/com/aether/app/data/storage/StorageManager.kt`
+- `app/src/main/java/com/aether/app/data/storage/SharedToolStore.kt`
+- `app/src/main/java/com/aether/app/ui/settings/StorageSection.kt`
+- `app/src/main/java/com/aether/app/ui/settings/StorageLabels.kt`
+- `app/src/main/java/com/aether/app/ui/settings/SettingsScreen.kt`
+- `app/src/main/java/com/aether/app/data/env/LinuxEnvironment.kt`
+- `app/src/main/java/com/aether/app/agent/TaskControl.kt`

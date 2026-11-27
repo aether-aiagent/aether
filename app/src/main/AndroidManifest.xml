@@ -84,7 +84,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
 
     <application
-        android:name=".HarnessApp"
+        android:name=".AetherApp"
         android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
@@ -95,7 +95,7 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true"
-        android:theme="@style/Theme.AndroidHarness">
+        android:theme="@style/Theme.Aether">
 
         <service android:name=".data.transfer.FtpShareService" android:exported="false" android:foregroundServiceType="dataSync" />
 
@@ -139,7 +139,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="androidharness" android:host="mcp" />
+                <data android:scheme="aether" android:host="mcp" />
             </intent-filter>
         </activity>
 
@@ -226,22 +226,22 @@
 
         <!-- Digital assistant app: a floating chat over the current app with the screen as context. -->
         <service
-            android:name=".assistant.HarnessAssistantService"
+            android:name=".assistant.AetherAssistantService"
             android:label="@string/assistant_service_label"
             android:permission="android.permission.BIND_VOICE_INTERACTION"
             android:exported="true">
-            <meta-data android:name="android.voice_interaction" android:resource="@xml/harness_assistant" />
+            <meta-data android:name="android.voice_interaction" android:resource="@xml/aether_assistant" />
             <intent-filter>
                 <action android:name="android.service.voice.VoiceInteractionService" />
             </intent-filter>
         </service>
         <service
-            android:name=".assistant.HarnessAssistantSessionService"
+            android:name=".assistant.AetherAssistantSessionService"
             android:permission="android.permission.BIND_VOICE_INTERACTION"
             android:exported="true" />
         <!-- Android requires an assistant to name a recognizer; this one declines politely. -->
         <service
-            android:name=".assistant.HarnessRecognitionService"
+            android:name=".assistant.AetherRecognitionService"
             android:label="@string/assistant_service_label"
             android:exported="true">
             <intent-filter>

@@ -1,6 +1,6 @@
 # Telegram Remote Control
 
-> Pairs a private Telegram bot with one account so the agent, its chats and its tool approvals can be driven from a phone chat while AndroidHarness runs in the background.
+> Pairs a private Telegram bot with one account so the agent, its chats and its tool approvals can be driven from a phone chat while Aether runs in the background.
 
 `TelegramSetupRepository` stores the bot token and owner identity, `TelegramManager` starts and pauses the runtime, and `TelegramGateway` owns four loops: polling, command processing, agent work and reply delivery. `TelegramGatewayStore` makes requests and replies durable in one JSON file, and `AndroidTelegramAgentBridge` connects the gateway to the same `RunManager`, Room history, model settings and approval prompts as the app UI. The service is single-owner: only the paired private chat can issue commands, and the bot token is never sent to a model or shown in a log.
 
@@ -108,7 +108,7 @@ A normal message while a question is pending becomes the answer (`TelegramGatewa
 
 The label combines setup, runtime and pairing state: pairing candidate, waiting for pairing, Paused, the runtime label, or Connecting. It stops itself when the connection is disabled and no pairing is active (`TelegramService.kt:35-48`). `onStartCommand` handles Pause and Stop, refuses to run when the runtime policy says the app may not run, and returns `START_STICKY` otherwise (`TelegramService.kt:50-59`). `onDestroy` calls `manager.serviceDestroyed(this)`, which cancels the runtime only if this service instance owns it (`TelegramService.kt:61-69`; `TelegramManager.kt:123-126`).
 
-`TelegramManager.enable` requires the runtime policy, no active pairing, a readable store, a paired connection and a project, then starts the service. A service start failure disables the connection and reports "Could not start Telegram" (`TelegramManager.kt:74-90`). `pause` sets `enabled = false`, stops the runtime and the service, but leaves the store intact so requests can resume (`TelegramManager.kt:118-122`). `stopAndPause` also stops the current task and cancels pairing (`TelegramManager.kt:127-130`). When the app goes to the background and background execution is not allowed, `HarnessApp` calls `telegram.suspendForBackground()` (`HarnessApp.kt:373-384`).
+`TelegramManager.enable` requires the runtime policy, no active pairing, a readable store, a paired connection and a project, then starts the service. A service start failure disables the connection and reports "Could not start Telegram" (`TelegramManager.kt:74-90`). `pause` sets `enabled = false`, stops the runtime and the service, but leaves the store intact so requests can resume (`TelegramManager.kt:118-122`). `stopAndPause` also stops the current task and cancels pairing (`TelegramManager.kt:127-130`). When the app goes to the background and background execution is not allowed, `AetherApp` calls `telegram.suspendForBackground()` (`AetherApp.kt:373-384`).
 
 ## What Is and Is Not Exposed
 
@@ -150,18 +150,18 @@ The label combines setup, runtime and pairing state: pairing candidate, waiting 
 - There is no attachment, image or voice message support in either direction; Telegram is text, buttons and callback queries only.
 - The runtime label is derived from text matching on `action` ("approval", "answer"), not from a typed enum (`TelegramGateway.kt:13-15`).
 
-Sources: [telegram/TelegramGateway.kt](../app/src/main/java/com/androidharness/app/telegram/TelegramGateway.kt)#L19-L433), [telegram/TelegramGatewayStore.kt](../app/src/main/java/com/androidharness/app/telegram/TelegramGatewayStore.kt)#L53-L145), [telegram/TelegramManager.kt](../app/src/main/java/com/androidharness/app/telegram/TelegramManager.kt)#L14-L179), [telegram/TelegramSetupRepository.kt](../app/src/main/java/com/androidharness/app/telegram/TelegramSetupRepository.kt)#L12-L169), [telegram/TelegramBotClient.kt](../app/src/main/java/com/androidharness/app/telegram/TelegramBotClient.kt)#L37-L171), [telegram/TelegramAgentBridge.kt](../app/src/main/java/com/androidharness/app/telegram/TelegramAgentBridge.kt)#L21-L156), [telegram/TelegramService.kt](../app/src/main/java/com/androidharness/app/telegram/TelegramService.kt)#L19-L98), [ui/settings/TelegramSection.kt](../app/src/main/java/com/androidharness/app/ui/settings/TelegramSection.kt)#L66-L334)
+Sources: [telegram/TelegramGateway.kt](../app/src/main/java/com/aether/app/telegram/TelegramGateway.kt)#L19-L433), [telegram/TelegramGatewayStore.kt](../app/src/main/java/com/aether/app/telegram/TelegramGatewayStore.kt)#L53-L145), [telegram/TelegramManager.kt](../app/src/main/java/com/aether/app/telegram/TelegramManager.kt)#L14-L179), [telegram/TelegramSetupRepository.kt](../app/src/main/java/com/aether/app/telegram/TelegramSetupRepository.kt)#L12-L169), [telegram/TelegramBotClient.kt](../app/src/main/java/com/aether/app/telegram/TelegramBotClient.kt)#L37-L171), [telegram/TelegramAgentBridge.kt](../app/src/main/java/com/aether/app/telegram/TelegramAgentBridge.kt)#L21-L156), [telegram/TelegramService.kt](../app/src/main/java/com/aether/app/telegram/TelegramService.kt)#L19-L98), [ui/settings/TelegramSection.kt](../app/src/main/java/com/aether/app/ui/settings/TelegramSection.kt)#L66-L334)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/telegram/TelegramGateway.kt`
-- `app/src/main/java/com/androidharness/app/telegram/TelegramGatewayStore.kt`
-- `app/src/main/java/com/androidharness/app/telegram/TelegramManager.kt`
-- `app/src/main/java/com/androidharness/app/telegram/TelegramSetupRepository.kt`
-- `app/src/main/java/com/androidharness/app/telegram/TelegramBotClient.kt`
-- `app/src/main/java/com/androidharness/app/telegram/TelegramAgentBridge.kt`
-- `app/src/main/java/com/androidharness/app/telegram/TelegramService.kt`
-- `app/src/main/java/com/androidharness/app/telegram/TelegramFormatting.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/TelegramSection.kt`
-- `app/src/main/java/com/androidharness/app/data/KeyStoreManager.kt`
+- `app/src/main/java/com/aether/app/telegram/TelegramGateway.kt`
+- `app/src/main/java/com/aether/app/telegram/TelegramGatewayStore.kt`
+- `app/src/main/java/com/aether/app/telegram/TelegramManager.kt`
+- `app/src/main/java/com/aether/app/telegram/TelegramSetupRepository.kt`
+- `app/src/main/java/com/aether/app/telegram/TelegramBotClient.kt`
+- `app/src/main/java/com/aether/app/telegram/TelegramAgentBridge.kt`
+- `app/src/main/java/com/aether/app/telegram/TelegramService.kt`
+- `app/src/main/java/com/aether/app/telegram/TelegramFormatting.kt`
+- `app/src/main/java/com/aether/app/ui/settings/TelegramSection.kt`
+- `app/src/main/java/com/aether/app/data/KeyStoreManager.kt`
 - `app/src/main/AndroidManifest.xml`

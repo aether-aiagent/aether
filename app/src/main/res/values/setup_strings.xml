@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">Welcome to AndroidHarness</string>
+    <string name="setup_welcome_title">Welcome to Aether</string>
     <string name="setup_welcome_body">Your coding agent, right on your phone. Let\'s get you set up.</string>
     <string name="setup_start_fresh">Start fresh</string>
-    <string name="setup_start_fresh_body">Set up a brand new AndroidHarness</string>
-    <string name="setup_restore">Restore AndroidHarness</string>
+    <string name="setup_start_fresh_body">Set up a brand new Aether</string>
+    <string name="setup_restore">Restore Aether</string>
     <string name="setup_restore_body">Bring back your chats and settings from a backup file</string>
 
     <string name="setup_storage_title">Allow file access</string>
-    <string name="setup_storage_body">Optional. Without it, AndroidHarness works in its own folder and asks when a task needs your files.</string>
+    <string name="setup_storage_body">Optional. Without it, Aether works in its own folder and asks when a task needs your files.</string>
     <string name="setup_storage_all_files">All files access</string>
     <string name="setup_storage_all_files_body">Read and edit any folder, the way the terminal and file tools expect. Best for coding.</string>
     <string name="setup_storage_legacy">Storage permission</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">Restore your stuff</string>
     <string name="setup_restore_subtitle">Pick the backup files from your old phone. Restore one, both or neither.</string>
     <string name="setup_restore_chats">Chats</string>
-    <string name="setup_restore_chats_body">A .harnessbackup file with your chats, images, usage stats, memories and snippets</string>
+    <string name="setup_restore_chats_body">A .aetherbackup file with your chats, images, usage stats, memories and snippets</string>
     <string name="setup_restore_settings">Settings &amp; providers</string>
     <string name="setup_restore_settings_body">A password-protected .hbackup file with your providers, API keys and preferences</string>
     <string name="setup_restore_choose">Choose file</string>

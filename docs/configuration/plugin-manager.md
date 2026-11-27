@@ -8,11 +8,11 @@ Open **Settings → Coding → Plugins**. Plugins extend **Code** runs. Personal
 
 The review lists bundled instruction files, skill names, MCP servers and hooks. Choose the selected project or Global. Project scope follows the workspace identity, rather than the chat that opened Settings. A project installation overrides a global installation of the same plugin name; other plugins remain active. Updates keep the installation's identity, scope and enabled state.
 
-Changes apply to the next Code run. Running turns keep their captured configuration and immutable bundle files. Updating or uninstalling a plugin does not edit `harness.json`, remove project files, or remove unrelated MCP settings. Files from superseded installations are reclaimed at the next app process start. Installed bundles are app-private and are not automatically shared with collaborators or included in the existing settings-backup format.
+Changes apply to the next Code run. Running turns keep their captured configuration and immutable bundle files. Updating or uninstalling a plugin does not edit `aether.json`, remove project files, or remove unrelated MCP settings. Files from superseded installations are reclaimed at the next app process start. Installed bundles are app-private and are not automatically shared with collaborators or included in the existing settings-backup format.
 
 ## Sources
 
-**npm:** enter `plugin-name`, `@team/plugin`, `plugin-name@1.2.0` or `@team/plugin@beta`. Exact versions and tags are supported; dependency ranges, shell commands such as `npx …`, arbitrary registry URLs and dependency installation are not. The installer uses the registry API and checks the archive against its published integrity hash. It never executes npm lifecycle scripts. For community discovery, publishers can add `"keywords": ["androidharness-plugin"]` to `package.json`.
+**npm:** enter `plugin-name`, `@team/plugin`, `plugin-name@1.2.0` or `@team/plugin@beta`. Exact versions and tags are supported; dependency ranges, shell commands such as `npx …`, arbitrary registry URLs and dependency installation are not. The installer uses the registry API and checks the archive against its published integrity hash. It never executes npm lifecycle scripts. For community discovery, publishers can add `"keywords": ["aether-plugin"]` to `package.json`.
 
 **GitHub:** enter `owner/repository` or its `https://github.com/owner/repository` URL. Optional fields select a branch, tag, commit and bundle subfolder. The requested ref is resolved to an immutable commit before the archive is downloaded. A connected GitHub account supplies access to private repositories when its token permits it. Updates explicitly resolve the chosen ref again; there is no silent background code update.
 
@@ -70,4 +70,4 @@ MCP startup and executable hooks retain the existing exact-definition project ap
 
 Hooks require a standalone JavaScript entry. They run in Android's isolated JavaScript runtime, with no Node `require`, filesystem or network bridge. Supported events, return values, time and memory limits are described in the [configuration guide](README.md#restricted-plugins). Skills and static instructions do not require that runtime.
 
-Packages written for another harness are not automatically compatible. Repackage their supported skills, instructions and MCP definitions with this manifest, and adapt executable hooks to AndroidHarness's restricted API. An incompatible package is reported instead of being installed with missing functionality.
+Packages written for another Aether app are not automatically compatible. Repackage their supported skills, instructions and MCP definitions with this manifest, and adapt executable hooks to Aether's restricted API. An incompatible package is reported instead of being installed with missing functionality.

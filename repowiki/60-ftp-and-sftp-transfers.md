@@ -51,7 +51,7 @@ The sync half always runs preview, then apply, and the plan is held in `pending`
 5. On success it stores `Pending(fs, profile, plan)` and publishes `SyncState(plan = plan)`. The final block closes the remote connection and clears `active` (`SyncManager.kt:38-44`).
 6. The UI renders the direction, counts of new files, replacements and unchanged files, the first 30 paths, and a replace toggle only when replacements exist (`TransferSettings.kt:92-101`).
 7. **Apply** calls `manager.apply(replace)` (`TransferSettings.kt:99`). `SyncManager.apply` requires `pending`, clears it, sets phase `Transferring`, and wraps the whole operation in `guard(selected.fs) { ... }` (`SyncManager.kt:46-54`).
-8. The guard is `RunManager.withIdleWorkspace`, which takes `workspaceGuard` and fails with "Stop running tasks in this workspace before syncing files." when a run is active there (`HarnessApp.kt:197-199`; `RunManager.kt:126-133`).
+8. The guard is `RunManager.withIdleWorkspace`, which takes `workspaceGuard` and fails with "Stop running tasks in this workspace before syncing files." when a run is active there (`AetherApp.kt:197-199`; `RunManager.kt:126-133`).
 9. `SyncEngine.apply` creates directories, skips replacements unless `replace` is true, re-hashes the destination before each write, streams the source through a `DigestInputStream`, and calls `target.writeAtomic` with a `beforeCommit` callback that verifies both the source digest and the destination hash (`TransferFiles.kt:162-183`).
 10. The result message reports `Copied N files; skipped M replacements. No files were deleted.` (`SyncManager.kt:62`).
 
@@ -74,11 +74,11 @@ Apply never deletes. A target that exists is either skipped (when the replace to
 | Maximum path length | 4096 characters, 255 per segment | `TransferPaths.relative` |
 | Saved sync profiles | 30 | `SyncProfiles.save` |
 
-`TransferPaths.relative` rejects absolute paths, backslashes, control characters, empty segments, `.` and `..` (`TransferFiles.kt:17-21`). `TransferPaths.ftp` resolves a server-supplied path against the session `cwd` and refuses to climb above the root (`TransferFiles.kt:22-31`). `TransferPaths.skip` excludes any path segment named `.git`, `.gradle`, `node_modules`, `build` or `.idea`, plus names starting with `.harness-transfer-` or `.harness-sync-` (`TransferFiles.kt:32`). Symbolic links and special files are filtered by both `LocalTransferFiles.list` and the remote listings, so sync never follows a link out of the selected tree.
+`TransferPaths.relative` rejects absolute paths, backslashes, control characters, empty segments, `.` and `..` (`TransferFiles.kt:17-21`). `TransferPaths.ftp` resolves a server-supplied path against the session `cwd` and refuses to climb above the root (`TransferFiles.kt:22-31`). `TransferPaths.skip` excludes any path segment named `.git`, `.gradle`, `node_modules`, `build` or `.idea`, plus names starting with `.aether-transfer-` or `.aether-sync-` (`TransferFiles.kt:32`). Symbolic links and special files are filtered by both `LocalTransferFiles.list` and the remote listings, so sync never follows a link out of the selected tree.
 
 ## FTP and SFTP Transport Details
 
-`FtpTransferFiles.connect` installs `TransferSockets` as the socket factory, sets UTF-8 control encoding, 15 s connect and default timeouts, a 15 s data timeout, disables trusting the address in a PASV response and enables EPSV for IPv4. It checks the greeting and login, sets `soTimeout` to 15 s, enters passive mode, requires binary file type, and `changeWorkingDirectory(remoteFolder)` with the message "Create it on the server first" (`SyncConnections.kt:59-73`). `stat` prefers `mlistFile` and falls back to listing the parent when the server replies 550 (`SyncConnections.kt:75-90`). Uploads use `storeFile` to `.harness-sync-<uuid>` then `rename`, and report "Existing file was kept" when the server refuses to publish (`SyncConnections.kt:114-123`). Reads require `completePendingCommand` on close (`SyncConnections.kt:101-104`).
+`FtpTransferFiles.connect` installs `TransferSockets` as the socket factory, sets UTF-8 control encoding, 15 s connect and default timeouts, a 15 s data timeout, disables trusting the address in a PASV response and enables EPSV for IPv4. It checks the greeting and login, sets `soTimeout` to 15 s, enters passive mode, requires binary file type, and `changeWorkingDirectory(remoteFolder)` with the message "Create it on the server first" (`SyncConnections.kt:59-73`). `stat` prefers `mlistFile` and falls back to listing the parent when the server replies 550 (`SyncConnections.kt:75-90`). Uploads use `storeFile` to `.aether-sync-<uuid>` then `rename`, and report "Existing file was kept" when the server refuses to publish (`SyncConnections.kt:114-123`). Reads require `completePendingCommand` on close (`SyncConnections.kt:101-104`).
 
 `SftpTransferFiles.connect` calls `ssh.openTransfer(profile.ssh())` with an `onConnecting` callback that installs the `TransferSockets` factory and aborts if cancel arrived during the handshake. It then stores the `SftpLease`, resolves `realpath(remoteFolder)` and requires it to be a directory (`SyncConnections.kt:134-152`). Writes preserve the existing permission bits with `chmod` before `rename` (`SyncConnections.kt:175-185`). Close disconnects the underlying session and closes every tracked socket (`SyncConnections.kt:186`).
 
@@ -86,7 +86,7 @@ Apply never deletes. A target that exists is either skipped (when the replace to
 
 ## FTP Share Server
 
-**Start.** `FtpServerSection` defaults to port 2121, username `androidharness`, a random 12-byte hex password, LAN off and read-only on (`TransferSettings.kt:191-196`). Start is enabled only when the workspace has a `shellRoot`, the password has at least 8 characters, the username is non-blank and the port is in 1024..65535 (`TransferSettings.kt:227`).
+**Start.** `FtpServerSection` defaults to port 2121, username `aether`, a random 12-byte hex password, LAN off and read-only on (`TransferSettings.kt:191-196`). Start is enabled only when the workspace has a `shellRoot`, the password has at least 8 characters, the username is non-blank and the port is in 1024..65535 (`TransferSettings.kt:227`).
 
 **Manager.** `FtpShareManager.start` checks `runtimePolicy.state.value.canRun`, refuses to stack servers, requires a local `shellRoot`, validates the port and credentials, stores a `Request`, sets `starting`, and calls `ContextCompat.startForegroundService` (`FtpShareManager.kt:24-33`).
 
@@ -96,7 +96,7 @@ Apply never deletes. A target that exists is either skipped (when the replace to
 
 **Protocol.** Only passive data connections are offered: `PORT` and `EPRT` reply `502 Use passive mode` (`FtpShareServer.kt:114`). `PASV` requires an IPv4 local address and `EPSV` works for IPv6 (`FtpShareServer.kt:163-174`). The data accept requires the same peer address as the control connection and has a 15 s timeout (`FtpShareServer.kt:175-191`). Authentication compares `USER` and `PASS` with `MessageDigest.isEqual` and closes the session after 3 failed passwords (`FtpShareServer.kt:94-98`). Supported commands are `FEAT`, `SYST`, `OPTS`, `NOOP`, `PWD`, `TYPE`, `CWD`, `CDUP`, `EPSV`, `PASV`, `LIST`, `NLST`, `MLSD`, `MLST`, `SIZE`, `MDTM`, `RETR`, `STOR`, `MKD`, `DELE`, `RMD`, `RNFR` and `RNTO`; anything else gets `502 Command not supported` (`FtpShareServer.kt:99-153`).
 
-**Writes.** Every mutating command goes through `writable`, which fails when `readOnly` is set and otherwise runs the configured `writeGuard`. `FtpShareManager` supplies a guard that calls `RunManager.withIdleWorkspace` with "Stop running tasks in this workspace before changing shared files." (`FtpShareManager.kt:40-42`; `HarnessApp.kt:200-202`). Uploads go through `files.writeAtomic` to a temp file and an atomic move (`FtpShareServer.kt:127-131`). `DELE` and `RMD` call `LocalTransferFiles.file`, which rejects symlinks and paths outside the root, so deletes cannot escape the share (`FtpShareServer.kt:133-140`; `TransferFiles.kt:49-58`).
+**Writes.** Every mutating command goes through `writable`, which fails when `readOnly` is set and otherwise runs the configured `writeGuard`. `FtpShareManager` supplies a guard that calls `RunManager.withIdleWorkspace` with "Stop running tasks in this workspace before changing shared files." (`FtpShareManager.kt:40-42`; `AetherApp.kt:200-202`). Uploads go through `files.writeAtomic` to a temp file and an atomic move (`FtpShareServer.kt:127-131`). `DELE` and `RMD` call `LocalTransferFiles.file`, which rejects symlinks and paths outside the root, so deletes cannot escape the share (`FtpShareServer.kt:133-140`; `TransferFiles.kt:49-58`).
 
 ## Key State and Persistence
 
@@ -129,19 +129,19 @@ Apply never deletes. A target that exists is either skipped (when the replace to
 - `SyncManager.preview` requires `fs.shellRoot`, so SAF-only workspaces cannot sync even though the UI shows a "local workspace required" warning; this is stated in `FEATURES.md:97` only indirectly.
 - The FTP server reports a client count through `clientsChanged`, but the count is incremented per accepted socket, not per authenticated session (`FtpShareServer.kt:49-51`).
 
-Sources: [data/transfer/SyncConnections.kt](../app/src/main/java/com/androidharness/app/data/transfer/SyncConnections.kt)#L18-L187), [data/transfer/SyncManager.kt](../app/src/main/java/com/androidharness/app/data/transfer/SyncManager.kt)#L12-L75), [data/transfer/TransferFiles.kt](../app/src/main/java/com/androidharness/app/data/transfer/TransferFiles.kt)#L11-L184), [data/transfer/FtpShareManager.kt](../app/src/main/java/com/androidharness/app/data/transfer/FtpShareManager.kt)#L14-L59), [data/transfer/FtpShareServer.kt](../app/src/main/java/com/androidharness/app/data/transfer/FtpShareServer.kt)#L16-L214), [data/transfer/FtpShareService.kt](../app/src/main/java/com/androidharness/app/data/transfer/FtpShareService.kt)#L10-L31), [ui/transfer/TransferSettings.kt](../app/src/main/java/com/androidharness/app/ui/transfer/TransferSettings.kt)#L39-L239)
+Sources: [data/transfer/SyncConnections.kt](../app/src/main/java/com/aether/app/data/transfer/SyncConnections.kt)#L18-L187), [data/transfer/SyncManager.kt](../app/src/main/java/com/aether/app/data/transfer/SyncManager.kt)#L12-L75), [data/transfer/TransferFiles.kt](../app/src/main/java/com/aether/app/data/transfer/TransferFiles.kt)#L11-L184), [data/transfer/FtpShareManager.kt](../app/src/main/java/com/aether/app/data/transfer/FtpShareManager.kt)#L14-L59), [data/transfer/FtpShareServer.kt](../app/src/main/java/com/aether/app/data/transfer/FtpShareServer.kt)#L16-L214), [data/transfer/FtpShareService.kt](../app/src/main/java/com/aether/app/data/transfer/FtpShareService.kt)#L10-L31), [ui/transfer/TransferSettings.kt](../app/src/main/java/com/aether/app/ui/transfer/TransferSettings.kt)#L39-L239)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/data/transfer/SyncConnections.kt`
-- `app/src/main/java/com/androidharness/app/data/transfer/SyncManager.kt`
-- `app/src/main/java/com/androidharness/app/data/transfer/TransferFiles.kt`
-- `app/src/main/java/com/androidharness/app/data/transfer/TransferSockets.kt`
-- `app/src/main/java/com/androidharness/app/data/transfer/TransferSockets.kt`
-- `app/src/main/java/com/androidharness/app/data/transfer/FtpShareManager.kt`
-- `app/src/main/java/com/androidharness/app/data/transfer/FtpShareServer.kt`
-- `app/src/main/java/com/androidharness/app/data/transfer/FtpShareService.kt`
-- `app/src/main/java/com/androidharness/app/ui/transfer/TransferSettings.kt`
-- `app/src/main/java/com/androidharness/app/agent/RunManager.kt`
-- `app/src/main/java/com/androidharness/app/HarnessApp.kt`
+- `app/src/main/java/com/aether/app/data/transfer/SyncConnections.kt`
+- `app/src/main/java/com/aether/app/data/transfer/SyncManager.kt`
+- `app/src/main/java/com/aether/app/data/transfer/TransferFiles.kt`
+- `app/src/main/java/com/aether/app/data/transfer/TransferSockets.kt`
+- `app/src/main/java/com/aether/app/data/transfer/TransferSockets.kt`
+- `app/src/main/java/com/aether/app/data/transfer/FtpShareManager.kt`
+- `app/src/main/java/com/aether/app/data/transfer/FtpShareServer.kt`
+- `app/src/main/java/com/aether/app/data/transfer/FtpShareService.kt`
+- `app/src/main/java/com/aether/app/ui/transfer/TransferSettings.kt`
+- `app/src/main/java/com/aether/app/agent/RunManager.kt`
+- `app/src/main/java/com/aether/app/AetherApp.kt`
 - `app/src/main/AndroidManifest.xml`

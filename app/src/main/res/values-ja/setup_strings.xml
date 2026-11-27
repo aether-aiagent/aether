@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">"AndroidHarness へようこそ"</string>
+    <string name="setup_welcome_title">"Aether へようこそ"</string>
     <string name="setup_welcome_body">"コーディングエージェントを、あなたのスマートフォンに。セットアップを始めましょう。"</string>
     <string name="setup_start_fresh">"新しく始める"</string>
-    <string name="setup_start_fresh_body">"まっさらな AndroidHarness をセットアップ"</string>
-    <string name="setup_restore">"AndroidHarness を復元"</string>
+    <string name="setup_start_fresh_body">"まっさらな Aether をセットアップ"</string>
+    <string name="setup_restore">"Aether を復元"</string>
     <string name="setup_restore_body">"バックアップファイルからチャットと設定を戻します"</string>
 
     <string name="setup_storage_title">"ファイルアクセスを許可"</string>
-    <string name="setup_storage_body">"任意です。許可しない場合、AndroidHarness は専用フォルダで動作し、タスクがファイルを必要とするときに確認します。"</string>
+    <string name="setup_storage_body">"任意です。許可しない場合、Aether は専用フォルダで動作し、タスクがファイルを必要とするときに確認します。"</string>
     <string name="setup_storage_all_files">"すべてのファイルへのアクセス"</string>
     <string name="setup_storage_all_files_body">"ターミナルやファイルツールが期待する通りに、任意のフォルダを読み取り・編集できます。コーディングに最適です。"</string>
     <string name="setup_storage_legacy">"ストレージの権限"</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">"データを復元"</string>
     <string name="setup_restore_subtitle">"以前の端末からバックアップファイルを選択してください。1 つ、両方、またはどちらも復元しないこともできます。"</string>
     <string name="setup_restore_chats">"チャット"</string>
-    <string name="setup_restore_chats_body">"チャット、画像、使用状況、メモリ、スニペットを含む .harnessbackup ファイル"</string>
+    <string name="setup_restore_chats_body">"チャット、画像、使用状況、メモリ、スニペットを含む .aetherbackup ファイル"</string>
     <string name="setup_restore_settings">"設定とプロバイダー"</string>
     <string name="setup_restore_settings_body">"プロバイダー、API キー、環境設定を含むパスワード保護された .hbackup ファイル"</string>
     <string name="setup_restore_choose">"ファイルを選択"</string>

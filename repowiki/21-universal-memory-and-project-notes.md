@@ -2,7 +2,7 @@
 
 > Stores durable facts in a shared database with section and scope rules, injects a bounded block into prompts, and keeps long-form workspace notes on disk.
 
-Memory has two storage tiers. The universal memory is an app-owned Room table (`memories`) used by both Chat and Code, written with `remember` and read with `recall`. Workspace notes are plain files under `.harness/`, written with `memory_write` and read with `memory_read` or `memory_search`. `MemoryRepository` owns the table and its policies, `MemoryPrompt` builds the prompt block, and `MemorySection` exposes settings, digests, and backups.
+Memory has two storage tiers. The universal memory is an app-owned Room table (`memories`) used by both Chat and Code, written with `remember` and read with `recall`. Workspace notes are plain files under `.aether/`, written with `memory_write` and read with `memory_read` or `memory_search`. `MemoryRepository` owns the table and its policies, `MemoryPrompt` builds the prompt block, and `MemorySection` exposes settings, digests, and backups.
 
 ## Module Responsibilities
 
@@ -13,7 +13,7 @@ Memory has two storage tiers. The universal memory is an app-owned Room table (`
 - **`RememberTool` / `RecallTool`** (`tools/UniversalMemoryTools.kt`): the model-facing `remember` and `recall` tools.
 - **`MemoryWriteTool`** (`tools/InteractiveTools.kt`): core note and topic writes on disk.
 - **`MemoryNotes` / `MemoryTopics`** (`agent/`): core note cap and truncation, topic naming and safe paths.
-- **`ProjectMemory`** (`workspace/ProjectMemory.kt`): raw editor read and conflict-checked save of `.harness/memory.md`.
+- **`ProjectMemory`** (`workspace/ProjectMemory.kt`): raw editor read and conflict-checked save of `.aether/memory.md`.
 - **`MemorySection`** (`ui/settings/MemorySection.kt`): toggles, list management, edit dialog, consolidation dialog.
 - **`ChatMemoryReceipt`** (`ui/chat/components/ChatMemoryReceipt.kt`): the saved/updated receipt and inline editor.
 - **`MemoryBackup`** (`data/MemoryBackup.kt`): portable entry schema and merge rules for settings and chat backups.
@@ -35,8 +35,8 @@ flowchart TD
     M[recall tool] --> N[MemoryRepository.search or recallById]
     N --> O[MemoryAccess.canRecall gate]
     P[memory_write] --> Q[MemoryNotes.write]
-    Q --> R[.harness/memory.md]
-    P --> S[.harness/memory/topic.md]
+    Q --> R[.aether/memory.md]
+    P --> S[.aether/memory/topic.md]
 ```
 
 - Write path: `RememberTool` resolves scope, then `rememberResult` runs inside a Room transaction, checks duplicates and near duplicates, inserts, and trims.
@@ -112,9 +112,9 @@ Settings backup exports memories at `data/SettingsBackup.kt` line 232 and import
 
 ## Project Notes on Disk
 
-The core note lives at `.harness/memory.md` with `MAX_CHARS = 8_000` (`agent/MemoryNotes.kt` line 9). `load` truncates a long note by keeping the head and tail around a `[truncated N chars of memory]` marker, so both early rules and recent additions survive (`agent/MemoryNotes.kt` lines 11-18). `write` appends by default or replaces, and keeps the tail when the result exceeds the cap (`agent/MemoryNotes.kt` lines 20-37).
+The core note lives at `.aether/memory.md` with `MAX_CHARS = 8_000` (`agent/MemoryNotes.kt` line 9). `load` truncates a long note by keeping the head and tail around a `[truncated N chars of memory]` marker, so both early rules and recent additions survive (`agent/MemoryNotes.kt` lines 11-18). `write` appends by default or replaces, and keeps the tail when the result exceeds the cap (`agent/MemoryNotes.kt` lines 20-37).
 
-Topic notes live at `.harness/memory/<topic>.md` with `MAX_TOPIC_CHARS = 40_000` (`agent/MemoryTopics.kt` lines 11-14). `sanitize` allows lowercase letters, digits, hyphen, and underscore, up to 48 characters. Reads use the lenient `topicPath`, while writes use `strictTopicPath`, which refuses names that are not already canonical instead of silently renaming them (`agent/MemoryTopics.kt` lines 20-38). Only topic names are listed in the system prompt; bodies stay on disk and are fetched with `memory_read` or `memory_search` (`agent/AgentEngine.kt` lines 2309-2312; `tools/MemoryTools.kt` lines 29-130).
+Topic notes live at `.aether/memory/<topic>.md` with `MAX_TOPIC_CHARS = 40_000` (`agent/MemoryTopics.kt` lines 11-14). `sanitize` allows lowercase letters, digits, hyphen, and underscore, up to 48 characters. Reads use the lenient `topicPath`, while writes use `strictTopicPath`, which refuses names that are not already canonical instead of silently renaming them (`agent/MemoryTopics.kt` lines 20-38). Only topic names are listed in the system prompt; bodies stay on disk and are fetched with `memory_read` or `memory_search` (`agent/AgentEngine.kt` lines 2309-2312; `tools/MemoryTools.kt` lines 29-130).
 
 When a project configuration is present, `memory_write` caps the core file to `memory.maxLines` lines from the tail and honors a custom `memory.file` or `memory.topics` path (`tools/InteractiveTools.kt` lines 83-91).
 
@@ -136,22 +136,22 @@ When a project configuration is present, `memory_write` caps the core file to `m
 - Tools are registered per run and removed when memory or personalization is off.
 - Backup formats accept a project remap function, so other callers can restore into a mapped workspace.
 
-Sources: [app/src/main/java/com/androidharness/app/data/MemoryRepository.kt](../app/src/main/java/com/androidharness/app/data/MemoryRepository.kt)#L124-L157)
+Sources: [app/src/main/java/com/aether/app/data/MemoryRepository.kt](../app/src/main/java/com/aether/app/data/MemoryRepository.kt)#L124-L157)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/UniversalMemoryTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/MemoryTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/InteractiveTools.kt`
-- `app/src/main/java/com/androidharness/app/data/MemoryRepository.kt`
-- `app/src/main/java/com/androidharness/app/data/MemoryPolicy.kt`
-- `app/src/main/java/com/androidharness/app/data/MemoryBackup.kt`
-- `app/src/main/java/com/androidharness/app/data/SettingsRepository.kt`
-- `app/src/main/java/com/androidharness/app/data/db/Database.kt`
-- `app/src/main/java/com/androidharness/app/agent/MemoryNotes.kt`
-- `app/src/main/java/com/androidharness/app/agent/MemoryTopics.kt`
-- `app/src/main/java/com/androidharness/app/workspace/ProjectMemory.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/MemorySection.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/ChatMemoryReceipt.kt`
-- `app/src/main/java/com/androidharness/app/core/ChatActivityPresentation.kt`
-- `app/src/main/java/com/androidharness/app/agent/AgentEngine.kt`
+- `app/src/main/java/com/aether/app/tools/UniversalMemoryTools.kt`
+- `app/src/main/java/com/aether/app/tools/MemoryTools.kt`
+- `app/src/main/java/com/aether/app/tools/InteractiveTools.kt`
+- `app/src/main/java/com/aether/app/data/MemoryRepository.kt`
+- `app/src/main/java/com/aether/app/data/MemoryPolicy.kt`
+- `app/src/main/java/com/aether/app/data/MemoryBackup.kt`
+- `app/src/main/java/com/aether/app/data/SettingsRepository.kt`
+- `app/src/main/java/com/aether/app/data/db/Database.kt`
+- `app/src/main/java/com/aether/app/agent/MemoryNotes.kt`
+- `app/src/main/java/com/aether/app/agent/MemoryTopics.kt`
+- `app/src/main/java/com/aether/app/workspace/ProjectMemory.kt`
+- `app/src/main/java/com/aether/app/ui/settings/MemorySection.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/ChatMemoryReceipt.kt`
+- `app/src/main/java/com/aether/app/core/ChatActivityPresentation.kt`
+- `app/src/main/java/com/aether/app/agent/AgentEngine.kt`

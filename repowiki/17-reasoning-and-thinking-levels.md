@@ -70,7 +70,7 @@ flowchart TD
 
 ## Custom Level Lists
 
-`CustomReasoningConfig` is a list of level names plus an optional mapping (`CustomReasoning.kt` lines 8 to 9). `CustomReasoning.key` hashes the routed provider id, type, base URL without trailing slash, and model with SHA-256, so a custom vocabulary applies to one connection and model and never to an unrelated fallback (lines 14 to 19). `ReasoningDefaults.isLocal` and `ThinkingSpecs.routedConfig` mean a Harness pool route is keyed by the real upstream transport.
+`CustomReasoningConfig` is a list of level names plus an optional mapping (`CustomReasoning.kt` lines 8 to 9). `CustomReasoning.key` hashes the routed provider id, type, base URL without trailing slash, and model with SHA-256, so a custom vocabulary applies to one connection and model and never to an unrelated fallback (lines 14 to 19). `ReasoningDefaults.isLocal` and `ThinkingSpecs.routedConfig` mean a Aether pool route is keyed by the real upstream transport.
 
 `wire` lowercases, collapses whitespace, underscores, and hyphens, and maps synonyms: `off`, `none`, `disabled` become `disabled`; `x high`, `x highest`, `extra high`, and similar become `xhigh` (lines 21 to 22). `label` produces `Disabled`, `X-High`, or a title-cased name. `native` maps `disabled` to `OFF`, `on` or `enabled` to `HIGH`, and otherwise matches an enum name.
 
@@ -129,15 +129,15 @@ The provider also reports the configured label through `StreamEvent.ThinkingConf
 - **`CustomReasoningSheet.onDetectLevels`**: a suspend callback supplied by the caller to query a provider for its levels.
 - **`RequestOptions.customReasoning` and `customThinkingLevels`**: maps keyed by `CustomReasoning.key`, carried across transport-only redirects by `forTransportRoute` (`Llm.kt` lines 95 to 106).
 
-Sources: [app/src/main/java/com/androidharness/app/agent/ThinkingSpecs.kt](../app/src/main/java/com/androidharness/app/agent/ThinkingSpecs.kt)#L104-L187)
+Sources: [app/src/main/java/com/aether/app/agent/ThinkingSpecs.kt](../app/src/main/java/com/aether/app/agent/ThinkingSpecs.kt)#L104-L187)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/agent/ThinkingLevel.kt`
-- `app/src/main/java/com/androidharness/app/agent/ThinkingSpecs.kt`
-- `app/src/main/java/com/androidharness/app/agent/CustomReasoning.kt`
-- `app/src/main/java/com/androidharness/app/llm/ModelReasoning.kt`
-- `app/src/main/java/com/androidharness/app/llm/ReasoningDefaults.kt`
-- `app/src/main/java/com/androidharness/app/llm/ReasoningMapping.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/CustomReasoningSheet.kt`
-- `app/src/main/java/com/androidharness/app/ui/common/ModelReasoningIcon.kt`
+- `app/src/main/java/com/aether/app/agent/ThinkingLevel.kt`
+- `app/src/main/java/com/aether/app/agent/ThinkingSpecs.kt`
+- `app/src/main/java/com/aether/app/agent/CustomReasoning.kt`
+- `app/src/main/java/com/aether/app/llm/ModelReasoning.kt`
+- `app/src/main/java/com/aether/app/llm/ReasoningDefaults.kt`
+- `app/src/main/java/com/aether/app/llm/ReasoningMapping.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/CustomReasoningSheet.kt`
+- `app/src/main/java/com/aether/app/ui/common/ModelReasoningIcon.kt`

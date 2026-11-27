@@ -1,14 +1,14 @@
 # Database and Persistence
 
-> Room database `harness.db` holds chat history, workspaces, memories, undo checkpoints, usage and code-change stats, saved answers, and the FTS search index.
+> Room database `aether.db` holds chat history, workspaces, memories, undo checkpoints, usage and code-change stats, saved answers, and the FTS search index.
 
-All persistent chat state lives in one Room database defined in `app/src/main/java/com/androidharness/app/data/db/Database.kt`. There are no separate per-feature databases. `AppDatabase` declares 13 entities, `HarnessDao` exposes the queries, and `HarnessApp` builds the singleton with every migration. Feature repositories (`SessionRepository`, `MemoryRepository`, `CheckpointStore`, `WorkspaceManager`, `ChatBackupManager`) call the DAO and own the transaction boundaries that span more than one statement.
+All persistent chat state lives in one Room database defined in `app/src/main/java/com/aether/app/data/db/Database.kt`. There are no separate per-feature databases. `AppDatabase` declares 13 entities, `AetherDao` exposes the queries, and `AetherApp` builds the singleton with every migration. Feature repositories (`SessionRepository`, `MemoryRepository`, `CheckpointStore`, `WorkspaceManager`, `ChatBackupManager`) call the DAO and own the transaction boundaries that span more than one statement.
 
 ## Module Responsibilities
 
 - **Schema ownership**: `AppDatabase` (`Database.kt:759`) defines the entity list, schema version 26, and the migration objects.
-- **Query surface**: `HarnessDao` (`Database.kt:280`) is one large DAO for every table, including FTS search.
-- **Connection lifecycle**: `HarnessApp` (`HarnessApp.kt:138-148`) builds `harness.db` with `Room.databaseBuilder`, registers 21 migrations, attaches `OVERSIZED_ROW_SANITIZER`, and enables destructive fallback for pre-v4 databases.
+- **Query surface**: `AetherDao` (`Database.kt:280`) is one large DAO for every table, including FTS search.
+- **Connection lifecycle**: `AetherApp` (`AetherApp.kt:138-148`) builds `aether.db` with `Room.databaseBuilder`, registers 21 migrations, attaches `OVERSIZED_ROW_SANITIZER`, and enables destructive fallback for pre-v4 databases.
 - **Write orchestration**: repositories group related DAO calls. For example `SessionRepository.recordFileEdit` writes `file_edits` and `code_activity` in one transaction (`SessionRepository.kt:643-672`).
 - **Search**: `ChatSearch` builds safe MATCH and LIKE expressions; the DAO runs them against `message_fts` and `messages` (`ChatSearch.kt:21-41`).
 
@@ -18,8 +18,8 @@ All persistent chat state lives in one Room database defined in `app/src/main/ja
 flowchart TD
     UI[Compose screens and ViewModels] --> Repo[SessionRepository / MemoryRepository / CheckpointStore / WorkspaceManager]
     Repo --> Tx[db.withTransaction or @Transaction DAO method]
-    Tx --> Dao[HarnessDao]
-    Dao --> Room[(harness.db)]
+    Tx --> Dao[AetherDao]
+    Dao --> Room[(aether.db)]
     Room --> Msg[messages]
     Msg -. content-sync triggers .-> Fts[message_fts]
     Room --> Mig[Migration 4_5 .. 25_26]
@@ -32,10 +32,10 @@ Room owns the connection and applies pending migrations before the first query. 
 ## Invocation Chain
 
 1. A screen calls a repository method, for example `SessionRepository.addMessage` (`SessionRepository.kt:261`).
-2. The repository opens `db.withTransaction` and calls `HarnessDao.insertMessage` (`Database.kt:443`).
+2. The repository opens `db.withTransaction` and calls `AetherDao.insertMessage` (`Database.kt:443`).
 3. SQLite writes `messages`; Room's generated content-sync triggers update `message_fts` for that row.
 4. `messagesFlow(sessionId)` (`Database.kt:403-404`) emits the new list; ordering is `createdAt ASC, rowid ASC`.
-5. On app start, `HarnessApp` builds the database (`HarnessApp.kt:138`), Room runs migrations in ascending order, `OVERSIZED_ROW_SANITIZER` runs (`Database.kt:862-880`), and `HarnessDao.sessionsFlow()` (`Database.kt:289-290`) drives the sidebar.
+5. On app start, `AetherApp` builds the database (`AetherApp.kt:138`), Room runs migrations in ascending order, `OVERSIZED_ROW_SANITIZER` runs (`Database.kt:862-880`), and `AetherDao.sessionsFlow()` (`Database.kt:289-290`) drives the sidebar.
 6. Chat search calls `SessionRepository.search`, which passes `ChatSearch.ftsMatchQuery` to `searchFts` (`Database.kt:500-504`); an empty result falls back to `searchLike` with an escaped `LIKE` pattern (`Database.kt:506-507`, `SessionRepository.kt:536-539`).
 
 ## Key State and Data Structures
@@ -68,7 +68,7 @@ No entity declares a Room `@ForeignKey`. Relationships are enforced by query sha
 - `code_activity` deliberately has no session column. It stores a hashed `fileKey` from `CodeFilePolicy.fileKey` so totals outlive chat deletion and undo.
 - `message_fts` is an external-content index: `f.docid = messages.rowid` in every search query (`Database.kt:500-513`).
 
-Deletes are manual. `SessionRepository.deleteSessions` removes answer versions, saved answers, messages, checkpoints, usage events, file edits and session file changes, then the session itself, all inside one transaction (`SessionRepository.kt:876-895`). `HarnessDao.deleteProjectAndChats` repeats that cascade for every chat of a project plus the project row, guarded by `@androidx.room.Transaction` (`Database.kt:340-361`).
+Deletes are manual. `SessionRepository.deleteSessions` removes answer versions, saved answers, messages, checkpoints, usage events, file edits and session file changes, then the session itself, all inside one transaction (`SessionRepository.kt:876-895`). `AetherDao.deleteProjectAndChats` repeats that cascade for every chat of a project plus the project row, guarded by `@androidx.room.Transaction` (`Database.kt:340-361`).
 
 ## Transaction Boundaries
 
@@ -80,7 +80,7 @@ Deletes are manual. `SessionRepository.deleteSessions` removes answer versions, 
 
 ## Migrations and Version History
 
-Current version is 26, `exportSchema = false` (`Database.kt:740-758`). Migrations are registered in ascending order in `HarnessApp.kt:139-143`.
+Current version is 26, `exportSchema = false` (`Database.kt:740-758`). Migrations are registered in ascending order in `AetherApp.kt:139-143`.
 
 | Migration | Change |
 |---|---|
@@ -106,7 +106,7 @@ Current version is 26, `exportSchema = false` (`Database.kt:740-758`). Migration
 | `MIGRATION_23_24` | Adds `memories.agentId` |
 | `MIGRATION_24_25` | Creates `saved_answers` with `sessionId` and `savedAt` indexes |
 
-There is no migration below 4 to 5. `fallbackToDestructiveMigration(true)` handles a database older than v4 by recreating it (`HarnessApp.kt:145-147`). The FTS column list and options in `MIGRATION_8_9` must stay byte-identical to Room's generated `CREATE` statement, because Room validates the schema on open (`Database.kt:979-992`).
+There is no migration below 4 to 5. `fallbackToDestructiveMigration(true)` handles a database older than v4 by recreating it (`AetherApp.kt:145-147`). The FTS column list and options in `MIGRATION_8_9` must stay byte-identical to Room's generated `CREATE` statement, because Room validates the schema on open (`Database.kt:979-992`).
 
 ## Retention and Cleanup
 
@@ -117,7 +117,7 @@ There is no time-based row expiry. Rows live until a user or feature deletes the
 - `clearMessages` drops messages, answer versions, checkpoints and the compaction summary; `truncateFrom` drops later messages and the summary but keeps checkpoints (`SessionRepository.kt:852-871`).
 - `code_activity` is intentionally never deleted with a chat, which is why it uses a digest instead of a readable path.
 - Unenabled or consolidated memories are hidden by queries, not deleted; `clearAll` calls `deleteAllMemories` (`MemoryRepository.kt:278`, `Database.kt:702-703`).
-- Physical file cleanup is separate. `StorageManager.cleanupCandidates` only proposes package downloads, npm and pip caches, and recognized Gradle build output older than 7 days (`StorageManager.kt:98-140`). It lists `harness.db`, `-wal`, `-shm` and `-journal` in the inventory but does not delete them.
+- Physical file cleanup is separate. `StorageManager.cleanupCandidates` only proposes package downloads, npm and pip caches, and recognized Gradle build output older than 7 days (`StorageManager.kt:98-140`). It lists `aether.db`, `-wal`, `-shm` and `-journal` in the inventory but does not delete them.
 
 ## Boundary Conditions
 
@@ -131,8 +131,8 @@ There is no time-based row expiry. Rows live until a user or feature deletes the
 
 ## Extension Points
 
-- Add an entity to the `@Database` list, bump `version`, write a `Migration`, and register it in `HarnessApp.addMigrations`. Room rejects a missing path at open time.
-- Add queries to `HarnessDao`; both suspend functions and `Flow` return types are used. `@Insert(onConflict = ...)` choices are per call site.
+- Add an entity to the `@Database` list, bump `version`, write a `Migration`, and register it in `AetherApp.addMigrations`. Room rejects a missing path at open time.
+- Add queries to `AetherDao`; both suspend functions and `Flow` return types are used. `@Insert(onConflict = ...)` choices are per call site.
 - FTS behavior is controlled by `ChatSearch` (`ChatSearch.kt`). Word mode uses quoted prefix tokens, fuzzy mode escapes `%`, `_` and `\` for `LIKE ... ESCAPE '\'`.
 - `CodeFilePolicy` decides which paths count toward code activity and how `fileKey` is hashed, so it changes what survives chat deletion.
 - `SessionFileChangeEntity.baseGzip` and `hasBase` define whether a chat's "Files changed" view can render a baseline diff; new files get an empty baseline, oversized files get `hasBase = false`.
@@ -140,19 +140,19 @@ There is no time-based row expiry. Rows live until a user or feature deletes the
 ## Known gaps
 
 - `exportSchema = false` means no schema JSON is checked in, so schema drift is caught only by Room's runtime validation and by tests, not by a generated artifact.
-- No `@ForeignKey` constraints exist, so any code path that deletes a session without going through `SessionRepository.deleteSessions` or `HarnessDao.deleteProjectAndChats` can leave orphaned rows. There is no database-level cascade to catch that.
+- No `@ForeignKey` constraints exist, so any code path that deletes a session without going through `SessionRepository.deleteSessions` or `AetherDao.deleteProjectAndChats` can leave orphaned rows. There is no database-level cascade to catch that.
 - `truncateFrom` keeps checkpoints for removed turns. It does not prune them by turn id.
 - There is no retention policy for `usage_events` or `code_activity`; both grow for the life of the install unless the user clears app data.
 
-Sources: [data/db/Database.kt](../app/src/main/java/com/androidharness/app/data/db/Database.kt)#L18-L1001), [HarnessApp.kt](../app/src/main/java/com/androidharness/app/HarnessApp.kt)#L138-L148), [data/SessionRepository.kt](../app/src/main/java/com/androidharness/app/data/SessionRepository.kt)#L876-L922), [data/CheckpointStore.kt](../app/src/main/java/com/androidharness/app/data/CheckpointStore.kt)#L13-L49), [data/db/ChatSearch.kt](../app/src/main/java/com/androidharness/app/data/db/ChatSearch.kt)#L12-L41)
+Sources: [data/db/Database.kt](../app/src/main/java/com/aether/app/data/db/Database.kt)#L18-L1001), [AetherApp.kt](../app/src/main/java/com/aether/app/AetherApp.kt)#L138-L148), [data/SessionRepository.kt](../app/src/main/java/com/aether/app/data/SessionRepository.kt)#L876-L922), [data/CheckpointStore.kt](../app/src/main/java/com/aether/app/data/CheckpointStore.kt)#L13-L49), [data/db/ChatSearch.kt](../app/src/main/java/com/aether/app/data/db/ChatSearch.kt)#L12-L41)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/data/db/Database.kt`
-- `app/src/main/java/com/androidharness/app/data/db/ChatSearch.kt`
-- `app/src/main/java/com/androidharness/app/data/SessionRepository.kt`
-- `app/src/main/java/com/androidharness/app/data/CheckpointStore.kt`
-- `app/src/main/java/com/androidharness/app/data/MemoryRepository.kt`
-- `app/src/main/java/com/androidharness/app/data/ChatBackup.kt`
-- `app/src/main/java/com/androidharness/app/data/storage/StorageManager.kt`
-- `app/src/main/java/com/androidharness/app/HarnessApp.kt`
+- `app/src/main/java/com/aether/app/data/db/Database.kt`
+- `app/src/main/java/com/aether/app/data/db/ChatSearch.kt`
+- `app/src/main/java/com/aether/app/data/SessionRepository.kt`
+- `app/src/main/java/com/aether/app/data/CheckpointStore.kt`
+- `app/src/main/java/com/aether/app/data/MemoryRepository.kt`
+- `app/src/main/java/com/aether/app/data/ChatBackup.kt`
+- `app/src/main/java/com/aether/app/data/storage/StorageManager.kt`
+- `app/src/main/java/com/aether/app/AetherApp.kt`

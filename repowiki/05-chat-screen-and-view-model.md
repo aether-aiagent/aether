@@ -6,7 +6,7 @@
 
 ## Module Responsibilities
 
-- **`ChatScreen` and `ChatScreenContent`**: entry composable and the stateful body. `ChatScreen` provides `ChatAppearance` plus `HarnessCanvasBackdrop`, then delegates. All visual pieces imported from `ui/chat/components/` are assembled here.
+- **`ChatScreen` and `ChatScreenContent`**: entry composable and the stateful body. `ChatScreen` provides `ChatAppearance` plus `AetherCanvasBackdrop`, then delegates. All visual pieces imported from `ui/chat/components/` are assembled here.
 - **`ChatViewModel`**: owns `MutableStateFlow<ChatUiState>`, the current `sessionId`, attachment buffers, history paging mutex, and all user actions. It never executes the agent loop itself.
 - **`ChatListState.kt`**: a prefetch-free `LazyListState` (`rememberChatListState`) plus the `ChatListContentType` row kinds.
 - **`ChatDetailScroll.kt`**: tracks expanded disclosures that own their gestures, and pauses transcript following while the reader interacts with one.
@@ -104,8 +104,8 @@ The composer holds a `TextFieldValue` in `rememberSaveable` (lines 327 to 339), 
 
 ## Boundary Conditions
 
-- `startRun` returns false and sets `error` for: missing conversation readiness, blank model selection, model selection busy or errored, removed provider, removed local model, blank API key, unsanitized pinned Harness model (lines 1425 to 1494).
-- A workspace `.harness/mcp.json` with unapproved servers stops before starting the run and sets `pendingWorkspaceMcp`; approve or deny decides whether `startRun` continues (lines 1532 to 1547, plus `approveWorkspaceMcp` and `denyWorkspaceMcp` at 337 to 370).
+- `startRun` returns false and sets `error` for: missing conversation readiness, blank model selection, model selection busy or errored, removed provider, removed local model, blank API key, unsanitized pinned Aether model (lines 1425 to 1494).
+- A workspace `.aether/mcp.json` with unapproved servers stops before starting the run and sets `pendingWorkspaceMcp`; approve or deny decides whether `startRun` continues (lines 1532 to 1547, plus `approveWorkspaceMcp` and `denyWorkspaceMcp` at 337 to 370).
 - Sending while this chat is already running calls `c.runManager.inject` instead of starting a second run (lines 922 to 932).
 - `/compact` is refused while busy or starting, and any send is refused while a compaction job is active (lines 819 to 822, 844 to 851).
 - `ChatDetailScroll` pauses following on any pointer down inside a disclosure and resumes through the same nested-scroll chain; a pointer gesture in an expanded block cannot drag the transcript (lines 16 to 58).
@@ -125,16 +125,16 @@ The composer holds a `TextFieldValue` in `rememberSaveable` (lines 327 to 339), 
 - `FEATURES.md` line 45 says paging keeps complete turns and does not change model context. The page start is snapped to the first message of a turn (`completeTurnStart`, `SessionRepository.kt` lines 94 to 96), and the model path reads `historyFor` independently, so the claim holds. No gap found.
 - `FEATURES.md` line 13 says Chat does not create saved artifacts. Confirmed by `ChatExperience.tools`, which omits `create_artifact` (`core/ChatExperience.kt` lines 9 to 16).
 
-Sources: [app/src/main/java/com/androidharness/app/ui/chat/ChatScreen.kt](../app/src/main/java/com/androidharness/app/ui/chat/ChatScreen.kt)#L189-L212), [app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt](../app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt)#L85-L262), [app/src/main/java/com/androidharness/app/ui/chat/ChatListState.kt](../app/src/main/java/com/androidharness/app/ui/chat/ChatListState.kt)#L20-L37)
+Sources: [app/src/main/java/com/aether/app/ui/chat/ChatScreen.kt](../app/src/main/java/com/aether/app/ui/chat/ChatScreen.kt)#L189-L212), [app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt](../app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt)#L85-L262), [app/src/main/java/com/aether/app/ui/chat/ChatListState.kt](../app/src/main/java/com/aether/app/ui/chat/ChatListState.kt)#L20-L37)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatScreen.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatListState.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatDetailScroll.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/UserScrollObserver.kt`
-- `app/src/main/java/com/androidharness/app/data/ChatModelSelection.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/ChatActivity.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/MessageComposer.kt`
-- `app/src/main/java/com/androidharness/app/data/SessionRepository.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatScreen.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatListState.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatDetailScroll.kt`
+- `app/src/main/java/com/aether/app/ui/chat/UserScrollObserver.kt`
+- `app/src/main/java/com/aether/app/data/ChatModelSelection.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/ChatActivity.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/MessageComposer.kt`
+- `app/src/main/java/com/aether/app/data/SessionRepository.kt`

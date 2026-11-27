@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="assistant_service_label">"AndroidHarness"</string>
+    <string name="assistant_service_label">"Aether"</string>
     <string name="assistant_input_hint">"Bu ekran hakkında sor"</string>
     <string name="assistant_input_hint_follow_up">"Devam sorusu sor"</string>
     <string name="assistant_send">"Gönder"</string>
@@ -17,12 +17,12 @@
     <string name="assistant_keyboard">"Bunun yerine yaz"</string>
     <string name="assistant_listening">"Dinliyor"</string>
     <string name="assistant_tap_to_talk">"Konuşmak için mikrofona dokun"</string>
-    <string name="assistant_mic_permission">"AndroidHarness mikrofonu gerektirir. Uygulamayı aç, sohbette mikrofona bir kez dokun ve izin ver."</string>
+    <string name="assistant_mic_permission">"Aether mikrofonu gerektirir. Uygulamayı aç, sohbette mikrofona bir kez dokun ve izin ver."</string>
     <string name="assistant_working">"Üzerinde çalışıyor"</string>
-    <string name="assistant_no_model">"Önce AndroidHarness içinde bir sohbet modeli seç."</string>
-    <string name="assistant_no_key">"Önce AndroidHarness içinde %1$s bağla."</string>
+    <string name="assistant_no_model">"Önce Aether içinde bir sohbet modeli seç."</string>
+    <string name="assistant_no_key">"Önce Aether içinde %1$s bağla."</string>
     <string name="assistant_failed">"Sorun gönderilemedi. Tekrar dene."</string>
-    <string name="assistant_open_failed">"AndroidHarness açılamadı."</string>
+    <string name="assistant_open_failed">"Aether açılamadı."</string>
     <string name="assistant_thinking_level">"Düşünme: %1$s"</string>
     <string name="assistant_thinking_auto">"Kendi karar verir"</string>
     <string name="assistant_thinking_pick">"Ne kadar düşüneceğini seç"</string>
@@ -35,10 +35,10 @@
     <string name="assistant_settings_title">"Diğer uygulamaların üzerinde asistan"</string>
     <string name="assistant_settings_page_desc">"Kullandığın uygulamadan çıkmadan herhangi bir ekran hakkında sor"</string>
     <string name="assistant_settings_desc">"Güç veya ana ekran düğmesini basılı tut ya da alt köşeden yukarı kaydır ve ekranda olanı sor."</string>
-    <string name="assistant_settings_on">"AndroidHarness dijital asistanın"</string>
-    <string name="assistant_settings_off">"Bunu açmak için AndroidHarness'ı dijital asistan uygulaması yap"</string>
+    <string name="assistant_settings_on">"Aether dijital asistanın"</string>
+    <string name="assistant_settings_off">"Bunu açmak için Aether'ı dijital asistan uygulaması yap"</string>
     <string name="assistant_settings_open">"Asistan uygulamasını seç"</string>
-    <string name="assistant_settings_steps">"Android ayarlarında Dijital asistan uygulaması'nı aç ve AndroidHarness'ı seç. Senin gördüğünü görmesi için Ekrandaki metni kullan ve Ekran görüntüsünü kullan seçeneklerini aç."</string>
+    <string name="assistant_settings_steps">"Android ayarlarında Dijital asistan uygulaması'nı aç ve Aether'ı seç. Senin gördüğünü görmesi için Ekrandaki metni kullan ve Ekran görüntüsünü kullan seçeneklerini aç."</string>
     <string name="assistant_settings_privacy">"Ekran yalnızca asistanı çağırdığında yakalanır ve yalnızca sorun onunla ilgiliyse modele gönderilir. Ekran görüntüsünü engelleyen uygulamalar gizli kalır."</string>
     <string name="assistant_settings_voice_first">"Sesle başla"</string>
     <string name="assistant_settings_voice_first_desc">"Asistan açılır açılmaz dinler. Yine de klavyeye geçebilirsin."</string>
@@ -54,8 +54,8 @@
     <string name="settings_read_image_text">"Görsellerdeki metni oku"</string>
     <string name="settings_read_image_text_desc">"Görselleri göremeyen modeller için fotoğraf ve ekran görüntülerindeki metin bu telefonda okunur ve onların yerine gönderilir. Çevrimdışı çalışır."</string>
     <string name="chat_attachment_read_as_text">"Bu model görselleri göremez, bu yüzden yalnızca içlerindeki metin gönderilir."</string>
-    <string name="assistant_check_unsupported">"Bu telefon diğer uygulamaların dijital asistan olmasına izin vermiyor. Bu telefonun sınırı, AndroidHarness\'ın değil. Uygulamayı açıp ekranınız hakkında yine de sorabilirsiniz."</string>
-    <string name="assistant_check_profile">"AndroidHarness bir iş profilinde, Secure Folder\'da, özel alanda veya ikinci alanda yüklü. Yalnızca ana profildeki uygulamalar asistan olabilir, bu yüzden oraya yükleyin."</string>
+    <string name="assistant_check_unsupported">"Bu telefon diğer uygulamaların dijital asistan olmasına izin vermiyor. Bu telefonun sınırı, Aether\'ın değil. Uygulamayı açıp ekranınız hakkında yine de sorabilirsiniz."</string>
+    <string name="assistant_check_profile">"Aether bir iş profilinde, Secure Folder\'da, özel alanda veya ikinci alanda yüklü. Yalnızca ana profildeki uygulamalar asistan olabilir, bu yüzden oraya yükleyin."</string>
     <string name="assistant_check_samsung">"Samsung\'da: Ayarlar, ardından Uygulamalar, ardından Varsayılan uygulamaları seç, ardından Dijital asistan uygulaması."</string>
     <string name="assistant_check_generic">"Bulamadınız mı? Ayarlar\'ı açın ve dijital asistan veya assist arayın. Sesli girişten farklı bir listedir."</string>
     <string name="assistant_check_copy">"Ayrıntıları kopyala"</string>

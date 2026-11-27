@@ -36,7 +36,7 @@ flowchart TD
     N --> O[PluginStore.install]
     O --> P[installed.json + packages/uuid]
     P --> Q[configurationSources]
-    Q --> R[HarnessConfigLoader merges Managed Global and Project]
+    Q --> R[AetherConfigLoader merges Managed Global and Project]
 ```
 
 Preparation is staged through `PluginProgress`: `Resolving source`, `Downloading`, `Checking bundle`, `Reading archive` or `Reading folder`, `Installing runtime`, `Running installer`, and finally `Installing plugin`. `PluginManager.prepare` returns a `PreparedPlugin` that still lives in `cacheDir/plugin-previews/<uuid>`; it is deleted by `discard` when the review dialog is disposed or after a successful install. `MarketplaceChoices` and `InstallerNeeded` are control-flow exceptions: the first opens a chooser of listings, the second opens an approval dialog whose edited command becomes an `installer` origin.
@@ -52,7 +52,7 @@ Catalog discovery runs every source concurrently. `PluginManager.search` builds 
 5. `prepare` calls `PluginDownloads.resolve` for npm, GitHub and URL origins (`PluginDownloads.kt:57-88`), downloads through `PluginArchives.copyLimited`, extracts with `PluginArchives.extract`, adapts with `PluginAdapter.adapt`, and inspects with `PluginManifest.inspect`.
 6. `PluginInstallDialog` collects a scope and calls `PluginManager.install` (`PluginManager.kt:263-282`), which installs missing Linux runtimes, then calls `PluginStore.install` (`PluginStore.kt:75-94`).
 7. `PluginStore.install` re-inspects, moves the preview folder into `packages/<uuid>`, writes `installed.json` atomically, and returns the record. On a write failure the destination is deleted so no partial record survives.
-8. Configuration loading calls `PluginManager.configurationSources(workspace)` (`PluginManager.kt:55`), which maps `PluginStore.configurationSources` into `ConfigSource` objects. `HarnessConfigLoader` merges managed global sources, global files, managed project sources and project files in that order (`HarnessConfig.kt:180-198`).
+8. Configuration loading calls `PluginManager.configurationSources(workspace)` (`PluginManager.kt:55`), which maps `PluginStore.configurationSources` into `ConfigSource` objects. `AetherConfigLoader` merges managed global sources, global files, managed project sources and project files in that order (`AetherConfig.kt:180-198`).
 9. `PluginHooks` and MCP startup then consume the merged config; they never read `installed.json` directly.
 
 ## Key State and Data Structures
@@ -93,25 +93,25 @@ Persistence and lifetime:
 - **New catalog facet**: add a value to `CatalogSource`, `CatalogSort`, `CatalogStatus` or `CatalogSetup`, then extend `PluginCatalog.apply` and `DiscoverControls`.
 - **New manifest field**: add it to `PluginManifest.known`, parse it in `inspect`, and persist it in `PluginAdapter.Plan.write`.
 - **Runtime detection**: `PluginRuntimes.byCommand` and `byExtension` map commands and script extensions to Linux packages; new toolchains are added there.
-- **Installer execution**: implement `PluginRuntime` (`PluginInstallers.kt:9-15`). The app implementation supplies `LinuxEnvironmentManager` package availability, installation and process creation (`HarnessApp.kt:87-101`).
-- **Per-project plugin config**: `harness.json` `plugins.paths` and `plugins.npm` still load plugins without the manager, subject to the same manifest checks (`HarnessConfig.kt:325-343`).
+- **Installer execution**: implement `PluginRuntime` (`PluginInstallers.kt:9-15`). The app implementation supplies `LinuxEnvironmentManager` package availability, installation and process creation (`AetherApp.kt:87-101`).
+- **Per-project plugin config**: `aether.json` `plugins.paths` and `plugins.npm` still load plugins without the manager, subject to the same manifest checks (`AetherConfig.kt:325-343`).
 
 ## Known gaps
 
 - `PluginStarters.listings` (`PluginManager.kt:291-294`) is defined but `PluginManager.search` never adds it to any `CatalogSection`. The two starter bundles are therefore only reachable if code supplies a `PluginOrigin(kind = "builtin")`; Discover does not show them.
 - `PluginCatalog.setup` distinguishes only skills, remote MCP servers and local MCP servers. A plugin bundle's runtimes are unknown until `PluginManifest.inspect` runs, which is why the filter intentionally returns null for plugin listings (`PluginCatalog.kt:106-116`).
 
-Sources: [app/src/main/java/com/androidharness/app/plugins/PluginManager.kt](../app/src/main/java/com/androidharness/app/plugins/PluginManager.kt)#L34-L287), [app/src/main/java/com/androidharness/app/plugins/PluginStore.kt](../app/src/main/java/com/androidharness/app/plugins/PluginStore.kt)#L14-L113), [app/src/main/java/com/androidharness/app/plugins/PluginCatalog.kt](../app/src/main/java/com/androidharness/app/plugins/PluginCatalog.kt)#L38-L153), [app/src/main/java/com/androidharness/app/plugins/PluginDownloads.kt](../app/src/main/java/com/androidharness/app/plugins/PluginDownloads.kt)#L18-L268), [app/src/main/java/com/androidharness/app/plugins/PluginMarketplaces.kt](../app/src/main/java/com/androidharness/app/plugins/PluginMarketplaces.kt)#L12-L97), [app/src/main/java/com/androidharness/app/ui/settings/PluginManagerSection.kt](../app/src/main/java/com/androidharness/app/ui/settings/PluginManagerSection.kt)#L52-L473), [app/src/main/java/com/androidharness/app/ui/settings/PluginDiscover.kt](../app/src/main/java/com/androidharness/app/ui/settings/PluginDiscover.kt)#L146-L317)
+Sources: [app/src/main/java/com/aether/app/plugins/PluginManager.kt](../app/src/main/java/com/aether/app/plugins/PluginManager.kt)#L34-L287), [app/src/main/java/com/aether/app/plugins/PluginStore.kt](../app/src/main/java/com/aether/app/plugins/PluginStore.kt)#L14-L113), [app/src/main/java/com/aether/app/plugins/PluginCatalog.kt](../app/src/main/java/com/aether/app/plugins/PluginCatalog.kt)#L38-L153), [app/src/main/java/com/aether/app/plugins/PluginDownloads.kt](../app/src/main/java/com/aether/app/plugins/PluginDownloads.kt)#L18-L268), [app/src/main/java/com/aether/app/plugins/PluginMarketplaces.kt](../app/src/main/java/com/aether/app/plugins/PluginMarketplaces.kt)#L12-L97), [app/src/main/java/com/aether/app/ui/settings/PluginManagerSection.kt](../app/src/main/java/com/aether/app/ui/settings/PluginManagerSection.kt)#L52-L473), [app/src/main/java/com/aether/app/ui/settings/PluginDiscover.kt](../app/src/main/java/com/aether/app/ui/settings/PluginDiscover.kt)#L146-L317)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/plugins/PluginManager.kt`
-- `app/src/main/java/com/androidharness/app/plugins/PluginStore.kt`
-- `app/src/main/java/com/androidharness/app/plugins/PluginCatalog.kt`
-- `app/src/main/java/com/androidharness/app/plugins/PluginDownloads.kt`
-- `app/src/main/java/com/androidharness/app/plugins/PluginMarketplaces.kt`
-- `app/src/main/java/com/androidharness/app/plugins/PluginModels.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/PluginManagerSection.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/PluginDiscover.kt`
-- `app/src/main/java/com/androidharness/app/config/HarnessConfig.kt`
-- `app/src/main/java/com/androidharness/app/HarnessApp.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginManager.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginStore.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginCatalog.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginDownloads.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginMarketplaces.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginModels.kt`
+- `app/src/main/java/com/aether/app/ui/settings/PluginManagerSection.kt`
+- `app/src/main/java/com/aether/app/ui/settings/PluginDiscover.kt`
+- `app/src/main/java/com/aether/app/config/AetherConfig.kt`
+- `app/src/main/java/com/aether/app/AetherApp.kt`

@@ -1,8 +1,8 @@
 # Web Research and Search Backends
 
-> Chooses a search backend, spends a per-turn source and page budget, reads pages, and records a receipt of what the harness actually retrieved.
+> Chooses a search backend, spends a per-turn source and page budget, reads pages, and records a receipt of what Aether actually retrieved.
 
-`web_search` runs either a user-configured Brave or Tavily API or a keyless chain of HTML search endpoints. `web_fetch` reads a page directly, through Tavily Extract when configured, or through the rendered browser when the static read is not usable. Around both sits a shared request policy that spaces requests per site, respects `Retry-After`, and caches results briefly. `SearchSourceBudget` and `ResearchReceipt` make the difference between "the model says it searched" and "the harness can prove what it retrieved" explicit.
+`web_search` runs either a user-configured Brave or Tavily API or a keyless chain of HTML search endpoints. `web_fetch` reads a page directly, through Tavily Extract when configured, or through the rendered browser when the static read is not usable. Around both sits a shared request policy that spaces requests per site, respects `Retry-After`, and caches results briefly. `SearchSourceBudget` and `ResearchReceipt` make the difference between "the model says it searched" and "Aether can prove what it retrieved" explicit.
 
 ## Module Responsibilities
 
@@ -48,7 +48,7 @@ flowchart TD
     S --> W[success: paging, find, images, receipt]
 ```
 
-Key selection happens per call, not per process. `HarnessApp.searchApiConfigFor` reads the enabled key pool for the provider and orders it with `RotatingKeyProvider.orderedKeys("search:$provider", pool)`, putting the first key in `apiKey` and the rest in `fallbackKeys` (`HarnessApp.kt:230`). `SearchApiConfig.keys` deduplicates and drops blanks. `withKeyFailover` tries each key and continues only when `ResearchHttpFailure.keySpecific()` is true, which covers 401, 402, 403, 429, 432 and 433 (`tools/SearchBackends.kt:65`). Any other failure propagates immediately, because another key would not fix it. A key already in cooldown fails before a request is sent.
+Key selection happens per call, not per process. `AetherApp.searchApiConfigFor` reads the enabled key pool for the provider and orders it with `RotatingKeyProvider.orderedKeys("search:$provider", pool)`, putting the first key in `apiKey` and the rest in `fallbackKeys` (`AetherApp.kt:230`). `SearchApiConfig.keys` deduplicates and drops blanks. `withKeyFailover` tries each key and continues only when `ResearchHttpFailure.keySpecific()` is true, which covers 401, 402, 403, 429, 432 and 433 (`tools/SearchBackends.kt:65`). Any other failure propagates immediately, because another key would not fix it. A key already in cooldown fails before a request is sent.
 
 The keyless chain runs every requested engine concurrently and caps the whole batch at 28 seconds. Completed engines contribute results in chain order, with canonical URL deduplication, until `count` is reached. Engines that have not completed are cancelled. This replaced a serial chain where one blocked engine could consume its full read timeout before the next one started (`tools/SearchBackends.kt:133` to `145`).
 
@@ -110,21 +110,21 @@ Budgets are per turn, not persisted. `SearchSourceBudget` is created when a run 
 - Tavily search requests never send language or country, even when the caller supplies them. Only freshness and the deep flag change the payload.
 - `SearchSourceBudget` has no persistence. Restarting the app or starting a new turn resets the source and read counters.
 
-Sources: [app/src/main/java/com/androidharness/app/tools/SearchBackends.kt](../app/src/main/java/com/androidharness/app/tools/SearchBackends.kt)#L25-L541), [app/src/main/java/com/androidharness/app/tools/SearchBudget.kt](../app/src/main/java/com/androidharness/app/tools/SearchBudget.kt)#L11-L108), [app/src/main/java/com/androidharness/app/tools/ResearchHttp.kt](../app/src/main/java/com/androidharness/app/tools/ResearchHttp.kt)#L28-L160), [app/src/main/java/com/androidharness/app/tools/MoreTools.kt](../app/src/main/java/com/androidharness/app/tools/MoreTools.kt)#L219-L356)
+Sources: [app/src/main/java/com/aether/app/tools/SearchBackends.kt](../app/src/main/java/com/aether/app/tools/SearchBackends.kt)#L25-L541), [app/src/main/java/com/aether/app/tools/SearchBudget.kt](../app/src/main/java/com/aether/app/tools/SearchBudget.kt)#L11-L108), [app/src/main/java/com/aether/app/tools/ResearchHttp.kt](../app/src/main/java/com/aether/app/tools/ResearchHttp.kt)#L28-L160), [app/src/main/java/com/aether/app/tools/MoreTools.kt](../app/src/main/java/com/aether/app/tools/MoreTools.kt)#L219-L356)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/SearchBackends.kt`
-- `app/src/main/java/com/androidharness/app/tools/SearchBudget.kt`
-- `app/src/main/java/com/androidharness/app/tools/ResearchHttp.kt`
-- `app/src/main/java/com/androidharness/app/tools/TavilyPageReader.kt`
-- `app/src/main/java/com/androidharness/app/tools/StructuredPageText.kt`
-- `app/src/main/java/com/androidharness/app/tools/WebSearchText.kt`
-- `app/src/main/java/com/androidharness/app/tools/PageImages.kt`
-- `app/src/main/java/com/androidharness/app/tools/NetTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/MoreTools.kt`
-- `app/src/main/java/com/androidharness/app/core/ResearchReceipt.kt`
-- `app/src/main/java/com/androidharness/app/data/SearchDepth.kt`
-- `app/src/main/java/com/androidharness/app/data/SettingsRepository.kt`
-- `app/src/main/java/com/androidharness/app/HarnessApp.kt`
-- `app/src/main/java/com/androidharness/app/agent/AgentEngine.kt`
+- `app/src/main/java/com/aether/app/tools/SearchBackends.kt`
+- `app/src/main/java/com/aether/app/tools/SearchBudget.kt`
+- `app/src/main/java/com/aether/app/tools/ResearchHttp.kt`
+- `app/src/main/java/com/aether/app/tools/TavilyPageReader.kt`
+- `app/src/main/java/com/aether/app/tools/StructuredPageText.kt`
+- `app/src/main/java/com/aether/app/tools/WebSearchText.kt`
+- `app/src/main/java/com/aether/app/tools/PageImages.kt`
+- `app/src/main/java/com/aether/app/tools/NetTools.kt`
+- `app/src/main/java/com/aether/app/tools/MoreTools.kt`
+- `app/src/main/java/com/aether/app/core/ResearchReceipt.kt`
+- `app/src/main/java/com/aether/app/data/SearchDepth.kt`
+- `app/src/main/java/com/aether/app/data/SettingsRepository.kt`
+- `app/src/main/java/com/aether/app/AetherApp.kt`
+- `app/src/main/java/com/aether/app/agent/AgentEngine.kt`

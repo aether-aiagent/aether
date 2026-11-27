@@ -39,7 +39,7 @@ If they already said which, skip the question.
 - Scaffold or reuse the existing app per react-frontend, then apply the same principles to components.
 
 ## Pitfalls
-- Do not call browser_vision, terminal, or generative-widgets; this harness has shell, file tools, and web_fetch only.
+- Do not call browser_vision, terminal, or generative-widgets; this Aether has shell, file tools, and web_fetch only.
 - Inter-on-white with a purple blob is not a design decision.
 
 ## Verification

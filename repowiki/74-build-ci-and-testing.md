@@ -2,7 +2,7 @@
 
 > Defines the Gradle toolchain, the two distribution channels, the signing and native packaging rules, the test source sets, and the GitHub Actions jobs that build and publish artifacts.
 
-AndroidHarness is a single `:app` module plus a conditional `:local_gpu` dynamic feature. There are no Android product flavors. Distribution is selected by the `distribution` Gradle property, which adds a delivery source set and a `PLAY_DISTRIBUTION` BuildConfig field. The build pins AGP 9.3.1, Kotlin 2.4.10, Gradle 9.7.0, SDK 37, and a specific NDK, and both CI workflows use JDK 21 to compile Java 17 bytecode.
+Aether is a single `:app` module plus a conditional `:local_gpu` dynamic feature. There are no Android product flavors. Distribution is selected by the `distribution` Gradle property, which adds a delivery source set and a `PLAY_DISTRIBUTION` BuildConfig field. The build pins AGP 9.3.1, Kotlin 2.4.10, Gradle 9.7.0, SDK 37, and a specific NDK, and both CI workflows use JDK 21 to compile Java 17 bytecode.
 
 ## Module Responsibilities
 
@@ -88,9 +88,9 @@ The release type is explicitly a local alpha distribution: it uses the debug sig
 
 An opt-in `benchmark` build type exists when `-PcardBenchmark` is set. It extends release, adds `.benchmark`, sets `isDebuggable = false`, becomes the `testBuildType`, and reuses the debug Java sources and manifest ([app/build.gradle.kts:108](../app/build.gradle.kts)#L108-L126)). Instrumentation tests for card frame measurements use this window so the test host never enters the release APK.
 
-Packaging excludes `libggml-vulkan.so` and `libharness_gpu_unavailable.so` from the base JNI libraries because they are delivered separately, and excludes common `META-INF` license and notice files. Build features are `buildConfig`, `compose`, `aidl`, and `prefab`; prefab supplies BoringSSL for the wireless ADB pairing code. `bundle { language { enableSplit = false } }` keeps all app languages in the base so the in-app language picker works without a Play download.
+Packaging excludes `libggml-vulkan.so` and `libaether_gpu_unavailable.so` from the base JNI libraries because they are delivered separately, and excludes common `META-INF` license and notice files. Build features are `buildConfig`, `compose`, `aidl`, and `prefab`; prefab supplies BoringSSL for the wireless ADB pairing code. `bundle { language { enableSplit = false } }` keeps all app languages in the base so the in-app language picker works without a Play download.
 
-Lint has `checkReleaseBuilds = false` because `lintVitalAnalyzeRelease` crashes inside lint's own JavaDoc parser on `HarnessUserService.kt`. This is documented as an AGP or lint bug, not a suppression of findings.
+Lint has `checkReleaseBuilds = false` because `lintVitalAnalyzeRelease` crashes inside lint's own JavaDoc parser on `AetherUserService.kt`. This is documented as an AGP or lint bug, not a suppression of findings.
 
 ## Native and GPU Packaging
 
@@ -98,7 +98,7 @@ The CMake source is `src/main/cpp/CMakeLists.txt`. When the NDK is present, ABI 
 
 `PrepareGpuRuntime` runs per variant and produces three outputs ([app/build.gradle.kts:266](../app/build.gradle.kts)#L266-L327)):
 
-- `libharness_gpu_unavailable.so` stubs for `armeabi-v7a` and `x86`, stripped with the pinned NDK's `llvm-strip`.
+- `libaether_gpu_unavailable.so` stubs for `armeabi-v7a` and `x86`, stripped with the pinned NDK's `llvm-strip`.
 - `libggml-vulkan.so` for `arm64-v8a` and `x86_64`, either from the native build or from an optional `gpuRuntimePackages` folder whose manifest must contain the pinned ggml core revision.
 - Content-addressed `gpu-<abi>-<sha256>.so.gz` files under `outputs/gpuRuntime/<variant>` plus per-ABI JSON manifests under `generated/gpuDelivery/<variant>/assets/gpu-runtime`.
 
@@ -131,7 +131,7 @@ There are exactly two workflow files.
 
 - Triggers: cron `0 2 * * *` UTC, `workflow_dispatch`, and pushes to `main` touching `app/**` or the workflow file.
 - Permissions: `contents: write`; concurrency group `nightly-build` with cancel in progress.
-- Steps: checkout v7, Temurin JDK 21, `gradle/actions/setup-gradle@v6`, install NDK `27.2.12479018`, install `glslc`, run `:app:testDebugUnitTest`, upload the test report on failure, run `:app:assembleDebug`, stamp the APK as `AndroidHarness-<UTC yyyymmdd-HHMM>-<shortsha>-debug.apk`, copy GPU `.gz` outputs into `dist/`, optionally publish the GPU packages to release ID 1 of `Sanuu7/AH-GPU-Runtime` when `GPU_RUNTIME_PUBLISH_TOKEN` is set, and upload `dist/*` as an artifact kept 30 days.
+- Steps: checkout v7, Temurin JDK 21, `gradle/actions/setup-gradle@v6`, install NDK `27.2.12479018`, install `glslc`, run `:app:testDebugUnitTest`, upload the test report on failure, run `:app:assembleDebug`, stamp the APK as `Aether-<UTC yyyymmdd-HHMM>-<shortsha>-debug.apk`, copy GPU `.gz` outputs into `dist/`, optionally publish the GPU packages to release ID 1 of `Sanuu7/AH-GPU-Runtime` when `GPU_RUNTIME_PUBLISH_TOKEN` is set, and upload `dist/*` as an artifact kept 30 days.
 
 **`gpu-runtime.yml`, display name "Publish GPU runtime packages"** ([gpu-runtime.yml:1](../.github/workflows/gpu-runtime.yml)#L1-L43)):
 
@@ -159,7 +159,7 @@ Neither workflow runs instrumented tests, publishes to Play, or creates a GitHub
 
 ## Boundary Conditions
 
-- Building without the exact NDK succeeds but omits native libraries; anything that loads `harness_adb`, `libggml-vulkan.so`, or the local backend must not assume they exist.
+- Building without the exact NDK succeeds but omits native libraries; anything that loads `aether_adb`, `libggml-vulkan.so`, or the local backend must not assume they exist.
 - A foreign `ANDROID_NDK_HOME` does not enable native code; only the SDK directory layout does.
 - Release builds are debug-signed, so a switch to a real release key changes the signer and breaks in-place updates from earlier builds.
 - `-PcardBenchmark` changes `testBuildType`, disables the fixture providers, and adds a non-debuggable benchmark variant. Instrumented runs that depend on fixtures fail in that mode by design.
@@ -197,5 +197,5 @@ Sources: [app/build.gradle.kts:8-327](../app/build.gradle.kts)#L8-L327), [build.
 - `scripts/test_legacy_storage.sh`
 - `scripts/test_message_truncation.py`
 - `app/src/androidTest/AndroidManifest.xml`
-- `app/src/test/java/com/androidharness/app/LiveUpdateVendorTest.kt`
-- `app/src/androidTest/java/com/androidharness/app/LiveUpdateDeviceTest.kt`
+- `app/src/test/java/com/aether/app/LiveUpdateVendorTest.kt`
+- `app/src/androidTest/java/com/aether/app/LiveUpdateDeviceTest.kt`

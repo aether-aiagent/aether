@@ -79,7 +79,7 @@ On commit, `ChatViewModel.selectModelForTarget` calls `ChatModelRepository.selec
 - `ProviderModelSearch.results` synthesizes an unavailable `ModelEntry` for a favourite or recent entry whose model is missing from a still-present provider. The row says "Unavailable. Refresh or choose another model" and cannot be selected.
 - A favourite or recent entry whose provider itself is gone is dropped from the collection rather than shown as a phantom row.
 - `ChatModelRepository.select` throws "This provider is no longer available. Choose another provider." when the provider ID is missing.
-- `ChatViewModel` refuses to start a run when a per-chat provider is missing, a selected local model was removed, or a pinned Harness model no longer exists. Each error is specific: "This chat's provider is unavailable", "The selected local model was removed", "This chat's model is no longer available".
+- `ChatViewModel` refuses to start a run when a per-chat provider is missing, a selected local model was removed, or a pinned Aether model no longer exists. Each error is specific: "This chat's provider is unavailable", "The selected local model was removed", "This chat's model is no longer available".
 - Unreadable `modelSelectionJson` is reported as "This chat's saved models could not be read. Choose a model again." An explicit new pick rewrites the snapshot without touching messages.
 - `setShared` refuses for agent conversations with "Agent conversations keep their own model."
 - `sharedFor` requires a session when the mode is per-chat. Passing a null session ID throws "Open a chat before choosing its model."
@@ -103,18 +103,18 @@ On commit, `ChatViewModel.selectModelForTarget` calls `ChatModelRepository.selec
 - The picker does not have a separate persisted "staging" object. Staging is `rememberSaveable` UI state inside the sheet and disappears on dismissal without a commit.
 - `ModelShortcuts` is device-local and is not part of `SettingsBackup`. Favourites and recents do not travel with a settings backup.
 
-Sources: [app/src/main/java/com/androidharness/app/ui/chat/components/ModelPickerSheet.kt](../app/src/main/java/com/androidharness/app/ui/chat/components/ModelPickerSheet.kt)#L74-L170), [app/src/main/java/com/androidharness/app/ui/chat/components/ModelPickerSheet.kt](../app/src/main/java/com/androidharness/app/ui/chat/components/ModelPickerSheet.kt)#L262-L398), [app/src/main/java/com/androidharness/app/data/ChatModelSelection.kt](../app/src/main/java/com/androidharness/app/data/ChatModelSelection.kt)#L14-L170), [app/src/main/java/com/androidharness/app/data/ModelShortcuts.kt](../app/src/main/java/com/androidharness/app/data/ModelShortcuts.kt)#L10-L50), [app/src/main/java/com/androidharness/app/llm/ProviderModelSearch.kt](../app/src/main/java/com/androidharness/app/llm/ProviderModelSearch.kt)#L10-L45), [app/src/main/java/com/androidharness/app/data/ProviderListPreferences.kt](../app/src/main/java/com/androidharness/app/data/ProviderListPreferences.kt)#L7-L34), [app/src/main/java/com/androidharness/app/data/SessionRepository.kt](../app/src/main/java/com/androidharness/app/data/SessionRepository.kt)#L208-L229), [app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt](../app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt)#L2244-L2261), [app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt](../app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt)#L1440-L1488), [app/src/main/java/com/androidharness/app/ui/chat/ChatScreen.kt](../app/src/main/java/com/androidharness/app/ui/chat/ChatScreen.kt)#L749-L794)
+Sources: [app/src/main/java/com/aether/app/ui/chat/components/ModelPickerSheet.kt](../app/src/main/java/com/aether/app/ui/chat/components/ModelPickerSheet.kt)#L74-L170), [app/src/main/java/com/aether/app/ui/chat/components/ModelPickerSheet.kt](../app/src/main/java/com/aether/app/ui/chat/components/ModelPickerSheet.kt)#L262-L398), [app/src/main/java/com/aether/app/data/ChatModelSelection.kt](../app/src/main/java/com/aether/app/data/ChatModelSelection.kt)#L14-L170), [app/src/main/java/com/aether/app/data/ModelShortcuts.kt](../app/src/main/java/com/aether/app/data/ModelShortcuts.kt)#L10-L50), [app/src/main/java/com/aether/app/llm/ProviderModelSearch.kt](../app/src/main/java/com/aether/app/llm/ProviderModelSearch.kt)#L10-L45), [app/src/main/java/com/aether/app/data/ProviderListPreferences.kt](../app/src/main/java/com/aether/app/data/ProviderListPreferences.kt)#L7-L34), [app/src/main/java/com/aether/app/data/SessionRepository.kt](../app/src/main/java/com/aether/app/data/SessionRepository.kt)#L208-L229), [app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt](../app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt)#L2244-L2261), [app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt](../app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt)#L1440-L1488), [app/src/main/java/com/aether/app/ui/chat/ChatScreen.kt](../app/src/main/java/com/aether/app/ui/chat/ChatScreen.kt)#L749-L794)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/ui/chat/components/ModelPickerSheet.kt`
-- `app/src/main/java/com/androidharness/app/data/ChatModelSelection.kt`
-- `app/src/main/java/com/androidharness/app/data/ModelShortcuts.kt`
-- `app/src/main/java/com/androidharness/app/data/ModelVisibility.kt`
-- `app/src/main/java/com/androidharness/app/data/ProviderListPreferences.kt`
-- `app/src/main/java/com/androidharness/app/llm/ProviderModelSearch.kt`
-- `app/src/main/java/com/androidharness/app/data/SessionRepository.kt`
-- `app/src/main/java/com/androidharness/app/data/SettingsRepository.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatScreen.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/FallbackEditorSheet.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/ModelPickerSheet.kt`
+- `app/src/main/java/com/aether/app/data/ChatModelSelection.kt`
+- `app/src/main/java/com/aether/app/data/ModelShortcuts.kt`
+- `app/src/main/java/com/aether/app/data/ModelVisibility.kt`
+- `app/src/main/java/com/aether/app/data/ProviderListPreferences.kt`
+- `app/src/main/java/com/aether/app/llm/ProviderModelSearch.kt`
+- `app/src/main/java/com/aether/app/data/SessionRepository.kt`
+- `app/src/main/java/com/aether/app/data/SettingsRepository.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatScreen.kt`
+- `app/src/main/java/com/aether/app/ui/settings/FallbackEditorSheet.kt`

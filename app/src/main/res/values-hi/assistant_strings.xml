@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="assistant_service_label">"AndroidHarness"</string>
+    <string name="assistant_service_label">"Aether"</string>
     <string name="assistant_input_hint">"इस स्क्रीन के बारे में पूछें"</string>
     <string name="assistant_input_hint_follow_up">"अगला सवाल पूछें"</string>
     <string name="assistant_send">"भेजें"</string>
@@ -17,12 +17,12 @@
     <string name="assistant_keyboard">"इसके बजाय टाइप करें"</string>
     <string name="assistant_listening">"सुन रहा है"</string>
     <string name="assistant_tap_to_talk">"बोलने के लिए माइक पर टैप करें"</string>
-    <string name="assistant_mic_permission">"AndroidHarness को माइक्रोफ़ोन चाहिए। ऐप खोलें, चैट में माइक पर एक बार टैप करें और अनुमति दें।"</string>
+    <string name="assistant_mic_permission">"Aether को माइक्रोफ़ोन चाहिए। ऐप खोलें, चैट में माइक पर एक बार टैप करें और अनुमति दें।"</string>
     <string name="assistant_working">"इस पर काम हो रहा है"</string>
-    <string name="assistant_no_model">"पहले AndroidHarness में चैट मॉडल चुनें।"</string>
-    <string name="assistant_no_key">"पहले AndroidHarness में %1$s कनेक्ट करें।"</string>
+    <string name="assistant_no_model">"पहले Aether में चैट मॉडल चुनें।"</string>
+    <string name="assistant_no_key">"पहले Aether में %1$s कनेक्ट करें।"</string>
     <string name="assistant_failed">"आपका सवाल नहीं भेजा जा सका। फिर से कोशिश करें।"</string>
-    <string name="assistant_open_failed">"AndroidHarness नहीं खुल सका।"</string>
+    <string name="assistant_open_failed">"Aether नहीं खुल सका।"</string>
     <string name="assistant_thinking_level">"सोच: %1$s"</string>
     <string name="assistant_thinking_auto">"खुद सोचता है"</string>
     <string name="assistant_thinking_pick">"सोच की मात्रा चुनें"</string>
@@ -35,10 +35,10 @@
     <string name="assistant_settings_title">"अन्य ऐप्स के ऊपर सहायक"</string>
     <string name="assistant_settings_page_desc">"अपना ऐप छोड़े बिना किसी भी स्क्रीन के बारे में पूछें"</string>
     <string name="assistant_settings_desc">"पावर या होम बटन दबाकर रखें, या निचले कोने से ऊपर स्वाइप करें, और स्क्रीन पर जो है उसके बारे में पूछें।"</string>
-    <string name="assistant_settings_on">"AndroidHarness आपका डिजिटल सहायक है"</string>
-    <string name="assistant_settings_off">"इसे चालू करने के लिए AndroidHarness को डिजिटल सहायक ऐप बनाएं"</string>
+    <string name="assistant_settings_on">"Aether आपका डिजिटल सहायक है"</string>
+    <string name="assistant_settings_off">"इसे चालू करने के लिए Aether को डिजिटल सहायक ऐप बनाएं"</string>
     <string name="assistant_settings_open">"सहायक ऐप चुनें"</string>
-    <string name="assistant_settings_steps">"Android सेटिंग्स में डिजिटल सहायक ऐप खोलें और AndroidHarness चुनें। स्क्रीन से टेक्स्ट का उपयोग करें और स्क्रीनशॉट का उपयोग करें चालू करें ताकि यह वही देख सके जो आप देखते हैं।"</string>
+    <string name="assistant_settings_steps">"Android सेटिंग्स में डिजिटल सहायक ऐप खोलें और Aether चुनें। स्क्रीन से टेक्स्ट का उपयोग करें और स्क्रीनशॉट का उपयोग करें चालू करें ताकि यह वही देख सके जो आप देखते हैं।"</string>
     <string name="assistant_settings_privacy">"स्क्रीन केवल तब कैप्चर होती है जब आप सहायक को बुलाते हैं, और मॉडल को केवल तब भेजी जाती है जब आपका सवाल उसके बारे में हो। स्क्रीनशॉट रोकने वाले ऐप्स छिपे रहते हैं।"</string>
     <string name="assistant_settings_voice_first">"आवाज़ से शुरू करें"</string>
     <string name="assistant_settings_voice_first_desc">"सहायक खुलते ही सुनता है। आप फिर भी कीबोर्ड पर जा सकते हैं।"</string>
@@ -54,8 +54,8 @@
     <string name="settings_read_image_text">"छवियों में टेक्स्ट पढ़ें"</string>
     <string name="settings_read_image_text_desc">"जो मॉडल छवियां नहीं देख सकते, उनके लिए आपकी तस्वीरों और स्क्रीनशॉट का टेक्स्ट इस फ़ोन पर पढ़कर भेजा जाता है। ऑफ़लाइन भी काम करता है।"</string>
     <string name="chat_attachment_read_as_text">"यह मॉडल छवियां नहीं देख सकता, इसलिए केवल उनका टेक्स्ट भेजा जाता है।"</string>
-    <string name="assistant_check_unsupported">"यह फ़ोन अन्य ऐप्स को डिजिटल सहायक बनने नहीं देता। यह फ़ोन की सीमा है, AndroidHarness की नहीं। आप ऐप खोलकर अभी भी स्क्रीन के बारे में पूछ सकते हैं।"</string>
-    <string name="assistant_check_profile">"AndroidHarness किसी कार्य प्रोफ़ाइल, Secure Folder, निजी स्थान या दूसरे स्थान में इंस्टॉल है। केवल मुख्य प्रोफ़ाइल के ऐप सहायक बन सकते हैं, इसलिए इसे वहाँ इंस्टॉल करें।"</string>
+    <string name="assistant_check_unsupported">"यह फ़ोन अन्य ऐप्स को डिजिटल सहायक बनने नहीं देता। यह फ़ोन की सीमा है, Aether की नहीं। आप ऐप खोलकर अभी भी स्क्रीन के बारे में पूछ सकते हैं।"</string>
+    <string name="assistant_check_profile">"Aether किसी कार्य प्रोफ़ाइल, Secure Folder, निजी स्थान या दूसरे स्थान में इंस्टॉल है। केवल मुख्य प्रोफ़ाइल के ऐप सहायक बन सकते हैं, इसलिए इसे वहाँ इंस्टॉल करें।"</string>
     <string name="assistant_check_samsung">"Samsung पर: सेटिंग्स, फिर ऐप्स, फिर डिफ़ॉल्ट ऐप्स चुनें, फिर डिजिटल सहायक ऐप।"</string>
     <string name="assistant_check_generic">"नहीं मिला? सेटिंग्स खोलें और डिजिटल सहायक या असिस्ट खोजें। यह वॉइस इनपुट से अलग सूची है।"</string>
     <string name="assistant_check_copy">"विवरण कॉपी करें"</string>

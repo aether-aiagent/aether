@@ -71,7 +71,7 @@ Both providers emit `ThinkingConfigured` before any network event. This lets the
 - `metadata.user_id` when `cacheKey` is present, truncated to 64 characters.
 - Finally `options.applyReasoningMapping`, which can add a custom CEL-mapped object.
 
-`buildRequest` (`AnthropicProvider.kt#L451`) appends `/v1/messages` to the trimmed base URL, sets `x-api-key`, always sets `anthropic-version: 2023-06-01`, adds OpenCode session headers when `HarnessProvider.isOpenCode(config)`, and applies custom headers through `ProviderHeaders.apply`. Custom headers are disabled for managed provider ids by `ProviderHeaders.editable`.
+`buildRequest` (`AnthropicProvider.kt#L451`) appends `/v1/messages` to the trimmed base URL, sets `x-api-key`, always sets `anthropic-version: 2023-06-01`, adds OpenCode session headers when `AetherProvider.isOpenCode(config)`, and applies custom headers through `ProviderHeaders.apply`. Custom headers are disabled for managed provider ids by `ProviderHeaders.editable`.
 
 ## Anthropic Message Conversion
 
@@ -162,7 +162,7 @@ The `nativeCallIds` gate avoids inventing ids that the original Gemini response 
 - `options.applyReasoningMapping` runs after the native body is built, so a CEL expression can add or override fields without editing the provider.
 - `ProviderHeaders.apply` adds per-connection headers before the request is posted.
 - Native state capture can be extended by adding fields to the content block accumulators; keep the `format` string stable because `ProviderMessageState.matches` depends on it.
-- `HarnessProvider.isOpenCode` adds session headers for Anthropic requests through an OpenCode-compatible relay. The same hook exists in every provider.
+- `AetherProvider.isOpenCode` adds session headers for Anthropic requests through an OpenCode-compatible relay. The same hook exists in every provider.
 
 ## Known gaps
 
@@ -170,13 +170,13 @@ The `nativeCallIds` gate avoids inventing ids that the original Gemini response 
 - No Gemini safety settings or sampling parameters are exposed in the request body or the UI, so those behaviors are endpoint defaults and cannot be adjusted per connection.
 - Anthropic `metadata.user_id` is capped at 64 characters by truncation, not hashing. Two long session ids sharing a 64-character prefix would share the routing hint, though this is unlikely with UUID session ids.
 
-Sources: [app/src/main/java/com/androidharness/app/llm/AnthropicProvider.kt](../app/src/main/java/com/androidharness/app/llm/AnthropicProvider.kt)#L30-L466), [app/src/main/java/com/androidharness/app/llm/GeminiProvider.kt](../app/src/main/java/com/androidharness/app/llm/GeminiProvider.kt)#L26-L275), [CHANGELOG.md](../CHANGELOG.md)#L50), [app/src/main/java/com/androidharness/app/llm/Llm.kt](../app/src/main/java/com/androidharness/app/llm/Llm.kt)#L236-L284), [app/src/main/java/com/androidharness/app/llm/ProviderHeaders.kt](../app/src/main/java/com/androidharness/app/llm/ProviderHeaders.kt)#L41-L55)
+Sources: [app/src/main/java/com/aether/app/llm/AnthropicProvider.kt](../app/src/main/java/com/aether/app/llm/AnthropicProvider.kt)#L30-L466), [app/src/main/java/com/aether/app/llm/GeminiProvider.kt](../app/src/main/java/com/aether/app/llm/GeminiProvider.kt)#L26-L275), [CHANGELOG.md](../CHANGELOG.md)#L50), [app/src/main/java/com/aether/app/llm/Llm.kt](../app/src/main/java/com/aether/app/llm/Llm.kt)#L236-L284), [app/src/main/java/com/aether/app/llm/ProviderHeaders.kt](../app/src/main/java/com/aether/app/llm/ProviderHeaders.kt)#L41-L55)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/llm/AnthropicProvider.kt`
-- `app/src/main/java/com/androidharness/app/llm/GeminiProvider.kt`
-- `app/src/main/java/com/androidharness/app/llm/Llm.kt`
-- `app/src/main/java/com/androidharness/app/llm/ProviderHeaders.kt`
-- `app/src/main/java/com/androidharness/app/llm/HarnessProvider.kt`
+- `app/src/main/java/com/aether/app/llm/AnthropicProvider.kt`
+- `app/src/main/java/com/aether/app/llm/GeminiProvider.kt`
+- `app/src/main/java/com/aether/app/llm/Llm.kt`
+- `app/src/main/java/com/aether/app/llm/ProviderHeaders.kt`
+- `app/src/main/java/com/aether/app/llm/AetherProvider.kt`
 - `CHANGELOG.md`

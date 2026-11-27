@@ -89,7 +89,7 @@ Headings use a compressed scale rather than a full type ladder: 20/28 sp, 18/26 
 `styled` (lines 990 to 1218) builds an `AnnotatedString` plus a map of `InlineTextContent` placeholders. The `walk` function handles, in priority order:
 
 1. Markdown links, with nested spans recursed so a link inside bold still resolves. A workspace file reference becomes a `LinkAnnotation.Clickable` instead of a URL.
-2. `**bold**`, `~~strikethrough~~`, `` `code` ``, and `*italic*`. Code spans use `HarnessMono` with the surface container background and hair spaces as padding.
+2. `**bold**`, `~~strikethrough~~`, `` `code` ``, and `*italic*`. Code spans use `AetherMono` with the surface container background and hair spaces as padding.
 3. Bare URLs, using `bareUrlAt` so trailing sentence punctuation is excluded and a balanced closing parenthesis is kept.
 4. Inline math with `\(...\)` or `$...$`, validated by `isValidInlineMath`: nonblank, no leading or trailing whitespace, at most 2,000 characters (lines 1233 to 1234). `findDollarClose` stops at a newline so a stray dollar cannot swallow the answer (lines 1220 to 1231).
 
@@ -104,7 +104,7 @@ Math placeholders measure themselves. `MathInlineView` reports width and height,
 - Collapses at `CODE_BLOCK_COLLAPSED_LINES` (40 lines) with a "more lines" control.
 - Skips tokenization above `CODE_BLOCK_HIGHLIGHT_LIMIT` (400 lines) and renders plain, because highlighting runs on the main thread.
 - Uses `CodeTokenizer.langForName` and `CodeTokenizer.tokenizeLine`, the same tokenizer as the file editor, and `CodeTokenColors.of` for theme-aware token colors (lines 787 to 824).
-- Renders in `HarnessMono`, `softWrap = false`, inside a horizontal scroll, and wraps the content in `LeftToRightContent` so code stays left-to-right in RTL locales.
+- Renders in `AetherMono`, `softWrap = false`, inside a horizontal scroll, and wraps the content in `LeftToRightContent` so code stays left-to-right in RTL locales.
 - The language label defaults to "code" when the fence has no language.
 
 ### Tables
@@ -177,15 +177,15 @@ The timeline itself is built by `ChatActivityPresentation.timeline(messages, run
 
 - `FEATURES.md` line 90 says Markdown file previews use the chat renderer up to 400k characters. That limit lives in the file viewer, not in `MarkdownText`, which has no input length guard of its own. The streaming caps apply only while `streaming` is true.
 
-Sources: [app/src/main/java/com/androidharness/app/ui/chat/MarkdownText.kt](../app/src/main/java/com/androidharness/app/ui/chat/MarkdownText.kt)#L120-L159), [app/src/main/java/com/androidharness/app/ui/chat/MarkdownStreaming.kt](../app/src/main/java/com/androidharness/app/ui/chat/MarkdownStreaming.kt)#L4-L47), [app/src/main/java/com/androidharness/app/ui/chat/MarkdownTableLayout.kt](../app/src/main/java/com/androidharness/app/ui/chat/MarkdownTableLayout.kt)#L4-L64), [app/src/main/java/com/androidharness/app/ui/chat/components/RichRenderView.kt](../app/src/main/java/com/androidharness/app/ui/chat/components/RichRenderView.kt)#L58-L140)
+Sources: [app/src/main/java/com/aether/app/ui/chat/MarkdownText.kt](../app/src/main/java/com/aether/app/ui/chat/MarkdownText.kt)#L120-L159), [app/src/main/java/com/aether/app/ui/chat/MarkdownStreaming.kt](../app/src/main/java/com/aether/app/ui/chat/MarkdownStreaming.kt)#L4-L47), [app/src/main/java/com/aether/app/ui/chat/MarkdownTableLayout.kt](../app/src/main/java/com/aether/app/ui/chat/MarkdownTableLayout.kt)#L4-L64), [app/src/main/java/com/aether/app/ui/chat/components/RichRenderView.kt](../app/src/main/java/com/aether/app/ui/chat/components/RichRenderView.kt)#L58-L140)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/ui/chat/MarkdownText.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/MarkdownStreaming.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/MarkdownTableLayout.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/ThinkingBlock.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/ChatAnswerVersions.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/RichRenderView.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/Bubbles.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/rich/RichResponseContent.kt`
+- `app/src/main/java/com/aether/app/ui/chat/MarkdownText.kt`
+- `app/src/main/java/com/aether/app/ui/chat/MarkdownStreaming.kt`
+- `app/src/main/java/com/aether/app/ui/chat/MarkdownTableLayout.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/ThinkingBlock.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/ChatAnswerVersions.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/RichRenderView.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/Bubbles.kt`
+- `app/src/main/java/com/aether/app/ui/chat/rich/RichResponseContent.kt`

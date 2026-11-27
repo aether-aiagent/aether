@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">"Willkommen bei AndroidHarness"</string>
+    <string name="setup_welcome_title">"Willkommen bei Aether"</string>
     <string name="setup_welcome_body">"Dein Coding-Agent, direkt auf deinem Smartphone. Richten wir dich ein."</string>
     <string name="setup_start_fresh">"Neu beginnen"</string>
-    <string name="setup_start_fresh_body">"Ein brandneues AndroidHarness einrichten"</string>
-    <string name="setup_restore">"AndroidHarness wiederherstellen"</string>
+    <string name="setup_start_fresh_body">"Ein brandneues Aether einrichten"</string>
+    <string name="setup_restore">"Aether wiederherstellen"</string>
     <string name="setup_restore_body">"Chats und Einstellungen aus einer Sicherungsdatei zurückholen"</string>
 
     <string name="setup_storage_title">"Dateizugriff erlauben"</string>
-    <string name="setup_storage_body">"Optional. Ohne sie arbeitet AndroidHarness in seinem eigenen Ordner und fragt nach, wenn eine Aufgabe deine Dateien braucht."</string>
+    <string name="setup_storage_body">"Optional. Ohne sie arbeitet Aether in seinem eigenen Ordner und fragt nach, wenn eine Aufgabe deine Dateien braucht."</string>
     <string name="setup_storage_all_files">"Zugriff auf alle Dateien"</string>
     <string name="setup_storage_all_files_body">"Jeden Ordner lesen und bearbeiten, so wie Terminal und Dateiwerkzeuge es erwarten. Am besten zum Programmieren."</string>
     <string name="setup_storage_legacy">"Speicherberechtigung"</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">"Deine Daten wiederherstellen"</string>
     <string name="setup_restore_subtitle">"Wähle die Sicherungsdateien von deinem alten Telefon. Stelle eine, beide oder keine wieder her."</string>
     <string name="setup_restore_chats">"Chats"</string>
-    <string name="setup_restore_chats_body">"Eine .harnessbackup-Datei mit Chats, Bildern, Nutzungsstatistiken, Erinnerungen und Snippets"</string>
+    <string name="setup_restore_chats_body">"Eine .aetherbackup-Datei mit Chats, Bildern, Nutzungsstatistiken, Erinnerungen und Snippets"</string>
     <string name="setup_restore_settings">"Einstellungen &amp; Anbieter"</string>
     <string name="setup_restore_settings_body">"Eine passwortgeschützte .hbackup-Datei mit Anbietern, API-Schlüsseln und Einstellungen"</string>
     <string name="setup_restore_choose">"Datei wählen"</string>

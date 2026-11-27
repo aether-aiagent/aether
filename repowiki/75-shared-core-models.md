@@ -8,10 +8,10 @@ The `core` package is the dependency floor of the app. `Models.kt` holds `ChatMe
 
 - **`Models.kt`**: the provider-neutral message graph. `ChatMessage` (line 53), `ToolCallData` (line 8), `ToolCodeChange` (line 23), `ImageRef` (line 27), `ImageData` (line 44) and the `Role` enum (line 5).
 - **`GenerationMetadata.kt`**: `ProviderMessageState` (line 10), `SuppliedMemory` (line 44) and `GenerationMetadata` (line 47), with JSON encode/decode at lines 63 and 66.
-- **`ResearchReceipt.kt`**: harness-owned research evidence (line 7). **`SettingsReceipt.kt`**: `SettingsReceipt` (line 7), `SettingChange` (line 16), `SettingTodo` (line 20).
+- **`ResearchReceipt.kt`**: aether-owned research evidence (line 7). **`SettingsReceipt.kt`**: `SettingsReceipt` (line 7), `SettingChange` (line 16), `SettingTodo` (line 20).
 - **`FollowUpSuggestions.kt`**: parses and strips the `::followups` directive (line 15).
 - **`ChatTurnActions.kt`**: pure turn identity and lookup helpers (line 4).
-- **`ChatResponseImages.kt`**: opaque `harness-image:` reference resolution (line 4).
+- **`ChatResponseImages.kt`**: opaque `aether-image:` reference resolution (line 4).
 - **`ChangeQuestion.kt`**: builds the "ask about this change" prompt (line 3).
 - **`TextLines.kt`**: POSIX-correct `splitLines` (line 18). **`ToolOutputText.kt`**: bounded output chunking (line 5). **`ReasoningTextChunks.kt`**: bounded reasoning chunking plus a streaming cache (line 4).
 - **`WorkspaceFileReference.kt`**: parses `path:line` references from Markdown links, inline code and prose (line 7).
@@ -57,13 +57,13 @@ flowchart TD
 | `ImageRef` | name, mime, imageId, sourceUrl, caption, dimensions, bytes, origin, original* variants | `imagesJson` | Bytes live in `ImageStore` keyed by `name`; only metadata is in the row |
 | `ProviderMessageState` | providerId, endpointHash, model, format, items, contentDigest | inside `generationJson` | Bound to one provider, endpoint, model and format; never replayed across endpoints |
 | `GenerationMetadata` | state, reasoningTokens, reasoningSetting, suppliedMemories, execution, model, followUps, research, settings | `generationJson` | `null` means the provider reported no separate count; `0` is a real count |
-| `ResearchReceipt` | sourcesUsed, sourcesMax, pagesRead, readsRequired, pageUrl, pageRead, backend | inside `GenerationMetadata` | Harness evidence, kept separate from untrusted page text |
+| `ResearchReceipt` | sourcesUsed, sourcesMax, pagesRead, readsRequired, pageUrl, pageRead, backend | inside `GenerationMetadata` | Aether evidence, kept separate from untrusted page text |
 | `SettingsReceipt` | changes, needsUser, skipped | inside `GenerationMetadata` | Refused changes are reported, not hidden |
 | `WorkspaceFileReference` | path, optional one-based line | not persisted | The line, when present, is greater than zero |
 
 `ChatTurnActions` is pure lookup logic. `answerVersionKey` (line 5) hashes the previous message id plus the question with SHA-256, with a NUL separator, and becomes the `groupKey` for `chat_answer_versions` (`SessionRepository.kt:814`). `userMessageFor` (line 11) returns the last USER message with a matching `turnId`, which regeneration uses.
 
-`ChatResponseImages` defines the `harness-image:img_...` URL scheme. `imageId` (line 7) accepts ids of 1 to 128 characters from a fixed alphabet, `stableId` (line 9) derives `img_` plus 12 hex bytes from a SHA-256 digest, and `available` (line 12) rejects blank names, `.`, `..` and names containing a slash or backslash. `referenced` (line 18) ignores fenced code and inline code so an image URL inside a code sample does not render. `ChangeQuestion.prompt` caps the diff at 16,000 characters, or 8,000 per side for a selected section, and states that the pasted source is untrusted reference data.
+`ChatResponseImages` defines the `aether-image:img_...` URL scheme. `imageId` (line 7) accepts ids of 1 to 128 characters from a fixed alphabet, `stableId` (line 9) derives `img_` plus 12 hex bytes from a SHA-256 digest, and `available` (line 12) rejects blank names, `.`, `..` and names containing a slash or backslash. `referenced` (line 18) ignores fenced code and inline code so an image URL inside a code sample does not render. `ChangeQuestion.prompt` caps the diff at 16,000 characters, or 8,000 per side for a selected section, and states that the pasted source is untrusted reference data.
 
 `splitLines` (line 18) treats a trailing newline as a terminator, not a separator. It returns `["a","b"]` for `"a\nb\n"`, `[]` for `""`, and `[""]` for `"\n"`. Matching git's line model is what keeps `Diff.kt`, `FileTools.kt`, `PatchTools.kt` and `FuzzyEdit.kt` from seeing a phantom trailing line. `ToolOutputText.chunks` targets 2,048 characters per chunk, prefers to break after the next newline within another 2,048 characters, and never splits a surrogate pair. `ReasoningTextChunks` uses 512 to 1,024 character chunks, preferring newline or space boundaries, and its `Stream` class reuses all completed chunks when text only grows, so the live transcript re-splits only the tail.
 
@@ -73,7 +73,7 @@ flowchart TD
 
 `ProjectLaunch` parses `scripts` from `package.json`, validates names against `[A-Za-z0-9:_-]{1,80}`, and orders `dev`, `start`, `preview` first. `previewUrl` strips ANSI escapes and rewrites `0.0.0.0` to `127.0.0.1`. `NpmLaunchShell.preload` monkey-patches `child_process.spawn` so npm lifecycle scripts run through the packaged bash and its shims.
 
-In `core/response`, `ResponseAttachment` embeds a serialized selection and context into the user text between `[[harness-response]]` and `[[/harness-response]]` markers. Decode rejects payloads over 12,000 characters, blank titles, titles over 100 characters and contexts over 1,500 characters. `UserMessageContent` composes this with `ArtifactAttachment` for both display and edit. `ResponseDiff.lines` is an LCS diff with a hard cap of 400 lines per side and markers `" "`, `"-"` and `"+"`. `ResponseTableData` classifies pass, fail and unverified status prefixes, filters rows by case-insensitive substring, sorts numbers numerically before text, and exports CSV with CRLF and doubled quotes. `CalculatorMath` parses only arithmetic, parentheses, `min`, `max`, `abs`, `sqrt`, `round`, named variables and `^`, with limits of 300 characters, 128 nodes, 16 nesting levels, finite results and magnitude at most 1e15. `RichResponse` defines the `harness-ui`, `harness-html` and `harness-svg` languages, `MAX_JSON_CHARS` of 96,000 and `MAX_VISUAL_CHARS` of 64,000; `decode` (line 139) returns null on any invalid component, and `parse` (line 95) withholds incomplete fences while streaming. `ChatRichResponse.normalize` recovers components that arrive without a fence, with `type` reordered, or in the line-oriented `::card` directive form.
+In `core/response`, `ResponseAttachment` embeds a serialized selection and context into the user text between `[[aether-response]]` and `[[/aether-response]]` markers. Decode rejects payloads over 12,000 characters, blank titles, titles over 100 characters and contexts over 1,500 characters. `UserMessageContent` composes this with `ArtifactAttachment` for both display and edit. `ResponseDiff.lines` is an LCS diff with a hard cap of 400 lines per side and markers `" "`, `"-"` and `"+"`. `ResponseTableData` classifies pass, fail and unverified status prefixes, filters rows by case-insensitive substring, sorts numbers numerically before text, and exports CSV with CRLF and doubled quotes. `CalculatorMath` parses only arithmetic, parentheses, `min`, `max`, `abs`, `sqrt`, `round`, named variables and `^`, with limits of 300 characters, 128 nodes, 16 nesting levels, finite results and magnitude at most 1e15. `RichResponse` defines the `aether-ui`, `aether-html` and `aether-svg` languages, `MAX_JSON_CHARS` of 96,000 and `MAX_VISUAL_CHARS` of 64,000; `decode` (line 139) returns null on any invalid component, and `parse` (line 95) withholds incomplete fences while streaming. `ChatRichResponse.normalize` recovers components that arrive without a fence, with `type` reordered, or in the line-oriented `::card` directive form.
 
 ## Boundary Conditions
 
@@ -98,30 +98,30 @@ In `core/response`, `ResponseAttachment` embeds a serialized selection and conte
 - No literal `CORE-3` marker exists anywhere in the repository. The reasoning chunk file described by that label is `ReasoningTextChunks.kt`; its `Stream` usage is in `ChatActivity.kt:76` and `ChatActivity.kt:129`. The mapping of `CORE-3` to this file is inferred from the topic, not from a source comment.
 - `ChatThinkingMetrics.kt` in the same package is not part of the requested file list, so its totals and compact formatting are only noted here.
 
-Sources: [app/src/main/java/com/androidharness/app/core/Models.kt](../app/src/main/java/com/androidharness/app/core/Models.kt)#L1-L78), [app/src/main/java/com/androidharness/app/core/GenerationMetadata.kt](../app/src/main/java/com/androidharness/app/core/GenerationMetadata.kt)#L1-L69), [app/src/main/java/com/androidharness/app/data/SessionRepository.kt](../app/src/main/java/com/androidharness/app/data/SessionRepository.kt)#L261-L309)
+Sources: [app/src/main/java/com/aether/app/core/Models.kt](../app/src/main/java/com/aether/app/core/Models.kt)#L1-L78), [app/src/main/java/com/aether/app/core/GenerationMetadata.kt](../app/src/main/java/com/aether/app/core/GenerationMetadata.kt)#L1-L69), [app/src/main/java/com/aether/app/data/SessionRepository.kt](../app/src/main/java/com/aether/app/data/SessionRepository.kt)#L261-L309)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/core/Models.kt`
-- `app/src/main/java/com/androidharness/app/core/GenerationMetadata.kt`
-- `app/src/main/java/com/androidharness/app/core/ResearchReceipt.kt`
-- `app/src/main/java/com/androidharness/app/core/SettingsReceipt.kt`
-- `app/src/main/java/com/androidharness/app/core/FollowUpSuggestions.kt`
-- `app/src/main/java/com/androidharness/app/core/ChatTurnActions.kt`
-- `app/src/main/java/com/androidharness/app/core/ChatResponseImages.kt`
-- `app/src/main/java/com/androidharness/app/core/ChangeQuestion.kt`
-- `app/src/main/java/com/androidharness/app/core/TextLines.kt`
-- `app/src/main/java/com/androidharness/app/core/ToolOutputText.kt`
-- `app/src/main/java/com/androidharness/app/core/ReasoningTextChunks.kt`
-- `app/src/main/java/com/androidharness/app/core/WorkspaceFileReference.kt`
-- `app/src/main/java/com/androidharness/app/core/LocalPortProbe.kt`
-- `app/src/main/java/com/androidharness/app/core/NpmLaunchShell.kt`
-- `app/src/main/java/com/androidharness/app/core/ProjectLaunch.kt`
-- `app/src/main/java/com/androidharness/app/core/response/ResponseAttachment.kt`
-- `app/src/main/java/com/androidharness/app/core/response/ResponseDiff.kt`
-- `app/src/main/java/com/androidharness/app/core/response/ResponseTableData.kt`
-- `app/src/main/java/com/androidharness/app/core/response/CalculatorMath.kt`
-- `app/src/main/java/com/androidharness/app/core/response/RichResponse.kt`
-- `app/src/main/java/com/androidharness/app/core/response/ChatRichResponse.kt`
-- `app/src/main/java/com/androidharness/app/data/db/Database.kt`
-- `app/src/main/java/com/androidharness/app/data/SessionRepository.kt`
+- `app/src/main/java/com/aether/app/core/Models.kt`
+- `app/src/main/java/com/aether/app/core/GenerationMetadata.kt`
+- `app/src/main/java/com/aether/app/core/ResearchReceipt.kt`
+- `app/src/main/java/com/aether/app/core/SettingsReceipt.kt`
+- `app/src/main/java/com/aether/app/core/FollowUpSuggestions.kt`
+- `app/src/main/java/com/aether/app/core/ChatTurnActions.kt`
+- `app/src/main/java/com/aether/app/core/ChatResponseImages.kt`
+- `app/src/main/java/com/aether/app/core/ChangeQuestion.kt`
+- `app/src/main/java/com/aether/app/core/TextLines.kt`
+- `app/src/main/java/com/aether/app/core/ToolOutputText.kt`
+- `app/src/main/java/com/aether/app/core/ReasoningTextChunks.kt`
+- `app/src/main/java/com/aether/app/core/WorkspaceFileReference.kt`
+- `app/src/main/java/com/aether/app/core/LocalPortProbe.kt`
+- `app/src/main/java/com/aether/app/core/NpmLaunchShell.kt`
+- `app/src/main/java/com/aether/app/core/ProjectLaunch.kt`
+- `app/src/main/java/com/aether/app/core/response/ResponseAttachment.kt`
+- `app/src/main/java/com/aether/app/core/response/ResponseDiff.kt`
+- `app/src/main/java/com/aether/app/core/response/ResponseTableData.kt`
+- `app/src/main/java/com/aether/app/core/response/CalculatorMath.kt`
+- `app/src/main/java/com/aether/app/core/response/RichResponse.kt`
+- `app/src/main/java/com/aether/app/core/response/ChatRichResponse.kt`
+- `app/src/main/java/com/aether/app/data/db/Database.kt`
+- `app/src/main/java/com/aether/app/data/SessionRepository.kt`

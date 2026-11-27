@@ -18,7 +18,7 @@
 ```mermaid
 flowchart TD
     A[MainActivity.onCreate] --> B[enableEdgeToEdge]
-    A --> C[HarnessTheme from AppSettings]
+    A --> C[AetherTheme from AppSettings]
     C --> D[AppNav container]
     D --> E[rememberNavController]
     D --> F[settings gate: null renders empty Box]
@@ -43,9 +43,9 @@ flowchart TD
 
 ## Invocation Chain
 
-1. `MainActivity.onCreate` reads `container` from `HarnessApp`, starts a foreground update check 2000 ms after resume, and asks for `POST_NOTIFICATIONS` on API 33 and later when notifications are enabled.
-2. It routes the launch Intent: `handleSessionIntent` for `AgentService.EXTRA_SESSION_ID`, `handleMcpOAuth` for `androidharness://mcp`, and `handleShareIntent` for a share target.
-3. `setContent` applies `HarnessTheme`, checks biometric unlock, sets `FLAG_SECURE` from `ScreenshotPolicy.blocked`, binds the `WebView` read-capture host, and calls `AppNav(container)`.
+1. `MainActivity.onCreate` reads `container` from `AetherApp`, starts a foreground update check 2000 ms after resume, and asks for `POST_NOTIFICATIONS` on API 33 and later when notifications are enabled.
+2. It routes the launch Intent: `handleSessionIntent` for `AgentService.EXTRA_SESSION_ID`, `handleMcpOAuth` for `aether://mcp`, and `handleShareIntent` for a share target.
+3. `setContent` applies `AetherTheme`, checks biometric unlock, sets `FLAG_SECURE` from `ScreenshotPolicy.blocked`, binds the `WebView` read-capture host, and calls `AppNav(container)`.
 4. `AppNav` collects sessions, settings, providers, projects, the current back stack entry, and running session ids with `collectAsStateWithLifecycle`.
 5. It resolves the start destination, then computes `desktopNavigation`, `sidebarVisible`, `desktopGuard`, `desktopKeyboard`, and `desktopFocus`.
 6. `ModalNavigationDrawer` wraps the shell. `gesturesEnabled = !desktopNavigation && drawerGesturesEnabled`, where `drawerSwipeAllowed(route)` excludes settings, providers, skills, stats, setup, `viewer/*`, and `* /memory`.
@@ -96,7 +96,7 @@ Desktop shell:
 
 The sidebar has a fixed header and a scrolling list:
 
-- Header: `HarnessMark`, app name, collapse button, `ConversationSectionSwitcher`, New chat button, search field, collection buttons (Saved and Archived) for Chat, and a Chats/Projects segmented row for Code.
+- Header: `AetherMark`, app name, collapse button, `ConversationSectionSwitcher`, New chat button, search field, collection buttons (Saved and Archived) for Chat, and a Chats/Projects segmented row for Code.
 - Chat rows: title, draft marker, activity dot (`SidebarActivity.WORKING`) or help icon (`NEEDS_YOU`), project name, pin, and the current-chat check.
 - Chat menu: Select, Rename, Pin, Details, Archive, Delete. Long-press or Shift+F10 opens the same actions.
 - Project rows: expand arrow, folder badge, name, pin, chat count, and a menu with New chat, Open, Rename, Pin, Archive, Delete. Delete is hidden for the app workspace (`WorkspaceManager.KIND_APP`).
@@ -144,7 +144,7 @@ The sidebar's Projects view lists `WorkProjectEntity` rows from `WorkspaceManage
 
 ## Theme and Shared Chrome
 
-`HarnessTheme` resolves dark mode, then picks a color scheme in this order: Canvas seed, custom palette, dynamic Material You on API 31 and later, then the selected `ThemePalette`. `AMOLED` maps surfaces to black while keeping accent roles. Glass mode is resolved by `HarnessGlassMode.resolve(enabled, liquid, sdk)`: off below API 31, `LIQUID` below API 33 only when liquid is requested, otherwise `FROSTED`. Motion comes from `Motion.kt`: `defaultSpatialSpec` is a spring with damping 0.86 and stiffness 700, `expressiveSpatialSpec` and `expressiveEffectsSpec` opt specific controls into the expressive scheme.
+`AetherTheme` resolves dark mode, then picks a color scheme in this order: Canvas seed, custom palette, dynamic Material You on API 31 and later, then the selected `ThemePalette`. `AMOLED` maps surfaces to black while keeping accent roles. Glass mode is resolved by `AetherGlassMode.resolve(enabled, liquid, sdk)`: off below API 31, `LIQUID` below API 33 only when liquid is requested, otherwise `FROSTED`. Motion comes from `Motion.kt`: `defaultSpatialSpec` is a spring with damping 0.86 and stiffness 700, `expressiveSpatialSpec` and `expressiveEffectsSpec` opt specific controls into the expressive scheme.
 
 `AppHeader` is the shared screen header. It renders one row with a back or menu button, a title, an optional subtitle, and actions. On desktop the back icon becomes Close and the height drops to 42 dp.
 
@@ -165,17 +165,17 @@ The sidebar's Projects view lists `WorkProjectEntity` rows from `WorkspaceManage
 - **New layout rule**: change `useWorkspacePanes` thresholds or add a `WorkspaceLayoutMode` value and its settings label.
 - **New screen chrome**: use `AppHeader` so back, menu, insets, and divider behavior stay consistent.
 
-Sources: [app/src/main/java/com/androidharness/app/ui/AppNav.kt](../app/src/main/java/com/androidharness/app/ui/AppNav.kt)#L104-L1305), [app/src/main/java/com/androidharness/app/ui/ProjectNavigationSidebar.kt](../app/src/main/java/com/androidharness/app/ui/ProjectNavigationSidebar.kt)#L68-L554), [app/src/main/java/com/androidharness/app/ui/WorkspaceSplitLayout.kt](../app/src/main/java/com/androidharness/app/ui/WorkspaceSplitLayout.kt)#L23-L96), [app/src/main/java/com/androidharness/app/data/WorkspaceLayoutMode.kt](../app/src/main/java/com/androidharness/app/data/WorkspaceLayoutMode.kt)#L5-L29), [app/src/main/java/com/androidharness/app/ui/DesktopUi.kt](../app/src/main/java/com/androidharness/app/ui/DesktopUi.kt)#L6-L27), [app/src/main/java/com/androidharness/app/ui/theme/Theme.kt](../app/src/main/java/com/androidharness/app/ui/theme/Theme.kt)#L30-L85), [app/src/main/java/com/androidharness/app/MainActivity.kt](../app/src/main/java/com/androidharness/app/MainActivity.kt)#L68-L336)
+Sources: [app/src/main/java/com/aether/app/ui/AppNav.kt](../app/src/main/java/com/aether/app/ui/AppNav.kt)#L104-L1305), [app/src/main/java/com/aether/app/ui/ProjectNavigationSidebar.kt](../app/src/main/java/com/aether/app/ui/ProjectNavigationSidebar.kt)#L68-L554), [app/src/main/java/com/aether/app/ui/WorkspaceSplitLayout.kt](../app/src/main/java/com/aether/app/ui/WorkspaceSplitLayout.kt)#L23-L96), [app/src/main/java/com/aether/app/data/WorkspaceLayoutMode.kt](../app/src/main/java/com/aether/app/data/WorkspaceLayoutMode.kt)#L5-L29), [app/src/main/java/com/aether/app/ui/DesktopUi.kt](../app/src/main/java/com/aether/app/ui/DesktopUi.kt)#L6-L27), [app/src/main/java/com/aether/app/ui/theme/Theme.kt](../app/src/main/java/com/aether/app/ui/theme/Theme.kt)#L30-L85), [app/src/main/java/com/aether/app/MainActivity.kt](../app/src/main/java/com/aether/app/MainActivity.kt)#L68-L336)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/ui/AppNav.kt`
-- `app/src/main/java/com/androidharness/app/ui/ProjectNavigationSidebar.kt`
-- `app/src/main/java/com/androidharness/app/ui/WorkspaceSplitLayout.kt`
-- `app/src/main/java/com/androidharness/app/ui/DesktopUi.kt`
-- `app/src/main/java/com/androidharness/app/ui/NavigationGestures.kt`
-- `app/src/main/java/com/androidharness/app/ui/ChatWorkspaceScreen.kt`
-- `app/src/main/java/com/androidharness/app/ui/common/AppHeader.kt`
-- `app/src/main/java/com/androidharness/app/ui/theme/Theme.kt`
-- `app/src/main/java/com/androidharness/app/ui/theme/HarnessGlass.kt`
-- `app/src/main/java/com/androidharness/app/data/WorkspaceLayoutMode.kt`
+- `app/src/main/java/com/aether/app/ui/AppNav.kt`
+- `app/src/main/java/com/aether/app/ui/ProjectNavigationSidebar.kt`
+- `app/src/main/java/com/aether/app/ui/WorkspaceSplitLayout.kt`
+- `app/src/main/java/com/aether/app/ui/DesktopUi.kt`
+- `app/src/main/java/com/aether/app/ui/NavigationGestures.kt`
+- `app/src/main/java/com/aether/app/ui/ChatWorkspaceScreen.kt`
+- `app/src/main/java/com/aether/app/ui/common/AppHeader.kt`
+- `app/src/main/java/com/aether/app/ui/theme/Theme.kt`
+- `app/src/main/java/com/aether/app/ui/theme/AetherGlass.kt`
+- `app/src/main/java/com/aether/app/data/WorkspaceLayoutMode.kt`

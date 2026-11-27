@@ -1,1 +1,1 @@
-extern "C" int harness_local_unavailable() { return 1; }
+extern "C" int aether_local_unavailable() { return 1; }

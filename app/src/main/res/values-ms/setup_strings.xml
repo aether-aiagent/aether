@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">"Selamat datang ke AndroidHarness"</string>
+    <string name="setup_welcome_title">"Selamat datang ke Aether"</string>
     <string name="setup_welcome_body">"Ejen pengekodan anda, terus pada telefon anda. Mari sediakannya."</string>
     <string name="setup_start_fresh">"Mula baharu"</string>
-    <string name="setup_start_fresh_body">"Sediakan AndroidHarness yang serba baharu"</string>
-    <string name="setup_restore">"Pulihkan AndroidHarness"</string>
+    <string name="setup_start_fresh_body">"Sediakan Aether yang serba baharu"</string>
+    <string name="setup_restore">"Pulihkan Aether"</string>
     <string name="setup_restore_body">"Bawa balik sembang dan tetapan anda daripada fail sandaran"</string>
 
     <string name="setup_storage_title">"Benarkan akses fail"</string>
-    <string name="setup_storage_body">"Pilihan. Tanpanya, AndroidHarness berfungsi dalam foldernya sendiri dan bertanya apabila tugas memerlukan fail anda."</string>
+    <string name="setup_storage_body">"Pilihan. Tanpanya, Aether berfungsi dalam foldernya sendiri dan bertanya apabila tugas memerlukan fail anda."</string>
     <string name="setup_storage_all_files">"Akses semua fail"</string>
     <string name="setup_storage_all_files_body">"Baca dan edit mana-mana folder seperti yang dijangka terminal dan alat fail. Terbaik untuk pengekodan."</string>
     <string name="setup_storage_legacy">"Kebenaran storan"</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">"Pulihkan data anda"</string>
     <string name="setup_restore_subtitle">"Pilih fail sandaran daripada telefon lama anda. Pulihkan satu, kedua-duanya atau tiada."</string>
     <string name="setup_restore_chats">"Sembang"</string>
-    <string name="setup_restore_chats_body">"Fail .harnessbackup dengan sembang, imej, statistik penggunaan, kenangan dan coretan anda"</string>
+    <string name="setup_restore_chats_body">"Fail .aetherbackup dengan sembang, imej, statistik penggunaan, kenangan dan coretan anda"</string>
     <string name="setup_restore_settings">"Tetapan dan pembekal"</string>
     <string name="setup_restore_settings_body">"Fail .hbackup dilindungi kata laluan dengan pembekal, kunci API dan keutamaan anda"</string>
     <string name="setup_restore_choose">"Pilih fail"</string>

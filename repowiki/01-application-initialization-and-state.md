@@ -2,11 +2,11 @@
 
 > Boots the process, owns the single dependency graph, and holds the state that must outlive every Activity.
 
-`HarnessApp` is the `Application` subclass. It fixes two global framework behaviors, then builds one `AppContainer`. `AppContainer` is the service locator for the whole app: settings, encrypted keys, Room database, repositories, provider routing, the agent engine, `RunManager`, the Linux environment, terminals, and every pending deep-link channel. `MainActivity` reads the container from the application object instead of constructing anything itself.
+`AetherApp` is the `Application` subclass. It fixes two global framework behaviors, then builds one `AppContainer`. `AppContainer` is the service locator for the whole app: settings, encrypted keys, Room database, repositories, provider routing, the agent engine, `RunManager`, the Linux environment, terminals, and every pending deep-link channel. `MainActivity` reads the container from the application object instead of constructing anything itself.
 
 ## Module Responsibilities
 
-- **`HarnessApp`**: process entry point. Disables pausable LazyColumn prefetch, enables slow whole-document `WebView` draw, constructs `AppContainer`, and releases cached local models on memory pressure.
+- **`AetherApp`**: process entry point. Disables pausable LazyColumn prefetch, enables slow whole-document `WebView` draw, constructs `AppContainer`, and releases cached local models on memory pressure.
 - **`AppContainer`**: dependency injection root. Property initializers and five `init` blocks build the graph in declaration order, then start independent collectors that mirror settings and environment state.
 - **`KeyStoreManager`**: API keys, tokens, and provider credentials in `EncryptedSharedPreferences` backed by an Android Keystore AES256-GCM master key.
 - **`SettingsRepository`**: one DataStore preferences file named `settings`, decoded into the immutable `AppSettings` data class.
@@ -17,16 +17,16 @@
 
 ```mermaid
 flowchart TD
-    A[android.app.Application] --> B[HarnessApp.attachBaseContext]
+    A[android.app.Application] --> B[AetherApp.attachBaseContext]
     B --> B1[GpuDeliveryFactory.attach]
-    A --> C[HarnessApp.onCreate]
+    A --> C[AetherApp.onCreate]
     C --> C1[ComposeFoundationFlags.isPausableCompositionInPrefetchEnabled = false]
     C --> C2[WebView.enableSlowWholeDocumentDraw]
     C --> D[AppContainer this]
     D --> E[KeyStoreManager then SettingsRepository]
-    D --> F[PluginManager, HarnessConfigRepository, PluginHooks]
+    D --> F[PluginManager, AetherConfigRepository, PluginHooks]
     D --> G[ProviderRepository, LocalModelManager, ChatGptAccounts]
-    D --> H[Room harness.db version 25 with migrations]
+    D --> H[Room aether.db version 25 with migrations]
     D --> I[SessionRepository, MemoryRepository, WorkspaceManager]
     D --> J[LinuxEnvironmentManager, Shizuku, DeviceAccess, ShellTierRouter]
     D --> K[ToolRegistry.default]
@@ -42,18 +42,18 @@ flowchart TD
 
 - `attachBaseContext` runs before `onCreate` and hands the base `Context` to `GpuDeliveryFactory`, so GPU delivery is ready before any Compose surface exists.
 - `onCreate` builds `AppContainer` synchronously. Anything that needs a coroutine is deferred into one of the collectors in the last `init` block.
-- `MainActivity` only resolves `(application as HarnessApp).container` and passes it to `AppNav`.
+- `MainActivity` only resolves `(application as AetherApp).container` and passes it to `AppNav`.
 
 ## Invocation Chain
 
-1. Android instantiates `HarnessApp`, declared as `.HarnessApp` in `app/src/main/AndroidManifest.xml`.
-2. `HarnessApp.attachBaseContext` calls `super`, then `GpuDeliveryFactory.attach(this)`.
-3. `HarnessApp.onCreate` sets `ComposeFoundationFlags.isPausableCompositionInPrefetchEnabled` to false because paused prefetch crashes in `LayoutNode.onChildRemoved` when chat items change.
+1. Android instantiates `AetherApp`, declared as `.AetherApp` in `app/src/main/AndroidManifest.xml`.
+2. `AetherApp.attachBaseContext` calls `super`, then `GpuDeliveryFactory.attach(this)`.
+3. `AetherApp.onCreate` sets `ComposeFoundationFlags.isPausableCompositionInPrefetchEnabled` to false because paused prefetch crashes in `LayoutNode.onChildRemoved` when chat items change.
 4. `WebView.enableSlowWholeDocumentDraw()` is called once for the whole process.
 5. `AppContainer(this)` runs. `KeyStoreManager` is created first, and its `providerProxy` is injected into `ProviderNetwork.settings` in the following `init`.
-6. `SettingsRepository`, `PluginManager`, `HarnessConfigRepository`, `PluginHooks`, `AppRuntimePolicy`, `TtsController`, the editor draft and tab stores, `LocalModelManager`, `ChatGptAccounts`, and `ProviderRepository` are created.
+6. `SettingsRepository`, `PluginManager`, `AetherConfigRepository`, `PluginHooks`, `AppRuntimePolicy`, `TtsController`, the editor draft and tab stores, `LocalModelManager`, `ChatGptAccounts`, and `ProviderRepository` are created.
 7. The `init` at lines 127 to 135 installs `RotatingKeyProvider.pools`, `ProviderFactory.chatGptProvider`, `ModelCatalog.chatGptModels`, and `ProviderFactory.localProvider`.
-8. `Room.databaseBuilder` opens `harness.db` lazily with migrations 4 through 25, the `OVERSIZED_ROW_SANITIZER` callback, and destructive fallback.
+8. `Room.databaseBuilder` opens `aether.db` lazily with migrations 4 through 25, the `OVERSIZED_ROW_SANITIZER` callback, and destructive fallback.
 9. `ImageStore`, `SessionRepository`, `MemoryRepository`, and `ChatModelRepository` wrap the database. `WorkspaceManager`, `SshConnections`, `CheckpointStore`, and `TodoStore` follow.
 10. `LinuxEnvironmentManager`, `WirelessAdbManager`, `ShizukuManager`, `DhizukuManager`, `DeviceAccessManager`, `ShellTierRouter`, and `CodeGraphManager` are constructed after the settings layer so they can read provider and proxy state.
 11. `ToolRegistry.default(...)` receives every shared service and builds the tool set. `AgentEngine` receives the registry, checkpoint store, skills, plugin hooks, and subagent resolver.
@@ -103,7 +103,7 @@ The pending channels are deliberately in memory: they carry an intent from one s
 - **`ToolRegistry.default`**: its argument list is the contract for what tools can see. Passing a new manager here makes it reachable from the agent.
 - **`PluginRuntime`**: `PluginManager` receives an anonymous runtime that maps plugin package requests onto `LinuxEnvironmentManager`. Replacing that object changes plugin behavior without touching the manager.
 - **Settings**: `SettingsRepository.Keys`, `AppSettings`, and the agent settings catalog are the three places a preference must be registered.
-- **`ModelsDev`, `HarnessProvider.pins`, and `HarnessProvider.config`**: static hooks populated during startup, then read synchronously by request paths.
+- **`ModelsDev`, `AetherProvider.pins`, and `AetherProvider.config`**: static hooks populated during startup, then read synchronously by request paths.
 
 ## Known gaps
 
@@ -111,14 +111,14 @@ The pending channels are deliberately in memory: they carry an intent from one s
 - Startup has no explicit ordered phase list. Ordering is whatever Kotlin property initializers and the five `init` blocks produce, plus independent coroutine launches that can finish in any order.
 - The only boot restore receivers are `TelegramBootReceiver` for `BOOT_COMPLETED` and `MY_PACKAGE_REPLACED`, and `WirelessAdbReconnectReceiver` for `MY_PACKAGE_REPLACED`. Agent runs are not restored at boot.
 
-Sources: [app/src/main/java/com/androidharness/app/HarnessApp.kt](../app/src/main/java/com/androidharness/app/HarnessApp.kt)#L32-L477), [app/src/main/java/com/androidharness/app/MainActivity.kt](../app/src/main/java/com/androidharness/app/MainActivity.kt)#L59-L229), [app/src/main/java/com/androidharness/app/data/db/Database.kt](../app/src/main/java/com/androidharness/app/data/db/Database.kt)#L740-L880), [app/src/main/java/com/androidharness/app/data/SettingsRepository.kt](../app/src/main/java/com/androidharness/app/data/SettingsRepository.kt)#L16-L479), [app/src/main/java/com/androidharness/app/data/KeyStoreManager.kt](../app/src/main/java/com/androidharness/app/data/KeyStoreManager.kt)#L9-L42), [app/src/main/java/com/androidharness/app/AppRuntimePolicy.kt](../app/src/main/java/com/androidharness/app/AppRuntimePolicy.kt)#L13-L85)
+Sources: [app/src/main/java/com/aether/app/AetherApp.kt](../app/src/main/java/com/aether/app/AetherApp.kt)#L32-L477), [app/src/main/java/com/aether/app/MainActivity.kt](../app/src/main/java/com/aether/app/MainActivity.kt)#L59-L229), [app/src/main/java/com/aether/app/data/db/Database.kt](../app/src/main/java/com/aether/app/data/db/Database.kt)#L740-L880), [app/src/main/java/com/aether/app/data/SettingsRepository.kt](../app/src/main/java/com/aether/app/data/SettingsRepository.kt)#L16-L479), [app/src/main/java/com/aether/app/data/KeyStoreManager.kt](../app/src/main/java/com/aether/app/data/KeyStoreManager.kt)#L9-L42), [app/src/main/java/com/aether/app/AppRuntimePolicy.kt](../app/src/main/java/com/aether/app/AppRuntimePolicy.kt)#L13-L85)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/HarnessApp.kt`
-- `app/src/main/java/com/androidharness/app/MainActivity.kt`
-- `app/src/main/java/com/androidharness/app/AppRuntimePolicy.kt`
-- `app/src/main/java/com/androidharness/app/data/SettingsRepository.kt`
-- `app/src/main/java/com/androidharness/app/data/KeyStoreManager.kt`
-- `app/src/main/java/com/androidharness/app/data/db/Database.kt`
+- `app/src/main/java/com/aether/app/AetherApp.kt`
+- `app/src/main/java/com/aether/app/MainActivity.kt`
+- `app/src/main/java/com/aether/app/AppRuntimePolicy.kt`
+- `app/src/main/java/com/aether/app/data/SettingsRepository.kt`
+- `app/src/main/java/com/aether/app/data/KeyStoreManager.kt`
+- `app/src/main/java/com/aether/app/data/db/Database.kt`
 - `app/src/main/AndroidManifest.xml`

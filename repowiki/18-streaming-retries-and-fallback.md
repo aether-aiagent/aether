@@ -35,7 +35,7 @@ flowchart TD
 ## Invocation Chain
 
 1. `AgentEngine` calls `StreamRetrier.run` with `streamFor`, `onAttemptStart`, `hasOutput`, and a `handleEvent` sink (`AgentEngine.kt` lines 628 to 656).
-2. `streamFor` calls `providerFactory(config).streamChat(...)`. `HarnessApp.routedProvider` wraps `FallbackProvider` around `ProviderFactory::create` (`HarnessApp.kt` lines 277 to 298, 301).
+2. `streamFor` calls `providerFactory(config).streamChat(...)`. `AetherApp.routedProvider` wraps `FallbackProvider` around `ProviderFactory::create` (`AetherApp.kt` lines 277 to 298, 301).
 3. `FallbackProvider` reads the `FallbackRun` from the coroutine context. Without it, the request passes straight through (lines 48 to 52).
 4. A transport provider such as `OpenAiCompatProvider` opens the SSE stream through `ProviderFactory.sseJson` (`Llm.kt` lines 236 to 284).
 5. A non-2xx response becomes `ApiException` with the status and a parsed `Retry-After` (`Llm.kt` lines 164 to 171, 252 to 256). In-band error payloads become `StreamEvent.Failure`.
@@ -72,20 +72,20 @@ Per attempt, `onAttemptStart` clears buffers, resetting text, thinking, calls, u
 `fallbackFailureKind` classifies a failure into `QUOTA`, `TRANSIENT`, or `TERMINAL` (`FallbackProvider.kt` lines 19 to 33):
 
 - 401 or 403 is `TERMINAL`.
-- A quota error code from the set including `HarnessFreeLimit.QUOTA_CODE`, `insufficient_quota`, `quota_exceeded`, `credit_balance_too_low`, `subscription_sharing_usage_limit_exceeded`, `usage_limit_reached`, and `billing_hard_limit_reached` is `QUOTA`. The same applies to HTTP 402, or to HTTP 429 or a missing code with quota text such as "insufficient quota", "credit balance low", or "usage limit reached".
+- A quota error code from the set including `AetherFreeLimit.QUOTA_CODE`, `insufficient_quota`, `quota_exceeded`, `credit_balance_too_low`, `subscription_sharing_usage_limit_exceeded`, `usage_limit_reached`, and `billing_hard_limit_reached` is `QUOTA`. The same applies to HTTP 402, or to HTTP 429 or a missing code with quota text such as "insufficient quota", "credit balance low", or "usage limit reached".
 - `retryable == false` is `TERMINAL`.
 - A rate-limit transient error code (`rate_limit_exceeded`, `rate_limit_error`, `resource_exhausted`, `overloaded_error`, `unavailable`, `deadline_exceeded`) or any `RetryPolicy` match is `TRANSIENT`.
 - Everything else is `TERMINAL`.
 
 The practical difference: `TRANSIENT` consumes the fallback policy's `retries` budget on the same target before moving on. `QUOTA` skips that loop and moves to the next target immediately (lines 144 to 150). A partial response makes either kind terminal regardless of classification (line 138).
 
-`HarnessFreeLimit` normalizes only HTTP 429 responses and failures with no status code from the anonymous Harness transport (`HarnessFreeLimit.kt` lines 15 to 24). It detects `PROMOTION_MODEL_LIMIT_REACHED` or free-model quota text, rewrites the message to a friendly notice, forces code 429, and sets either `harness_free_quota_exhausted` with `retryable = false` or `harness_free_rate_limited` while preserving retryability. `suppressRecovery` recognizes both new notices and older raw Kilo 429 text, and `TaskProgressCard` uses it to hide a pointless Resume button (`ui/chat/TaskControls.kt` lines 41 to 42).
+`AetherFreeLimit` normalizes only HTTP 429 responses and failures with no status code from the anonymous Aether transport (`AetherFreeLimit.kt` lines 15 to 24). It detects `PROMOTION_MODEL_LIMIT_REACHED` or free-model quota text, rewrites the message to a friendly notice, forces code 429, and sets either `aether_free_quota_exhausted` with `retryable = false` or `aether_free_rate_limited` while preserving retryability. `suppressRecovery` recognizes both new notices and older raw Kilo 429 text, and `TaskProgressCard` uses it to hide a pointless Resume button (`ui/chat/TaskControls.kt` lines 41 to 42).
 
 ## Fallback Ordering
 
 `FallbackPolicy` allows at most four unique targets and zero to five retries, with an optional `sameProviderOnly` restriction (`FallbackPolicy.kt` lines 8 to 33). `FallbackMode` is `DEFAULT`, `CUSTOM`, or `OFF`. `effectiveFallback` resolves this against app settings and the per-chat override: `DEFAULT` uses the app policy when enabled and valid, `CUSTOM` uses the chat policy or an empty one, and `OFF` returns an empty policy (lines 39 to 43). `RunManager` installs `FallbackRun(record.fallbackPrimary)` with a live policy reader so disabling routing takes effect on the next check (`RunManager.kt` lines 534 to 537).
 
-`FallbackProvider` keeps `primary`, `managedChanged`, and a `tried` set (lines 44 to 55). The primary and the initially requested model are always allowed; any other target must be listed in the live policy and satisfy `allowed`, which also honors `sameProviderOnly` by matching provider id and destination base URL (lines 61 to 64). Destinations are base URLs without trailing slash, lowercased; a Harness pool model uses its upstream base URL instead (`HarnessApp.kt` lines 294 to 298).
+`FallbackProvider` keeps `primary`, `managedChanged`, and a `tried` set (lines 44 to 55). The primary and the initially requested model are always allowed; any other target must be listed in the live policy and satisfy `allowed`, which also honors `sameProviderOnly` by matching provider id and destination base URL (lines 61 to 64). Destinations are base URLs without trailing slash, lowercased; a Aether pool model uses its upstream base URL instead (`AetherApp.kt` lines 294 to 298).
 
 The loop enforces these invariants:
 
@@ -107,7 +107,7 @@ Each transport emits a single in-band failure and stops:
 - Anthropic: an `error` event becomes a failure with status and code; `message_stop` emits `Done(stopReason)`. Usage is cumulative, so only the final snapshot is emitted (lines 243 to 265).
 - Gemini: an `error` object emits a failure and stops that chunk; each chunk can emit a batch of text, thinking, and function calls; final usage includes thought tokens, then `ResponseState`, then `Done(finishReason)` (lines 64 to 130).
 - OpenAI Responses: error payloads emit failures with status and code; completion emits `Done(reason)` (lines 245 to 256, 328).
-- Harness: catches `ApiException` and passes it through `HarnessFreeLimit.normalize` (lines 232 to 234).
+- Aether: catches `ApiException` and passes it through `AetherFreeLimit.normalize` (lines 232 to 234).
 
 `ProviderRetryAfter` parses explicit `retry_after_seconds` or `retryAfterSeconds` fields recursively through `error`, `metadata`, and `details`, and parses an HTTP `Retry-After` header as seconds or as an RFC 1123 date (`ProviderRetryAfter.kt` lines 9 to 31). It never infers a reset time from a generic 429.
 
@@ -120,7 +120,7 @@ Each transport emits a single in-band failure and stops:
 - `OpenAiCompatProvider` adds `prompt_cache_key` truncated to 64 characters when supported, and marks the last cacheable content block with `cache_control: ephemeral` (lines 161 to 179).
 - `OpenAiResponsesProvider` adds the same key (lines 118 to 120).
 - `AnthropicProvider` sends the key as `metadata.user_id`, truncated to 64 characters (lines 113 to 114), and anchors `cache_control: ephemeral` on the last cacheable block, skipping thinking blocks because Anthropic rejects cache control on them (lines 298 to 322).
-- `HarnessProvider.withSession` forwards the session on the request builder. The free transport generates a random cache key when none is supplied, so unrelated requests are not forced onto one shard (lines 247 to 249).
+- `AetherProvider.withSession` forwards the session on the request builder. The free transport generates a random cache key when none is supplied, so unrelated requests are not forced onto one shard (lines 247 to 249).
 - Gemini reports `cachedContentTokenCount` but does not accept the routing key.
 
 Because the key is the session id, consecutive requests in one chat, including retries, compaction, and side questions, are routed to the same cache shard. `Usage.cachedInputTokens` and `cacheWriteTokens` report the result, and `ContextUsageDialog` computes hit rate and cost from them.
@@ -145,20 +145,20 @@ Because the key is the session id, consecutive requests in one chat, including r
 - **`StreamRetrier.run`**: injectable `sleep`, `stallTimeoutMs`, and `allowRetries`.
 - **`PromptCachePolicy.supportsKey`**: the single switch for adding another endpoint that accepts explicit cache routing.
 
-Sources: [app/src/main/java/com/androidharness/app/llm/FallbackProvider.kt](../app/src/main/java/com/androidharness/app/llm/FallbackProvider.kt)#L46-L177)
+Sources: [app/src/main/java/com/aether/app/llm/FallbackProvider.kt](../app/src/main/java/com/aether/app/llm/FallbackProvider.kt)#L46-L177)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/agent/StreamRetrier.kt`
-- `app/src/main/java/com/androidharness/app/agent/RetryPolicy.kt`
-- `app/src/main/java/com/androidharness/app/llm/FallbackProvider.kt`
-- `app/src/main/java/com/androidharness/app/llm/FallbackPolicy.kt`
-- `app/src/main/java/com/androidharness/app/llm/PromptCachePolicy.kt`
-- `app/src/main/java/com/androidharness/app/llm/ProviderRetryAfter.kt`
-- `app/src/main/java/com/androidharness/app/llm/HarnessFreeLimit.kt`
-- `app/src/main/java/com/androidharness/app/llm/Llm.kt`
-- `app/src/main/java/com/androidharness/app/llm/OpenAiCompatProvider.kt`
-- `app/src/main/java/com/androidharness/app/llm/AnthropicProvider.kt`
-- `app/src/main/java/com/androidharness/app/llm/GeminiProvider.kt`
-- `app/src/main/java/com/androidharness/app/llm/OpenAiResponsesProvider.kt`
-- `app/src/main/java/com/androidharness/app/llm/HarnessProvider.kt`
+- `app/src/main/java/com/aether/app/agent/StreamRetrier.kt`
+- `app/src/main/java/com/aether/app/agent/RetryPolicy.kt`
+- `app/src/main/java/com/aether/app/llm/FallbackProvider.kt`
+- `app/src/main/java/com/aether/app/llm/FallbackPolicy.kt`
+- `app/src/main/java/com/aether/app/llm/PromptCachePolicy.kt`
+- `app/src/main/java/com/aether/app/llm/ProviderRetryAfter.kt`
+- `app/src/main/java/com/aether/app/llm/AetherFreeLimit.kt`
+- `app/src/main/java/com/aether/app/llm/Llm.kt`
+- `app/src/main/java/com/aether/app/llm/OpenAiCompatProvider.kt`
+- `app/src/main/java/com/aether/app/llm/AnthropicProvider.kt`
+- `app/src/main/java/com/aether/app/llm/GeminiProvider.kt`
+- `app/src/main/java/com/aether/app/llm/OpenAiResponsesProvider.kt`
+- `app/src/main/java/com/aether/app/llm/AetherProvider.kt`

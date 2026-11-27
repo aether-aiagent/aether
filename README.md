@@ -1,22 +1,22 @@
 <div align="center">
 
-<img src=".github/assets/icon.svg" alt="AndroidHarness logo" width="128">
+<img src=".github/assets/icon.svg" alt="Aether logo" width="128">
 
-# AndroidHarness
+# Aether
 
 **An AI coding agent and chat assistant that runs on your Android phone.**
 
 No PC needed. No root needed.
 
 <p>
-  <a href="https://github.com/Sanuu7/AndroidHarness/releases/latest"><img src=".github/assets/download-from-github.png" alt="Download from GitHub" height="54"></a>
-  <a href="https://play.google.com/store/apps/details?id=com.androidharness.app"><img src=".github/assets/google-play.png" alt="Get it on Google Play" height="54"></a>
+  <a href="https://github.com/Sanuu7/Aether/releases/latest"><img src=".github/assets/download-from-github.png" alt="Download from GitHub" height="54"></a>
+  <a href="https://play.google.com/store/apps/details?id=com.aether.app"><img src=".github/assets/google-play.png" alt="Get it on Google Play" height="54"></a>
   <a href="https://buymeacoffee.com/sanuj7"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy me a coffee" height="54"></a>
   <a href="https://discord.gg/NdC5K3XeWF"><img src=".github/assets/join-discord.png" alt="Join our Discord" height="54"></a>
 </p>
 
-[![Debug build](https://github.com/Sanuu7/AndroidHarness/actions/workflows/nightly.yml/badge.svg)](https://github.com/Sanuu7/AndroidHarness/actions/workflows/nightly.yml)
-[![Version](https://img.shields.io/badge/version-4.1-blue)](https://github.com/Sanuu7/AndroidHarness/releases/latest)
+[![Debug build](https://github.com/Sanuu7/Aether/actions/workflows/nightly.yml/badge.svg)](https://github.com/Sanuu7/Aether/actions/workflows/nightly.yml)
+[![Version](https://img.shields.io/badge/version-4.1-blue)](https://github.com/Sanuu7/Aether/releases/latest)
 [![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-3ddc84)](https://developer.android.com/about/versions/oreo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -24,7 +24,7 @@ No PC needed. No root needed.
 
 ## About
 
-AndroidHarness is a native Android app, written in Kotlin with Jetpack Compose, for working on real code projects from your phone. The agent reads and edits files, runs commands in a real Linux toolchain (bash, git, python, node), pushes to GitHub, drives a browser, and shows every step in a chat you can inspect.
+Aether is a native Android app, written in Kotlin with Jetpack Compose, for working on real code projects from your phone. The agent reads and edits files, runs commands in a real Linux toolchain (bash, git, python, node), pushes to GitHub, drives a browser, and shows every step in a chat you can inspect.
 
 The app has two sections:
 
@@ -55,7 +55,7 @@ You can start for free with the built-in provider, which needs no account, or ru
 ## Highlights
 
 - **A real coding agent.** File edits, shell, git, tests, browser control and subagents. Every tool call gets a card you can open to see exactly what happened.
-- **An assistant everywhere.** Make AndroidHarness your phone's digital assistant and ask about any screen without leaving the app you are in. Models that cannot see pictures can read the text inside them on the phone.
+- **An assistant everywhere.** Make Aether your phone's digital assistant and ask about any screen without leaving the app you are in. Models that cannot see pictures can read the text inside them on the phone.
 - **Goals that finish the job.** `/goal` keeps the agent working turn after turn until a separate check agrees the task is done, with parts, a budget and a Resume that keeps its progress.
 - **A real shell.** Commands run through Shizuku, Wireless ADB pairing, optional root, a Termux-based Linux toolchain, or a toybox fallback. A shell policy and a secret redactor sit on top.
 - **Free to start.** The built-in keyless provider works without sign-up, and local GGUF models run offline. Cloud API keys and ChatGPT accounts are optional.
@@ -69,7 +69,7 @@ You can start for free with the built-in provider, which needs no account, or ru
 
 ## What's new in 4.1
 
-- **Your assistant over any app.** Set AndroidHarness as your digital assistant and ask about what is on screen, by voice or typing, without leaving the app you are in. Models that cannot see images can now read the text inside pictures on the phone.
+- **Your assistant over any app.** Set Aether as your digital assistant and ask about what is on screen, by voice or typing, without leaving the app you are in. Models that cannot see images can now read the text inside pictures on the phone.
 - **Goals that keep going.** `/goal` turns a task into a loop that keeps taking turns until a separate check agrees it is done, with a turn limit, an optional check command, a budget, named parts, a per-turn change summary and a Resume that keeps its progress. Keep improving can push past done.
 - **Backups and setup rebuilt.** Backup & restore streams one file, lets you pick chats, and now carries images and usage stats. Setup is a page-by-page flow that can restore chats and settings, and file access is optional.
 - **Memory you can shape.** Folders with colors, trigger words, trigger-only memories, multi-select move and delete, and a zoomable map of how memories connect.
@@ -80,7 +80,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full release notes.
 
 ## Getting started
 
-1. Install the app from [Google Play](https://play.google.com/store/apps/details?id=com.androidharness.app) or [GitHub Releases](https://github.com/Sanuu7/AndroidHarness/releases/latest), or build it from source.
+1. Install the app from [Google Play](https://play.google.com/store/apps/details?id=com.aether.app) or [GitHub Releases](https://github.com/Sanuu7/Aether/releases/latest), or build it from source.
 2. Grant file access if you want it. All files access lets the shell and file tools use real paths; without it the app works in its own folder and asks when a task needs your files.
 3. Pick a model. Use the built-in keyless provider, add an API key in Settings, or download a model in Settings → Local models.
 4. Recommended: install [Shizuku](https://github.com/RikkaApps/Shizuku), pair Wireless ADB in Settings → Terminal & device, or install the Linux environment from inside the app. This lets shell commands run with proper permissions. Rooted devices can also turn on direct root there.
@@ -207,9 +207,9 @@ Register a [GitHub OAuth app](https://github.com/settings/developers), turn on *
 ## Documentation
 
 - [FEATURES.md](FEATURES.md): the complete feature reference
-- [Configuration guide](docs/configuration/README.md) and [JSON Schema](docs/harness.schema.json) for `harness.json`
+- [Configuration guide](docs/configuration/README.md) and [JSON Schema](docs/aether.schema.json) for `aether.json`
 - [Plugin guide](docs/configuration/plugin-manager.md)
-- [Developer repo wiki](https://github.com/Sanuu7/AndroidHarness/tree/main/repowiki): architecture of the agent engine, tools, providers, MCP and workspaces
+- [Developer repo wiki](https://github.com/Sanuu7/Aether/tree/main/repowiki): architecture of the agent engine, tools, providers, MCP and workspaces
 - [CHANGELOG.md](CHANGELOG.md), [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md)
 
 ## Contributing
@@ -218,7 +218,7 @@ Bug reports, fixes, tests and documentation are all welcome. Start with [CONTRIB
 
 ## Acknowledgements
 
-AndroidHarness takes ideas and design inspiration from these open source projects:
+Aether takes ideas and design inspiration from these open source projects:
 
 [Hermes Agent](https://github.com/NousResearch/hermes-agent),
 [Aider](https://github.com/Aider-AI/aider),

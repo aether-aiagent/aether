@@ -77,7 +77,7 @@ The names in the code are older than the model. A row in the `projects` table (`
 - **Normal chat.** `sessions.workProjectId` is null and the chat has one workspace. `assignSelection` stores a selection of one editable grant as a plain `projectId` with no selection JSON, unless the chat already has saved `@workspaces/` paths that need the JSON to resolve.
 - **Project chat.** `sessions.workProjectId` points at the project and the chat carries a copy of the project's selection. `RunManager.createProjectChat` creates one, `moveChatToProject` files an existing chat, and `assignProjectWorkspaces` saves an edited selection to the project and applies it to every chat in it. That call is all or nothing: it computes the change for every chat first and refuses if any of them is running.
 - **Adding a folder.** `addSafProject`, `addPickedFolder`, `addShellProject` and `addSshProject` insert a workspace row and nothing else. No project is created by any of them.
-- **Adoption.** `adoptUnfiledChats`, launched once from `HarnessApp` at startup, takes each chat that has selection JSON with more than one grant and no `workProjectId`, creates a project named after its main workspace plus the number of other folders, and files the chat under it. Chats with the same grants and main workspace share one project. It is idempotent, so it also repairs a run that was interrupted.
+- **Adoption.** `adoptUnfiledChats`, launched once from `AetherApp` at startup, takes each chat that has selection JSON with more than one grant and no `workProjectId`, creates a project named after its main workspace plus the number of other folders, and files the chat under it. Chats with the same grants and main workspace share one project. It is idempotent, so it also repairs a run that was interrupted.
 - **Deletion.** `RunManager.deleteWorkProject` deletes the project row and its chats and returns their ids. Workspace rows and files are not touched. Deleting a workspace still goes through `ProjectDeletion`.
 
 The UI follows the same split. `WorkspaceSwitcher` (`ui/chat/components/WorkspaceSwitcherSheet.kt`) lists workspaces for a normal chat and offers New project and Move to a project. For a project chat it shows the project and opens `ProjectEditorSheet`, the only place where membership changes. `WorkProjectsScreen` and `WorkProjectScreen` (`ui/projects/WorkProjectsScreen.kt`) are the project list and page. `ProjectsScreen` and `ProjectScreen` are the workspace list and page.
@@ -95,15 +95,15 @@ The UI follows the same split. `WorkspaceSwitcher` (`ui/chat/components/Workspac
 
 - None of the routing code verifies that a `SHELL` project path still exists at tool time beyond the `scopedFs` directory check and per-node existence checks. A folder removed while a chat is open surfaces as a tool error, not a selection invalidation.
 
-Sources: [app/src/main/java/com/androidharness/app/workspace/WorkspaceManager.kt](../app/src/main/java/com/androidharness/app/workspace/WorkspaceManager.kt)#L39-L436), [app/src/main/java/com/androidharness/app/workspace/ChatWorkspaces.kt](../app/src/main/java/com/androidharness/app/workspace/ChatWorkspaces.kt)#L10-L176), [app/src/main/java/com/androidharness/app/workspace/ProjectDeletion.kt](../app/src/main/java/com/androidharness/app/workspace/ProjectDeletion.kt)#L10-L57), [app/src/main/java/com/androidharness/app/data/storage/StorageManager.kt](../app/src/main/java/com/androidharness/app/data/storage/StorageManager.kt)#L14-L163), [app/src/main/java/com/androidharness/app/tools/WorkspaceToolRouting.kt](../app/src/main/java/com/androidharness/app/tools/WorkspaceToolRouting.kt)#L9-L69), [app/src/main/java/com/androidharness/app/data/db/Database.kt](../app/src/main/java/com/androidharness/app/data/db/Database.kt)#L111-L117)
+Sources: [app/src/main/java/com/aether/app/workspace/WorkspaceManager.kt](../app/src/main/java/com/aether/app/workspace/WorkspaceManager.kt)#L39-L436), [app/src/main/java/com/aether/app/workspace/ChatWorkspaces.kt](../app/src/main/java/com/aether/app/workspace/ChatWorkspaces.kt)#L10-L176), [app/src/main/java/com/aether/app/workspace/ProjectDeletion.kt](../app/src/main/java/com/aether/app/workspace/ProjectDeletion.kt)#L10-L57), [app/src/main/java/com/aether/app/data/storage/StorageManager.kt](../app/src/main/java/com/aether/app/data/storage/StorageManager.kt)#L14-L163), [app/src/main/java/com/aether/app/tools/WorkspaceToolRouting.kt](../app/src/main/java/com/aether/app/tools/WorkspaceToolRouting.kt)#L9-L69), [app/src/main/java/com/aether/app/data/db/Database.kt](../app/src/main/java/com/aether/app/data/db/Database.kt)#L111-L117)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/workspace/WorkspaceManager.kt`
-- `app/src/main/java/com/androidharness/app/workspace/ChatWorkspaces.kt`
-- `app/src/main/java/com/androidharness/app/workspace/ProjectDeletion.kt`
-- `app/src/main/java/com/androidharness/app/data/storage/StorageManager.kt`
-- `app/src/main/java/com/androidharness/app/data/env/StorageAccess.kt`
-- `app/src/main/java/com/androidharness/app/tools/WorkspaceToolRouting.kt`
-- `app/src/main/java/com/androidharness/app/agent/RunManager.kt`
-- `app/src/main/java/com/androidharness/app/data/db/Database.kt`
+- `app/src/main/java/com/aether/app/workspace/WorkspaceManager.kt`
+- `app/src/main/java/com/aether/app/workspace/ChatWorkspaces.kt`
+- `app/src/main/java/com/aether/app/workspace/ProjectDeletion.kt`
+- `app/src/main/java/com/aether/app/data/storage/StorageManager.kt`
+- `app/src/main/java/com/aether/app/data/env/StorageAccess.kt`
+- `app/src/main/java/com/aether/app/tools/WorkspaceToolRouting.kt`
+- `app/src/main/java/com/aether/app/agent/RunManager.kt`
+- `app/src/main/java/com/aether/app/data/db/Database.kt`

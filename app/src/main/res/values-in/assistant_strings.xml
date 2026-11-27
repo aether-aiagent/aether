@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="assistant_service_label">"AndroidHarness"</string>
+    <string name="assistant_service_label">"Aether"</string>
     <string name="assistant_input_hint">"Tanyakan tentang layar ini"</string>
     <string name="assistant_input_hint_follow_up">"Ajukan pertanyaan lanjutan"</string>
     <string name="assistant_send">"Kirim"</string>
@@ -17,12 +17,12 @@
     <string name="assistant_keyboard">"Ketik saja"</string>
     <string name="assistant_listening">"Mendengarkan"</string>
     <string name="assistant_tap_to_talk">"Ketuk mikrofon untuk berbicara"</string>
-    <string name="assistant_mic_permission">"AndroidHarness memerlukan mikrofon. Buka aplikasi, ketuk mikrofon di obrolan sekali, lalu izinkan akses."</string>
+    <string name="assistant_mic_permission">"Aether memerlukan mikrofon. Buka aplikasi, ketuk mikrofon di obrolan sekali, lalu izinkan akses."</string>
     <string name="assistant_working">"Sedang dikerjakan"</string>
-    <string name="assistant_no_model">"Pilih model obrolan di AndroidHarness terlebih dahulu."</string>
-    <string name="assistant_no_key">"Hubungkan %1$s di AndroidHarness terlebih dahulu."</string>
+    <string name="assistant_no_model">"Pilih model obrolan di Aether terlebih dahulu."</string>
+    <string name="assistant_no_key">"Hubungkan %1$s di Aether terlebih dahulu."</string>
     <string name="assistant_failed">"Pertanyaan tidak terkirim. Coba lagi."</string>
-    <string name="assistant_open_failed">"AndroidHarness tidak dapat dibuka."</string>
+    <string name="assistant_open_failed">"Aether tidak dapat dibuka."</string>
     <string name="assistant_thinking_level">"Penalaran: %1$s"</string>
     <string name="assistant_thinking_auto">"Berpikir sendiri"</string>
     <string name="assistant_thinking_pick">"Pilih seberapa kuat berpikir"</string>
@@ -35,10 +35,10 @@
     <string name="assistant_settings_title">"Asisten di atas aplikasi lain"</string>
     <string name="assistant_settings_page_desc">"Tanyakan tentang layar apa pun tanpa meninggalkan aplikasi Anda"</string>
     <string name="assistant_settings_desc">"Tekan lama tombol daya atau tombol beranda, atau geser ke atas dari sudut bawah, untuk menanyakan apa yang ada di layar."</string>
-    <string name="assistant_settings_on">"AndroidHarness adalah asisten digital Anda"</string>
-    <string name="assistant_settings_off">"Jadikan AndroidHarness aplikasi asisten digital untuk mengaktifkannya"</string>
+    <string name="assistant_settings_on">"Aether adalah asisten digital Anda"</string>
+    <string name="assistant_settings_off">"Jadikan Aether aplikasi asisten digital untuk mengaktifkannya"</string>
     <string name="assistant_settings_open">"Pilih aplikasi asisten"</string>
-    <string name="assistant_settings_steps">"Di pengaturan Android, buka Aplikasi asisten digital dan pilih AndroidHarness. Aktifkan Gunakan teks dari layar dan Gunakan tangkapan layar agar ia melihat apa yang Anda lihat."</string>
+    <string name="assistant_settings_steps">"Di pengaturan Android, buka Aplikasi asisten digital dan pilih Aether. Aktifkan Gunakan teks dari layar dan Gunakan tangkapan layar agar ia melihat apa yang Anda lihat."</string>
     <string name="assistant_settings_privacy">"Layar hanya diambil saat Anda memanggil asisten, dan hanya dikirim ke model jika pertanyaan Anda tentangnya. Aplikasi yang memblokir tangkapan layar tetap tersembunyi."</string>
     <string name="assistant_settings_voice_first">"Mulai dengan suara"</string>
     <string name="assistant_settings_voice_first_desc">"Mendengar begitu asisten dibuka. Anda tetap bisa beralih ke papan ketik."</string>
@@ -54,8 +54,8 @@
     <string name="settings_read_image_text">"Baca teks di gambar"</string>
     <string name="settings_read_image_text_desc">"Untuk model yang tidak dapat melihat gambar, teks di foto dan tangkapan layar dibaca di ponsel ini lalu dikirim sebagai gantinya. Berfungsi offline."</string>
     <string name="chat_attachment_read_as_text">"Model ini tidak dapat melihat gambar, jadi hanya teks di dalamnya yang dikirim."</string>
-    <string name="assistant_check_unsupported">"Ponsel ini tidak mengizinkan aplikasi lain menjadi asisten digital. Ini batasan ponsel, bukan AndroidHarness. Anda tetap bisa bertanya tentang layar dengan membuka aplikasi."</string>
-    <string name="assistant_check_profile">"AndroidHarness terpasang di profil kerja, Secure Folder, ruang pribadi, atau ruang kedua. Hanya aplikasi di profil utama yang bisa menjadi asisten, jadi pasang di sana."</string>
+    <string name="assistant_check_unsupported">"Ponsel ini tidak mengizinkan aplikasi lain menjadi asisten digital. Ini batasan ponsel, bukan Aether. Anda tetap bisa bertanya tentang layar dengan membuka aplikasi."</string>
+    <string name="assistant_check_profile">"Aether terpasang di profil kerja, Secure Folder, ruang pribadi, atau ruang kedua. Hanya aplikasi di profil utama yang bisa menjadi asisten, jadi pasang di sana."</string>
     <string name="assistant_check_samsung">"Di Samsung: Pengaturan, lalu Aplikasi, lalu Pilih aplikasi default, lalu Aplikasi asisten digital."</string>
     <string name="assistant_check_generic">"Tidak menemukannya? Buka Pengaturan dan cari asisten digital atau assist. Ini daftar yang berbeda dari Input suara."</string>
     <string name="assistant_check_copy">"Salin detail"</string>

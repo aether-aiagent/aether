@@ -2,7 +2,7 @@
 
 > Starts, tracks, lists, and kills long-running shell jobs, keeping durable records and log files across app restarts.
 
-`ShellBackgroundTool`, `BgListTool`, and `BgKillTool` in `app/src/main/java/com/androidharness/app/tools/BgShell.kt` are thin wrappers over `BgProcessStore`. The store owns the job registry, chooses between an app-child process, a Shizuku-detached process, a direct-root detached process, or an SSH job, writes stdout and stderr to a log file, and persists a JSON record so a restarted app can still report what is running and what already exited.
+`ShellBackgroundTool`, `BgListTool`, and `BgKillTool` in `app/src/main/java/com/aether/app/tools/BgShell.kt` are thin wrappers over `BgProcessStore`. The store owns the job registry, chooses between an app-child process, a Shizuku-detached process, a direct-root detached process, or an SSH job, writes stdout and stderr to a log file, and persists a JSON record so a restarted app can still report what is running and what already exited.
 
 ## Module Responsibilities
 
@@ -42,8 +42,8 @@ The critical distinction is who owns the process. An `APP` job is a child of the
 
 1. `ShellBackgroundTool.execute` reads `command`, calls `validateShellAccess`, and branches on `SshFs` (`BgShell.kt` lines 32-42).
 2. For a local workspace it resolves `shellRoot`, applies `ShellPolicy.denyReason` unless `sandboxOff`, applies `NpmOnSharedStorage.prepare`, and calls `store.start(command, cwd, ctx.sessionId)` (`BgShell.kt` lines 43-60).
-3. `BgProcessStore.startLocked` allocates an id, creates `<cwd>/.harness/bg/<id>-<bootToken>.log`, falls back to the store's own detached log directory if that path is not writable, and defines `<log>.exit` (`BgProcessStore.kt` lines 116-124).
-4. `backgroundCommand` builds the monitored command: a subshell around `eval '<command>'`, capture of `$?` into `harness_bg_exit`, a `printf` to the exit file, then `exit "$harness_bg_exit"` (`BgProcessStore.kt` lines 377-381).
+3. `BgProcessStore.startLocked` allocates an id, creates `<cwd>/.aether/bg/<id>-<bootToken>.log`, falls back to the store's own detached log directory if that path is not writable, and defines `<log>.exit` (`BgProcessStore.kt` lines 116-124).
+4. `backgroundCommand` builds the monitored command: a subshell around `eval '<command>'`, capture of `$?` into `aether_bg_exit`, a `printf` to the exit file, then `exit "$aether_bg_exit"` (`BgProcessStore.kt` lines 377-381).
 5. With `deviceAccess` present, `startWithAccess` runs `DeviceAccessManager.execute` with three starters and records the chosen tier (`BgProcessStore.kt` lines 178-219).
 6. Without `deviceAccess`, a granted Shizuku gets `spawnDetached` with the deployed toolchain and `tmpProcessEnv`, otherwise the app starts `linuxEnv.shellProcessBuilder(monitoredCommand)` with append-to-log redirection and merged stderr (`BgProcessStore.kt` lines 130-176).
 7. The entry is stored in a `ConcurrentHashMap` and persisted through a temp-file rename (`BgProcessStore.kt` lines 95-105 and 150-175).
@@ -54,7 +54,7 @@ The critical distinction is who owns the process. An `APP` job is a child of the
 
 - `normal`: app child process with `Redirect.appendTo(log)` and `redirectErrorStream(true)`.
 - `shizukuRun`: checks `shizuku.isServiceReady()`, ensures the deployed toolchain, then `shizuku.spawnDetached` with either the deployed bash or `/system/bin/sh`.
-- `rootRun`: calls `svc.spawnDetached` with the app prefix environment plus `HARNESS_TMP_LIB` and `HARNESS_TMP_BIN`.
+- `rootRun`: calls `svc.spawnDetached` with the app prefix environment plus `AETHER_TMP_LIB` and `AETHER_TMP_BIN`.
 
 The tier reported by the returned `ShellRunResult` becomes `source`: `ROOT`, `SHIZUKU`, or `APP` (`BgProcessStore.kt` lines 191-218). `ShellBackgroundTool` adds a note for direct root jobs ("tied to this root service/app session") and for privileged jobs ("survives the app being minimized or killed") (`BgShell.kt` lines 61-66).
 
@@ -78,7 +78,7 @@ The registry is written to `filesDir/bg-processes.json` as a sorted JSON array t
 
 Output is captured by file redirection, not by in-memory buffers. For app jobs `ProcessBuilder` appends both streams to the log; for detached jobs the privileged server writes to the same path, and the shell wrapper writes the exit code to the sibling `.exit` file.
 
-Reading is tail-oriented. `BgListTool` asks `store.tail(entry, 800)` and prints the last 800 characters after filtering heartbeat lines (`BgShell.kt` lines 125-127). `tail` reads the whole log, drops any line containing "heartbeat" case-insensitively, and keeps the last `chars` characters, prefixing an ellipsis when truncated (`BgProcessStore.kt` lines 339-354). There is no offset or page parameter for background logs; the log file is a normal workspace file under `.harness/bg`, so `read_file` with `offset` and `limit` can page it. `read_tool_output` pages earlier tool results, not log files.
+Reading is tail-oriented. `BgListTool` asks `store.tail(entry, 800)` and prints the last 800 characters after filtering heartbeat lines (`BgShell.kt` lines 125-127). `tail` reads the whole log, drops any line containing "heartbeat" case-insensitively, and keeps the last `chars` characters, prefixing an ellipsis when truncated (`BgProcessStore.kt` lines 339-354). There is no offset or page parameter for background logs; the log file is a normal workspace file under `.aether/bg`, so `read_file` with `offset` and `limit` can page it. `read_tool_output` pages earlier tool results, not log files.
 
 ## Exit Codes, Killed State, and Liveness
 
@@ -98,7 +98,7 @@ The exit code comes from the recorded `.exit` file first, then from `Process.exi
 - **`killLocked`**: for `ROOT` it calls `killTrackedProcess(pid, logPath)`; for `SHIZUKU` it calls `shizuku.killProcess(pid, logPath)` and then `killPidsWithFd`; for `APP` it sends `SIGKILL` to the process group, `pkill -9 -P`, `SIGKILL` to the pid, then `destroyForcibly` and a two-second wait. Each branch confirms the probe reports false before writing `killed` (`BgProcessStore.kt` lines 286-337).
 - **`killPidsWithFd`**: scans `/proc/<pid>/fd` for any process still holding the log file and kills it, which catches a wrapper that detached from the known pid (`BgProcessStore.kt` lines 356-374).
 - **`killAll`**: iterates every unfinished entry and calls `kill` (`BgProcessStore.kt` lines 276-284).
-- **`stopPrivilegedTasks`**: stops only `ROOT` and `SHIZUKU` entries and returns a confirmed versus unconfirmed count (`BgProcessStore.kt` lines 225-230). `HarnessApp` wires this into `DeviceAccessManager.stopBackgroundTasks`, so pausing privileged access also stops detached jobs (`HarnessApp.kt` lines 203-207).
+- **`stopPrivilegedTasks`**: stops only `ROOT` and `SHIZUKU` entries and returns a confirmed versus unconfirmed count (`BgProcessStore.kt` lines 225-230). `AetherApp` wires this into `DeviceAccessManager.stopBackgroundTasks`, so pausing privileged access also stops detached jobs (`AetherApp.kt` lines 203-207).
 - **Resume**: there is no resume for a killed job. The only resume path is `DeviceAccessManager.resume`, which calls `root.resume()`, `shizuku.resumeCommands()`, and `dhizuku.resumeCommands()` to unpause runners; it does not restart a process (`DeviceAccessManager.kt` lines 85-88).
 
 ## Retention and Cleanup
@@ -119,18 +119,18 @@ Finished entries are retained so `bg_list` can explain what exited. `listLocked`
 
 - `BgProcessStore` accepts a custom `privilegedLiveness` probe for tests or alternate transports.
 - `bootToken` and `bootAt` are public enough for UI code to distinguish current and previous sessions.
-- The `.harness/bg` log convention means any file tool can inspect output without a dedicated pager.
+- The `.aether/bg` log convention means any file tool can inspect output without a dedicated pager.
 
 ## Known gaps
 
 - FEATURES.md and the tool description imply the agent can inspect background output. The implemented inspection is a fixed tail of 800 characters in `bg_list`; reading further requires a separate file read. No paging parameters exist on `bg_list` itself.
 
-Sources: [app/src/main/java/com/androidharness/app/tools/BgShell.kt](../app/src/main/java/com/androidharness/app/tools/BgShell.kt)#L11-L130), [app/src/main/java/com/androidharness/app/data/BgProcessStore.kt](../app/src/main/java/com/androidharness/app/data/BgProcessStore.kt)#L18-L176), [app/src/main/java/com/androidharness/app/data/BgProcessStore.kt](../app/src/main/java/com/androidharness/app/data/BgProcessStore.kt)#L232-L381)
+Sources: [app/src/main/java/com/aether/app/tools/BgShell.kt](../app/src/main/java/com/aether/app/tools/BgShell.kt)#L11-L130), [app/src/main/java/com/aether/app/data/BgProcessStore.kt](../app/src/main/java/com/aether/app/data/BgProcessStore.kt)#L18-L176), [app/src/main/java/com/aether/app/data/BgProcessStore.kt](../app/src/main/java/com/aether/app/data/BgProcessStore.kt)#L232-L381)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/BgShell.kt`
-- `app/src/main/java/com/androidharness/app/data/BgProcessStore.kt`
-- `app/src/main/java/com/androidharness/app/workspace/SshJobs.kt`
-- `app/src/main/java/com/androidharness/app/data/env/DeviceAccessManager.kt`
-- `app/src/main/java/com/androidharness/app/HarnessApp.kt`
+- `app/src/main/java/com/aether/app/tools/BgShell.kt`
+- `app/src/main/java/com/aether/app/data/BgProcessStore.kt`
+- `app/src/main/java/com/aether/app/workspace/SshJobs.kt`
+- `app/src/main/java/com/aether/app/data/env/DeviceAccessManager.kt`
+- `app/src/main/java/com/aether/app/AetherApp.kt`

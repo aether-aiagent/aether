@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="assistant_service_label">"AndroidHarness"</string>
+    <string name="assistant_service_label">"Aether"</string>
     <string name="assistant_input_hint">"Frag zu diesem Bildschirm"</string>
     <string name="assistant_input_hint_follow_up">"Stelle eine Nachfrage"</string>
     <string name="assistant_send">"Senden"</string>
@@ -17,12 +17,12 @@
     <string name="assistant_keyboard">"Stattdessen tippen"</string>
     <string name="assistant_listening">"Hört zu"</string>
     <string name="assistant_tap_to_talk">"Tippe auf das Mikrofon zum Sprechen"</string>
-    <string name="assistant_mic_permission">"AndroidHarness braucht das Mikrofon. Öffne die App, tippe einmal auf das Mikrofon in einem Chat und erlaube den Zugriff."</string>
+    <string name="assistant_mic_permission">"Aether braucht das Mikrofon. Öffne die App, tippe einmal auf das Mikrofon in einem Chat und erlaube den Zugriff."</string>
     <string name="assistant_working">"Wird bearbeitet"</string>
-    <string name="assistant_no_model">"Wähle zuerst ein Chat-Modell in AndroidHarness."</string>
-    <string name="assistant_no_key">"Verbinde zuerst %1$s in AndroidHarness."</string>
+    <string name="assistant_no_model">"Wähle zuerst ein Chat-Modell in Aether."</string>
+    <string name="assistant_no_key">"Verbinde zuerst %1$s in Aether."</string>
     <string name="assistant_failed">"Deine Frage konnte nicht gesendet werden. Versuche es erneut."</string>
-    <string name="assistant_open_failed">"AndroidHarness konnte nicht geöffnet werden."</string>
+    <string name="assistant_open_failed">"Aether konnte nicht geöffnet werden."</string>
     <string name="assistant_thinking_level">"Denken: %1$s"</string>
     <string name="assistant_thinking_auto">"Denkt selbstständig"</string>
     <string name="assistant_thinking_pick">"Wähle, wie stark es denkt"</string>
@@ -35,10 +35,10 @@
     <string name="assistant_settings_title">"Assistenz über anderen Apps"</string>
     <string name="assistant_settings_page_desc">"Frag zu jedem Bildschirm, ohne die App zu verlassen"</string>
     <string name="assistant_settings_desc">"Halte die Power- oder Home-Taste gedrückt oder wische von einer unteren Ecke nach oben, um zu fragen, was auf dem Bildschirm ist."</string>
-    <string name="assistant_settings_on">"AndroidHarness ist deine digitale Assistenz"</string>
-    <string name="assistant_settings_off">"Lege AndroidHarness als digitale Assistenz-App fest, um dies zu aktivieren"</string>
+    <string name="assistant_settings_on">"Aether ist deine digitale Assistenz"</string>
+    <string name="assistant_settings_off">"Lege Aether als digitale Assistenz-App fest, um dies zu aktivieren"</string>
     <string name="assistant_settings_open">"Assistenz-App wählen"</string>
-    <string name="assistant_settings_steps">"Öffne in den Android-Einstellungen Digitale Assistenz-App und wähle AndroidHarness. Aktiviere Text vom Bildschirm verwenden und Screenshot verwenden, damit sie sieht, was du siehst."</string>
+    <string name="assistant_settings_steps">"Öffne in den Android-Einstellungen Digitale Assistenz-App und wähle Aether. Aktiviere Text vom Bildschirm verwenden und Screenshot verwenden, damit sie sieht, was du siehst."</string>
     <string name="assistant_settings_privacy">"Der Bildschirm wird nur erfasst, wenn du die Assistenz aufrufst, und nur dann ans Modell gesendet, wenn deine Frage ihn betrifft. Apps, die Screenshots blockieren, bleiben verborgen."</string>
     <string name="assistant_settings_voice_first">"Mit Stimme starten"</string>
     <string name="assistant_settings_voice_first_desc">"Hört zu, sobald die Assistenz geöffnet ist. Du kannst trotzdem zur Tastatur wechseln."</string>
@@ -54,8 +54,8 @@
     <string name="settings_read_image_text">"Text in Bildern lesen"</string>
     <string name="settings_read_image_text_desc">"Bei Modellen, die keine Bilder sehen können, wird der Text in deinen Bildern und Screenshots auf diesem Telefon gelesen und stattdessen gesendet. Funktioniert offline."</string>
     <string name="chat_attachment_read_as_text">"Dieses Modell kann keine Bilder sehen, daher wird nur der Text daraus gesendet."</string>
-    <string name="assistant_check_unsupported">"Dieses Telefon erlaubt anderen Apps nicht, die digitale Assistenz zu sein. Das ist eine Grenze des Telefons, nicht von AndroidHarness. Du kannst trotzdem über die App nach deinem Bildschirm fragen."</string>
-    <string name="assistant_check_profile">"AndroidHarness ist in einem Arbeitsprofil, Secure Folder, privaten Bereich oder zweiten Bereich installiert. Nur Apps im Hauptprofil können Assistenz sein, installiere es also dort."</string>
+    <string name="assistant_check_unsupported">"Dieses Telefon erlaubt anderen Apps nicht, die digitale Assistenz zu sein. Das ist eine Grenze des Telefons, nicht von Aether. Du kannst trotzdem über die App nach deinem Bildschirm fragen."</string>
+    <string name="assistant_check_profile">"Aether ist in einem Arbeitsprofil, Secure Folder, privaten Bereich oder zweiten Bereich installiert. Nur Apps im Hauptprofil können Assistenz sein, installiere es also dort."</string>
     <string name="assistant_check_samsung">"Auf Samsung: Einstellungen, dann Apps, dann Standard-Apps wählen, dann Digitale Assistenz-App."</string>
     <string name="assistant_check_generic">"Nicht gefunden? Öffne die Einstellungen und suche nach digitale Assistenz oder Assist. Es ist eine andere Liste als Spracheingabe."</string>
     <string name="assistant_check_copy">"Details kopieren"</string>

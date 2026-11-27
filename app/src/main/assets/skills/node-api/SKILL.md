@@ -21,7 +21,7 @@ Correct async, validated inputs, and an endpoint you actually curl before claimi
 3. Structure small: `server.js` entry, `routes/`, one module per resource. No frameworks beyond what was asked.
 4. Async rules: wrap awaits in try/catch or an Express error middleware (async throws do not reach the default handler). Never use sync fs calls inside request handlers. Handle unhandledRejection explicitly.
 5. Validate inputs at the boundary; return 400 with a short JSON error shape the client can render.
-6. Run: start with the harness background shell (`shell_background` or `node server.js &`), bind 0.0.0.0 so the phone's own Chrome can open http://localhost:PORT.
+6. Run: start with the Aether background shell (`shell_background` or `node server.js &`), bind 0.0.0.0 so the phone's own Chrome can open http://localhost:PORT.
 7. Verify with `curl -s localhost:PORT/path` for one happy case and one bad input. Paste both outputs.
 
 ## Pitfalls

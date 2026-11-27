@@ -33,14 +33,14 @@ flowchart TD
 ```
 
 - Grouping: in the tool round, `AgentEngine` walks contiguous calls whose name is `task` and starts one `async` per call inside a `coroutineScope`, then `awaitAll` (`agent/AgentEngine.kt` lines 793-830). Emits go through a `Mutex` because `FlowCollector.emit` is not concurrency safe.
-- Execution: each call reaches `performWithPermission`, which parses arguments and calls `SubagentConfiguration.forTask` (`agent/AgentEngine.kt` lines 1217-1244). The child context may be narrowed by an `agent` profile from `harness.json` through `runConfig.child(name)`.
+- Execution: each call reaches `performWithPermission`, which parses arguments and calls `SubagentConfiguration.forTask` (`agent/AgentEngine.kt` lines 1217-1244). The child context may be narrowed by an `agent` profile from `aether.json` through `runConfig.child(name)`.
 - Isolation: foreground delegates use `supervisorScope` plus a child `Job`, so `subagent_stop` cancels the delegate and not the main run (`agent/SubagentRuns.kt` lines 144-169). Background delegates launch on the application scope with `Dispatchers.IO` and acquire a keepalive (`agent/SubagentRuns.kt` lines 172-209).
 - Output: `runSubagent` returns only the final assistant text. Intermediate tool messages and assistant rounds are persisted with the parent call id, but the parent model receives a single tool result.
 
 ## Invocation Chain
 
 1. The model emits one or more `task` calls; `TaskTool.parametersSchema` defines the accepted fields (`tools/SubagentTools.kt` lines 28-47).
-2. `AgentEngine` groups adjacent task calls and logs the batch under the `HarnessSpawn` tag (`agent/AgentEngine.kt` lines 793-815).
+2. `AgentEngine` groups adjacent task calls and logs the batch under the `AetherSpawn` tag (`agent/AgentEngine.kt` lines 793-815).
 3. `executeWithPermission` reaches `performWithPermission`; the task branch checks `prompt`, derives `title` (`name` or `title`, truncated to 40 characters), and rejects `background` when `Allow background delegation` is off (`agent/AgentEngine.kt` lines 1217-1227).
 4. `SubagentConfiguration.forTask` resolves the connection (`agent/SubagentConfiguration.kt` lines 25-53).
 5. `SubagentRuns.foreground` registers the run as `RUNNING`, starts the child, awaits the result, and finishes it. `SubagentRuns.background` registers as `QUEUED`, launches, then flips to `RUNNING` once a semaphore slot is free (`agent/SubagentRuns.kt` lines 154-157 and 181-191).
@@ -93,24 +93,24 @@ Matching accepts exact ids, case-insensitive ids (catalog casing wins), and an u
 ## Extension Points
 
 - Settings: `subagent_full_access`, `background_subagents`, `subagent_completion_notifications`, `subagent_provider_id`, `subagent_model` (`data/SettingsRepository.kt` lines 238-242, 360-362).
-- Project config: an `agent` argument selects a named profile in `harness.json`, including its tool restrictions.
+- Project config: an `agent` argument selects a named profile in `aether.json`, including its tool restrictions.
 - Runtime: any code holding `RunManager.subagents` can call `stop`, `stopSession`, `stopSessionAndJoin`, `stopAllAndJoin`, `waitFor`, `pending`, and `acknowledge`.
 - Notifications: `onFinished` posts a `RunResultNotification` when completion notifications are enabled (`agent/RunManager.kt` lines 227-235).
 
-Sources: [app/src/main/java/com/androidharness/app/tools/SubagentTools.kt](../app/src/main/java/com/androidharness/app/tools/SubagentTools.kt)#L10-L52)
+Sources: [app/src/main/java/com/aether/app/tools/SubagentTools.kt](../app/src/main/java/com/aether/app/tools/SubagentTools.kt)#L10-L52)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/SubagentTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/SubagentControlTools.kt`
-- `app/src/main/java/com/androidharness/app/agent/SubagentRuns.kt`
-- `app/src/main/java/com/androidharness/app/agent/SubagentModelResolver.kt`
-- `app/src/main/java/com/androidharness/app/agent/SubagentConfiguration.kt`
-- `app/src/main/java/com/androidharness/app/agent/AgentEngine.kt`
-- `app/src/main/java/com/androidharness/app/agent/RunManager.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/SubagentCard.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/FloatingSubagentDeck.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/SubagentBubbleState.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/SubagentBubblePositionStore.kt`
-- `app/src/main/java/com/androidharness/app/ui/subagent/SubagentScreen.kt`
-- `app/src/main/java/com/androidharness/app/data/SettingsRepository.kt`
+- `app/src/main/java/com/aether/app/tools/SubagentTools.kt`
+- `app/src/main/java/com/aether/app/tools/SubagentControlTools.kt`
+- `app/src/main/java/com/aether/app/agent/SubagentRuns.kt`
+- `app/src/main/java/com/aether/app/agent/SubagentModelResolver.kt`
+- `app/src/main/java/com/aether/app/agent/SubagentConfiguration.kt`
+- `app/src/main/java/com/aether/app/agent/AgentEngine.kt`
+- `app/src/main/java/com/aether/app/agent/RunManager.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/SubagentCard.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/FloatingSubagentDeck.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/SubagentBubbleState.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/SubagentBubblePositionStore.kt`
+- `app/src/main/java/com/aether/app/ui/subagent/SubagentScreen.kt`
+- `app/src/main/java/com/aether/app/data/SettingsRepository.kt`

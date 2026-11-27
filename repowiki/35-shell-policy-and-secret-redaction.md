@@ -10,7 +10,7 @@ Two independent guards sit around tool execution. `ShellPolicy` decides whether 
 - **Command parsing**: `extractTokens`, `extractSubshells`, `extractVariableAssignments`, and `expandVariables` normalize a command before containment checks, so quoting, redirection, and variable tricks cannot hide a path.
 - **Grant signatures**: `signature`, `grantKey`, and `isGranted` decide what "Always" remembers for a shell tool.
 - **`SecretRedactor`**: matched vendor prefixes plus credential-named assignments and passwords.
-- **`HarnessConfig.redact`**: adds project-sensitive values and MCP server environment or header values on top of `SecretRedactor`.
+- **`AetherConfig.redact`**: adds project-sensitive values and MCP server environment or header values on top of `SecretRedactor`.
 - **`ContextHygiene`**: bounds stale tool text for the model; it truncates, it does not redact.
 
 ## Architecture and Flow
@@ -30,7 +30,7 @@ flowchart TD
     E --> K[tool.execute]
     K --> L[ToolResult.redacted]
     L --> M[SecretRedactor.redact]
-    M --> N[HarnessConfig.redact]
+    M --> N[AetherConfig.redact]
     N --> O[ToolMessageCommitted]
 ```
 
@@ -85,7 +85,7 @@ The consequence is that approving `git status` once does not approve `git push`.
 
 ## Key State and Data Structures
 
-`ShellPolicy` is a stateless object; its state is the compiled regex constants and the `SCRATCH_ROOTS` list (`ShellPolicy.kt` lines 618-654). The effective inputs are the command string, the canonical workspace root, and the effective `cwd`. `SecretRedactor.Rule` pairs a regex with its replacement string, and the ordered `PREFIX_RULES` list is the entire vendor pattern table. `CREDENTIAL_WORDS` and `PASSWORD_WORDS` are `Set<String>` membership checks on name segments, not patterns. `HarnessConfig.sensitiveValues` is a `Set<String>` rebuilt on every configuration load and merged with MCP server environment and header values inside `redact`. Nothing in this subsystem persists state; durability comes from the settings file and the chat database, both of which only ever receive redacted tool text.
+`ShellPolicy` is a stateless object; its state is the compiled regex constants and the `SCRATCH_ROOTS` list (`ShellPolicy.kt` lines 618-654). The effective inputs are the command string, the canonical workspace root, and the effective `cwd`. `SecretRedactor.Rule` pairs a regex with its replacement string, and the ordered `PREFIX_RULES` list is the entire vendor pattern table. `CREDENTIAL_WORDS` and `PASSWORD_WORDS` are `Set<String>` membership checks on name segments, not patterns. `AetherConfig.sensitiveValues` is a `Set<String>` rebuilt on every configuration load and merged with MCP server environment and header values inside `redact`. Nothing in this subsystem persists state; durability comes from the settings file and the chat database, both of which only ever receive redacted tool text.
 
 ## Secret Patterns
 
@@ -108,7 +108,7 @@ Assignment rules are two-stage. A generic `NAME = value` regex captures a 16-cha
 ## Redaction Boundaries
 
 - **Tool results**: every result crosses `ToolResult.redacted()` before the model, the database, or the transcript sees it (`AgentEngine.kt` lines 1168-1169).
-- **Project-sensitive values**: `HarnessConfig.redact` runs `SecretRedactor` first, then replaces every resolved `sensitiveValues` entry plus each MCP server `env` or `headers` value of four characters or more (`HarnessConfig.kt` lines 40-45). `sensitiveValues` is filled from `{env:...}`, `{secret:...}`, and `{file:...}` expansion inside the configuration loader (`HarnessConfig.kt` lines 171-178).
+- **Project-sensitive values**: `AetherConfig.redact` runs `SecretRedactor` first, then replaces every resolved `sensitiveValues` entry plus each MCP server `env` or `headers` value of four characters or more (`AetherConfig.kt` lines 40-45). `sensitiveValues` is filled from `{env:...}`, `{secret:...}`, and `{file:...}` expansion inside the configuration loader (`AetherConfig.kt` lines 171-178).
 - **Plugin hooks**: the arguments passed to `tool.before` are redacted and capped at 16,000 characters; the hook prompt gets a redacted last user message capped at 32,000 characters (`AgentEngine.kt` lines 313 and 1134-1136).
 - **Subagent previews and steps**: redacted individually before they enter the popup or the durable subagent record (`SubagentRuns.kt` lines 129-135 and 214).
 - **Not redacted**: the actual command sent to the shell. Redaction is an output-side filter, so a command containing a literal token still runs; the model is expected to use environment variables or stored credentials.
@@ -131,16 +131,16 @@ Assignment rules are two-stage. A generic `NAME = value` regex captures a 16-cha
 
 ## Known gaps
 
-- The page brief names `agent/ContextHygiene.kt` as a redaction layer. The file contains no redaction call. It only truncates stale tool text and strips image payloads, so redaction boundaries must be described through `SecretRedactor` and `HarnessConfig.redact` (verified at `ContextHygiene.kt` lines 1-129).
+- The page brief names `agent/ContextHygiene.kt` as a redaction layer. The file contains no redaction call. It only truncates stale tool text and strips image payloads, so redaction boundaries must be described through `SecretRedactor` and `AetherConfig.redact` (verified at `ContextHygiene.kt` lines 1-129).
 - Shell policy applies to shell tools only. File tools rely on `WorkspaceFs.resolve` for containment, which is outside this page.
 
-Sources: [app/src/main/java/com/androidharness/app/tools/ShellPolicy.kt](../app/src/main/java/com/androidharness/app/tools/ShellPolicy.kt)#L13-L103), [app/src/main/java/com/androidharness/app/tools/ShellPolicy.kt](../app/src/main/java/com/androidharness/app/tools/ShellPolicy.kt)#L575-L604), [app/src/main/java/com/androidharness/app/tools/SecretRedactor.kt](../app/src/main/java/com/androidharness/app/tools/SecretRedactor.kt)#L19-L141), [app/src/main/java/com/androidharness/app/config/HarnessConfig.kt](../app/src/main/java/com/androidharness/app/config/HarnessConfig.kt)#L40-L45)
+Sources: [app/src/main/java/com/aether/app/tools/ShellPolicy.kt](../app/src/main/java/com/aether/app/tools/ShellPolicy.kt)#L13-L103), [app/src/main/java/com/aether/app/tools/ShellPolicy.kt](../app/src/main/java/com/aether/app/tools/ShellPolicy.kt)#L575-L604), [app/src/main/java/com/aether/app/tools/SecretRedactor.kt](../app/src/main/java/com/aether/app/tools/SecretRedactor.kt)#L19-L141), [app/src/main/java/com/aether/app/config/AetherConfig.kt](../app/src/main/java/com/aether/app/config/AetherConfig.kt)#L40-L45)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/ShellPolicy.kt`
-- `app/src/main/java/com/androidharness/app/tools/SecretRedactor.kt`
-- `app/src/main/java/com/androidharness/app/agent/ContextHygiene.kt`
-- `app/src/main/java/com/androidharness/app/agent/AgentEngine.kt`
-- `app/src/main/java/com/androidharness/app/config/HarnessConfig.kt`
-- `app/src/main/java/com/androidharness/app/tools/ReadToolOutputTool.kt`
+- `app/src/main/java/com/aether/app/tools/ShellPolicy.kt`
+- `app/src/main/java/com/aether/app/tools/SecretRedactor.kt`
+- `app/src/main/java/com/aether/app/agent/ContextHygiene.kt`
+- `app/src/main/java/com/aether/app/agent/AgentEngine.kt`
+- `app/src/main/java/com/aether/app/config/AetherConfig.kt`
+- `app/src/main/java/com/aether/app/tools/ReadToolOutputTool.kt`

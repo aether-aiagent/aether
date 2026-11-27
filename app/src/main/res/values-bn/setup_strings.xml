@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">"AndroidHarness এ স্বাগতম"</string>
+    <string name="setup_welcome_title">"Aether এ স্বাগতম"</string>
     <string name="setup_welcome_body">"আপনার কোডিং এজেন্ট, সরাসরি আপনার ফোনে। আসুন এটি সেট আপ করি।"</string>
     <string name="setup_start_fresh">"নতুন করে শুরু করুন"</string>
-    <string name="setup_start_fresh_body">"একটি সম্পূর্ণ নতুন AndroidHarness সেট আপ করুন"</string>
-    <string name="setup_restore">"AndroidHarness পুনরুদ্ধার করুন"</string>
+    <string name="setup_start_fresh_body">"একটি সম্পূর্ণ নতুন Aether সেট আপ করুন"</string>
+    <string name="setup_restore">"Aether পুনরুদ্ধার করুন"</string>
     <string name="setup_restore_body">"ব্যাকআপ ফাইল থেকে আপনার চ্যাট ও সেটিংস ফিরিয়ে আনুন"</string>
 
     <string name="setup_storage_title">"ফাইল অ্যাক্সেসের অনুমতি দিন"</string>
-    <string name="setup_storage_body">"ঐচ্ছিক। এটি ছাড়া AndroidHarness নিজের ফোল্ডারে কাজ করে এবং কোনো কাজে আপনার ফাইল দরকার হলে জিজ্ঞাসা করে।"</string>
+    <string name="setup_storage_body">"ঐচ্ছিক। এটি ছাড়া Aether নিজের ফোল্ডারে কাজ করে এবং কোনো কাজে আপনার ফাইল দরকার হলে জিজ্ঞাসা করে।"</string>
     <string name="setup_storage_all_files">"সব ফাইলে অ্যাক্সেস"</string>
     <string name="setup_storage_all_files_body">"টার্মিনাল ও ফাইল টুল যেভাবে আশা করে, যেকোনো ফোল্ডার পড়ুন ও সম্পাদনা করুন। কোডিংয়ের জন্য সেরা।"</string>
     <string name="setup_storage_legacy">"স্টোরেজ অনুমতি"</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">"আপনার ডেটা পুনরুদ্ধার করুন"</string>
     <string name="setup_restore_subtitle">"আপনার পুরোনো ফোনের ব্যাকআপ ফাইলগুলো বেছে নিন। একটি, দুটোই বা কিছুই পুনরুদ্ধার করুন।"</string>
     <string name="setup_restore_chats">"চ্যাট"</string>
-    <string name="setup_restore_chats_body">"আপনার চ্যাট, ছবি, ব্যবহারের পরিসংখ্যান, স্মৃতি ও স্নিপেটসহ একটি .harnessbackup ফাইল"</string>
+    <string name="setup_restore_chats_body">"আপনার চ্যাট, ছবি, ব্যবহারের পরিসংখ্যান, স্মৃতি ও স্নিপেটসহ একটি .aetherbackup ফাইল"</string>
     <string name="setup_restore_settings">"সেটিংস ও প্রদানকারী"</string>
     <string name="setup_restore_settings_body">"আপনার প্রদানকারী, API কী ও পছন্দসহ পাসওয়ার্ড-সুরক্ষিত একটি .hbackup ফাইল"</string>
     <string name="setup_restore_choose">"ফাইল বেছে নিন"</string>

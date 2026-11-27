@@ -92,7 +92,7 @@ The send path (`ChatViewModel.kt:816-940`) checks compaction and attachment read
 
 Persistence:
 
-- Snippets are the only persisted data in this page's scope. They live in the Room `snippets` table and are observed as a flow (`HarnessApp.kt:170`, `ChatViewModel.kt:454-458`).
+- Snippets are the only persisted data in this page's scope. They live in the Room `snippets` table and are observed as a flow (`AetherApp.kt:170`, `ChatViewModel.kt:454-458`).
 - Side questions and their answers are never written to the chat. Usage is written under a `btw:` turn id (`RunManager.kt:1450-1460`), so it counts toward cost without altering a main turn.
 - Steering messages are saved to the chat by `SteeringInbox.take()` before they leave the queue (`RunManager.kt:1180-1194`). The saved id lets `dropDeliveredSteering` remove the queue copy without losing the message.
 
@@ -155,18 +155,18 @@ The composer shows the skill as a removable badge (`MessageComposer.kt:293-317`)
 - Snippets have no editing flow, only add and delete (`SlashCommandsSection`), and `SnippetRepository` performs no name uniqueness or length validation beyond non-blank trimmed values.
 - `/auto compact` is accepted as an alias but is not listed in the `/` menu or `FEATURES.md`; the documented spelling is `/autocompact`.
 
-Sources: [app/src/main/java/com/androidharness/app/ui/chat/SlashCommands.kt](../app/src/main/java/com/androidharness/app/ui/chat/SlashCommands.kt)#L11-L244), [app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt](../app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt)#L816-L940), [app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt](../app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt)#L1087-L1137), [app/src/main/java/com/androidharness/app/ui/chat/components/StatusBars.kt](../app/src/main/java/com/androidharness/app/ui/chat/components/StatusBars.kt)#L314-L356), [app/src/main/java/com/androidharness/app/data/SnippetRepository.kt](../app/src/main/java/com/androidharness/app/data/SnippetRepository.kt)#L9-L19), [app/src/main/java/com/androidharness/app/agent/Steering.kt](../app/src/main/java/com/androidharness/app/agent/Steering.kt)#L11-L34), [app/src/main/java/com/androidharness/app/agent/SideQuestions.kt](../app/src/main/java/com/androidharness/app/agent/SideQuestions.kt)#L65-L152), [app/src/main/java/com/androidharness/app/agent/RunManager.kt](../app/src/main/java/com/androidharness/app/agent/RunManager.kt)#L1180-L1206)
+Sources: [app/src/main/java/com/aether/app/ui/chat/SlashCommands.kt](../app/src/main/java/com/aether/app/ui/chat/SlashCommands.kt)#L11-L244), [app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt](../app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt)#L816-L940), [app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt](../app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt)#L1087-L1137), [app/src/main/java/com/aether/app/ui/chat/components/StatusBars.kt](../app/src/main/java/com/aether/app/ui/chat/components/StatusBars.kt)#L314-L356), [app/src/main/java/com/aether/app/data/SnippetRepository.kt](../app/src/main/java/com/aether/app/data/SnippetRepository.kt)#L9-L19), [app/src/main/java/com/aether/app/agent/Steering.kt](../app/src/main/java/com/aether/app/agent/Steering.kt)#L11-L34), [app/src/main/java/com/aether/app/agent/SideQuestions.kt](../app/src/main/java/com/aether/app/agent/SideQuestions.kt)#L65-L152), [app/src/main/java/com/aether/app/agent/RunManager.kt](../app/src/main/java/com/aether/app/agent/RunManager.kt)#L1180-L1206)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/ui/chat/SlashCommands.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatScreen.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/StatusBars.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/MessageComposer.kt`
-- `app/src/main/java/com/androidharness/app/data/SnippetRepository.kt`
-- `app/src/main/java/com/androidharness/app/data/db/Database.kt`
-- `app/src/main/java/com/androidharness/app/agent/Steering.kt`
-- `app/src/main/java/com/androidharness/app/agent/SideQuestions.kt`
-- `app/src/main/java/com/androidharness/app/agent/RunManager.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/SettingsScreen.kt`
+- `app/src/main/java/com/aether/app/ui/chat/SlashCommands.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatScreen.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/StatusBars.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/MessageComposer.kt`
+- `app/src/main/java/com/aether/app/data/SnippetRepository.kt`
+- `app/src/main/java/com/aether/app/data/db/Database.kt`
+- `app/src/main/java/com/aether/app/agent/Steering.kt`
+- `app/src/main/java/com/aether/app/agent/SideQuestions.kt`
+- `app/src/main/java/com/aether/app/agent/RunManager.kt`
+- `app/src/main/java/com/aether/app/ui/settings/SettingsScreen.kt`

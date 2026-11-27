@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">"Selamat datang di AndroidHarness"</string>
+    <string name="setup_welcome_title">"Selamat datang di Aether"</string>
     <string name="setup_welcome_body">"Agen coding Anda, langsung di ponsel. Mari kita atur."</string>
     <string name="setup_start_fresh">"Mulai baru"</string>
-    <string name="setup_start_fresh_body">"Siapkan AndroidHarness yang benar-benar baru"</string>
-    <string name="setup_restore">"Pulihkan AndroidHarness"</string>
+    <string name="setup_start_fresh_body">"Siapkan Aether yang benar-benar baru"</string>
+    <string name="setup_restore">"Pulihkan Aether"</string>
     <string name="setup_restore_body">"Kembalikan chat dan setelan Anda dari berkas cadangan"</string>
 
     <string name="setup_storage_title">"Izinkan akses berkas"</string>
-    <string name="setup_storage_body">"Opsional. Tanpanya, AndroidHarness bekerja di folder sendiri dan bertanya saat tugas membutuhkan berkas Anda."</string>
+    <string name="setup_storage_body">"Opsional. Tanpanya, Aether bekerja di folder sendiri dan bertanya saat tugas membutuhkan berkas Anda."</string>
     <string name="setup_storage_all_files">"Akses semua berkas"</string>
     <string name="setup_storage_all_files_body">"Baca dan edit folder mana pun seperti yang diharapkan terminal dan alat berkas. Terbaik untuk coding."</string>
     <string name="setup_storage_legacy">"Izin penyimpanan"</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">"Pulihkan data Anda"</string>
     <string name="setup_restore_subtitle">"Pilih berkas cadangan dari ponsel lama Anda. Pulihkan satu, keduanya, atau tidak sama sekali."</string>
     <string name="setup_restore_chats">"Chat"</string>
-    <string name="setup_restore_chats_body">"Berkas .harnessbackup berisi chat, gambar, statistik penggunaan, memori, dan cuplikan"</string>
+    <string name="setup_restore_chats_body">"Berkas .aetherbackup berisi chat, gambar, statistik penggunaan, memori, dan cuplikan"</string>
     <string name="setup_restore_settings">"Setelan dan penyedia"</string>
     <string name="setup_restore_settings_body">"Berkas .hbackup yang dilindungi kata sandi berisi penyedia, kunci API, dan preferensi Anda"</string>
     <string name="setup_restore_choose">"Pilih berkas"</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="assistant_service_label">"AndroidHarness"</string>
+    <string name="assistant_service_label">"Aether"</string>
     <string name="assistant_input_hint">"Спросите об этом экране"</string>
     <string name="assistant_input_hint_follow_up">"Задайте уточняющий вопрос"</string>
     <string name="assistant_send">"Отправить"</string>
@@ -17,12 +17,12 @@
     <string name="assistant_keyboard">"Ввести текстом"</string>
     <string name="assistant_listening">"Слушаю"</string>
     <string name="assistant_tap_to_talk">"Нажмите на микрофон, чтобы говорить"</string>
-    <string name="assistant_mic_permission">"AndroidHarness нужен микрофон. Откройте приложение, один раз нажмите микрофон в чате и разрешите доступ."</string>
+    <string name="assistant_mic_permission">"Aether нужен микрофон. Откройте приложение, один раз нажмите микрофон в чате и разрешите доступ."</string>
     <string name="assistant_working">"Работаю над этим"</string>
-    <string name="assistant_no_model">"Сначала выберите модель чата в AndroidHarness."</string>
-    <string name="assistant_no_key">"Сначала подключите %1$s в AndroidHarness."</string>
+    <string name="assistant_no_model">"Сначала выберите модель чата в Aether."</string>
+    <string name="assistant_no_key">"Сначала подключите %1$s в Aether."</string>
     <string name="assistant_failed">"Не удалось отправить вопрос. Попробуйте ещё раз."</string>
-    <string name="assistant_open_failed">"Не удалось открыть AndroidHarness."</string>
+    <string name="assistant_open_failed">"Не удалось открыть Aether."</string>
     <string name="assistant_thinking_level">"Размышление: %1$s"</string>
     <string name="assistant_thinking_auto">"Думает сам"</string>
     <string name="assistant_thinking_pick">"Выберите силу размышления"</string>
@@ -35,10 +35,10 @@
     <string name="assistant_settings_title">"Ассистент поверх других приложений"</string>
     <string name="assistant_settings_page_desc">"Спрашивайте о любом экране, не выходя из приложения"</string>
     <string name="assistant_settings_desc">"Удерживайте кнопку питания или «Домой» либо смахните вверх от нижнего угла, чтобы спросить о том, что на экране."</string>
-    <string name="assistant_settings_on">"AndroidHarness — ваш цифровой ассистент"</string>
-    <string name="assistant_settings_off">"Назначьте AndroidHarness приложением цифрового ассистента, чтобы включить"</string>
+    <string name="assistant_settings_on">"Aether — ваш цифровой ассистент"</string>
+    <string name="assistant_settings_off">"Назначьте Aether приложением цифрового ассистента, чтобы включить"</string>
     <string name="assistant_settings_open">"Выбрать ассистента"</string>
-    <string name="assistant_settings_steps">"В настройках Android откройте «Приложение цифрового ассистента» и выберите AndroidHarness. Включите «Использовать текст экрана» и «Использовать снимок экрана», чтобы он видел то же, что вы."</string>
+    <string name="assistant_settings_steps">"В настройках Android откройте «Приложение цифрового ассистента» и выберите Aether. Включите «Использовать текст экрана» и «Использовать снимок экрана», чтобы он видел то же, что вы."</string>
     <string name="assistant_settings_privacy">"Экран снимается только при вызове ассистента и отправляется модели только тогда, когда вопрос о нём. Приложения, блокирующие снимки, остаются скрыты."</string>
     <string name="assistant_settings_voice_first">"Начинать с голоса"</string>
     <string name="assistant_settings_voice_first_desc">"Слушать сразу при открытии. К клавиатуре можно переключиться в любой момент."</string>
@@ -54,8 +54,8 @@
     <string name="settings_read_image_text">"Читать текст на изображениях"</string>
     <string name="settings_read_image_text_desc">"Для моделей, которые не видят изображения, текст с ваших фото и снимков читается на телефоне и отправляется вместо них. Работает без интернета."</string>
     <string name="chat_attachment_read_as_text">"Эта модель не видит изображения, поэтому отправляется только текст с них."</string>
-    <string name="assistant_check_unsupported">"Этот телефон не разрешает другим приложениям быть цифровым ассистентом. Это ограничение телефона, а не AndroidHarness. Вы всё равно можете спрашивать об экране, открыв приложение."</string>
-    <string name="assistant_check_profile">"AndroidHarness установлен в рабочем профиле, Secure Folder, приватном пространстве или втором пространстве. Быть ассистентом могут только приложения основного профиля, установите его там."</string>
+    <string name="assistant_check_unsupported">"Этот телефон не разрешает другим приложениям быть цифровым ассистентом. Это ограничение телефона, а не Aether. Вы всё равно можете спрашивать об экране, открыв приложение."</string>
+    <string name="assistant_check_profile">"Aether установлен в рабочем профиле, Secure Folder, приватном пространстве или втором пространстве. Быть ассистентом могут только приложения основного профиля, установите его там."</string>
     <string name="assistant_check_samsung">"На Samsung: Настройки, затем Приложения, затем Выбор приложений по умолчанию, затем Приложение цифрового ассистента."</string>
     <string name="assistant_check_generic">"Не нашли? Откройте Настройки и найдите цифровой ассистент или помощь. Это другой список, не «Голосовой ввод»."</string>
     <string name="assistant_check_copy">"Скопировать данные"</string>

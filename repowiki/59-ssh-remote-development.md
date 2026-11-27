@@ -11,7 +11,7 @@
 - **`SshStatus`**: `connected`, `message` and `uncertain` state published per connection (`SshConnections.kt:42`).
 - **`SshConnections`**: Session and credential manager. Holds `sessions: ConcurrentHashMap<String, Session>`, `paused: ConcurrentHashMap.newKeySet<String>()` and `statuses: MutableStateFlow<Map<String, SshStatus>>` (`SshConnections.kt:46-50`).
 - **`SshFs`**: `WorkspaceFs` implementation over SFTP with a deliberately null `shellRoot` (`SshFs.kt:12-16`).
-- **`SshJobs`**: Remote background job facade writing under `.harness/ssh-jobs/<id>` (`SshJobs.kt:6-40`).
+- **`SshJobs`**: Remote background job facade writing under `.aether/ssh-jobs/<id>` (`SshJobs.kt:6-40`).
 - **`SshWorkspaceDialog` and `SshWorkspaceBar`**: Profile editor, folder browser and status strip (`SshWorkspaceDialog.kt:20`; `SshWorkspaceBar.kt:19`).
 - **`TermuxSsh.kt` helpers**: `TermuxSshConfig`, `termuxSharedPath`, `termuxCommand`, `sshFingerprint`, `FingerprintRepository` and `LimitedSshOutput` (`TermuxSsh.kt:13-79`).
 
@@ -60,7 +60,7 @@ Ed25519 support comes from the bundled JSch 2.28.7 and Bouncy Castle provider de
 
 `RemoteNode` is an inner class carrying a mutable `SftpATTRS` snapshot. Each connection-scoped operation calls `connections.sftp(id) { ... }`, so a node holds no channel between calls and a stale snapshot is invalidated after writes (`SshFs.kt:52-58`, `99`). Directory listings filter `.` and `..` and build child nodes with the parent's attributes (`SshFs.kt:63-68`).
 
-Reads are capped at 32 MiB by `MAX_TRANSFER`; a larger file raises an instruction to use the SSH terminal instead (`SshFs.kt:69-84`, `137`). Writes are transactional: the bytes go to `<path>.harness-upload-<uuid>`, the previous permission bits are copied with `chmod(permissions and 511)`, then `rename` replaces the target, and a failed upload removes the temp file (`SshFs.kt:87-102`). Overwriting a symlink or directory is refused. `delete` recurses through directories and removes them with `rmdir`, refusing the workspace root (`SshFs.kt:104-116`). `renameTo` stays in the same parent, rejects separators and dot names, and refuses an existing destination (`SshFs.kt:117-124`).
+Reads are capped at 32 MiB by `MAX_TRANSFER`; a larger file raises an instruction to use the SSH terminal instead (`SshFs.kt:69-84`, `137`). Writes are transactional: the bytes go to `<path>.aether-upload-<uuid>`, the previous permission bits are copied with `chmod(permissions and 511)`, then `rename` replaces the target, and a failed upload removes the temp file (`SshFs.kt:87-102`). Overwriting a symlink or directory is refused. `delete` recurses through directories and removes them with `rmdir`, refusing the workspace root (`SshFs.kt:104-116`). `renameTo` stays in the same parent, rejects separators and dot names, and refuses an existing destination (`SshFs.kt:117-124`).
 
 `walk` yields the root and descends only into directories that pass `WorkspaceIgnore.shouldSkip`, so remote traversal honors the same ignore rules as local trees (`SshFs.kt:23-31`).
 
@@ -74,7 +74,7 @@ Git, package managers and build tools branch on `SshFs` rather than shelling out
 
 ## Background Jobs
 
-`SshJobs.start` generates a positive numeric id, writes `.harness/ssh-jobs/<id>/run.sh`, records `$$` in `pid`, runs the command under `nohup setsid` with output redirected to `output.log`, and writes the exit code to `exit` (`SshJobs.kt:7-17`). It first requires both `setsid` and `nohup` on the host and fails with an install instruction otherwise. `list` iterates the job directories, prints `exited <code>`, `running` or `unknown or stopped`, and appends the last 2000 bytes of the log (`SshJobs.kt:19-27`). `stop` rejects a non-positive id, refuses an already-exited job, validates that the pid is numeric, checks `ps -p <pid> -o args=` still contains `run.sh` to prevent PID reuse, then sends `TERM` to the process group (`SshJobs.kt:28-39`). `BgShell` routes `shell_background`, `bg_list` and `bg_kill` into these calls whenever the workspace is `SshFs` (`BgShell.kt:41`, `99`, `148`).
+`SshJobs.start` generates a positive numeric id, writes `.aether/ssh-jobs/<id>/run.sh`, records `$$` in `pid`, runs the command under `nohup setsid` with output redirected to `output.log`, and writes the exit code to `exit` (`SshJobs.kt:7-17`). It first requires both `setsid` and `nohup` on the host and fails with an install instruction otherwise. `list` iterates the job directories, prints `exited <code>`, `running` or `unknown or stopped`, and appends the last 2000 bytes of the log (`SshJobs.kt:19-27`). `stop` rejects a non-positive id, refuses an already-exited job, validates that the pid is numeric, checks `ps -p <pid> -o args=` still contains `run.sh` to prevent PID reuse, then sends `TERM` to the process group (`SshJobs.kt:28-39`). `BgShell` routes `shell_background`, `bg_list` and `bg_kill` into these calls whenever the workspace is `SshFs` (`BgShell.kt:41`, `99`, `148`).
 
 ## Reconnect and Status Bar
 
@@ -108,22 +108,22 @@ Settings diagnostics summarize the same flow: not checked when no statuses exist
 - `TermuxSshConfig`, `termuxSharedPath` and `termuxCommand` are declared in `data/env/TermuxSsh.kt` but have no call sites in `app/src/main/java`; the Termux option in the dialog is implemented by connecting to `127.0.0.1:8022` with the normal SSH path (`SshWorkspaceDialog.kt:64`).
 - Ed25519 is claimed by the build dependency and ProGuard comment, but no explicit provider registration or Ed25519 test exists in app code.
 
-Sources: [workspace/SshConnections.kt](../app/src/main/java/com/androidharness/app/workspace/SshConnections.kt)#L18-L217), [workspace/SshFs.kt](../app/src/main/java/com/androidharness/app/workspace/SshFs.kt)#L11-L138), [workspace/SshJobs.kt](../app/src/main/java/com/androidharness/app/workspace/SshJobs.kt)#L6-L40), [data/env/TermuxSsh.kt](../app/src/main/java/com/androidharness/app/data/env/TermuxSsh.kt)#L13-L79), [ui/common/SshWorkspaceDialog.kt](../app/src/main/java/com/androidharness/app/ui/common/SshWorkspaceDialog.kt)#L20-L144), [ui/common/SshWorkspaceBar.kt](../app/src/main/java/com/androidharness/app/ui/common/SshWorkspaceBar.kt)#L19-L79)
+Sources: [workspace/SshConnections.kt](../app/src/main/java/com/aether/app/workspace/SshConnections.kt)#L18-L217), [workspace/SshFs.kt](../app/src/main/java/com/aether/app/workspace/SshFs.kt)#L11-L138), [workspace/SshJobs.kt](../app/src/main/java/com/aether/app/workspace/SshJobs.kt)#L6-L40), [data/env/TermuxSsh.kt](../app/src/main/java/com/aether/app/data/env/TermuxSsh.kt)#L13-L79), [ui/common/SshWorkspaceDialog.kt](../app/src/main/java/com/aether/app/ui/common/SshWorkspaceDialog.kt)#L20-L144), [ui/common/SshWorkspaceBar.kt](../app/src/main/java/com/aether/app/ui/common/SshWorkspaceBar.kt)#L19-L79)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/workspace/SshConnections.kt`
-- `app/src/main/java/com/androidharness/app/workspace/SshFs.kt`
-- `app/src/main/java/com/androidharness/app/workspace/SshJobs.kt`
-- `app/src/main/java/com/androidharness/app/data/env/TermuxSsh.kt`
-- `app/src/main/java/com/androidharness/app/ui/common/SshWorkspaceDialog.kt`
-- `app/src/main/java/com/androidharness/app/ui/common/SshWorkspaceBar.kt`
-- `app/src/main/java/com/androidharness/app/workspace/WorkspaceManager.kt`
-- `app/src/main/java/com/androidharness/app/data/KeyStoreManager.kt`
-- `app/src/main/java/com/androidharness/app/data/env/ShellTierRouter.kt`
-- `app/src/main/java/com/androidharness/app/tools/BgShell.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/TroubleshootingSection.kt`
-- `app/src/main/java/com/androidharness/app/ui/AppNav.kt`
-- `app/src/main/java/com/androidharness/app/ui/projects/ProjectsScreen.kt`
+- `app/src/main/java/com/aether/app/workspace/SshConnections.kt`
+- `app/src/main/java/com/aether/app/workspace/SshFs.kt`
+- `app/src/main/java/com/aether/app/workspace/SshJobs.kt`
+- `app/src/main/java/com/aether/app/data/env/TermuxSsh.kt`
+- `app/src/main/java/com/aether/app/ui/common/SshWorkspaceDialog.kt`
+- `app/src/main/java/com/aether/app/ui/common/SshWorkspaceBar.kt`
+- `app/src/main/java/com/aether/app/workspace/WorkspaceManager.kt`
+- `app/src/main/java/com/aether/app/data/KeyStoreManager.kt`
+- `app/src/main/java/com/aether/app/data/env/ShellTierRouter.kt`
+- `app/src/main/java/com/aether/app/tools/BgShell.kt`
+- `app/src/main/java/com/aether/app/ui/settings/TroubleshootingSection.kt`
+- `app/src/main/java/com/aether/app/ui/AppNav.kt`
+- `app/src/main/java/com/aether/app/ui/projects/ProjectsScreen.kt`
 - `app/build.gradle.kts`
 - `app/proguard-rules.pro`

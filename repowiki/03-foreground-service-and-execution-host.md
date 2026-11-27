@@ -58,7 +58,7 @@ sequenceDiagram
 
 `onDestroy` cancels the service scope, releases the wake lock, and removes the foreground notification.
 
-The wake lock is `PowerManager.PARTIAL_WAKE_LOCK` named `harness:agent`, acquired with a 12 hour ceiling so a long run is not silently killed at the platform's 10 minute default. `acquireWakeLock` is idempotent while a lock is held.
+The wake lock is `PowerManager.PARTIAL_WAKE_LOCK` named `aether:agent`, acquired with a 12 hour ceiling so a long run is not silently killed at the platform's 10 minute default. `acquireWakeLock` is idempotent while a lock is held.
 
 ## Notifications
 
@@ -76,7 +76,7 @@ Notification IDs:
 - `RESULT_NOTIFICATION_ID = 9102`: base for run results, offset by a hash of the session or subagent key.
 - `ALERT_NOTIFICATION_ID = 9103`: shared ID for action alerts, keyed by session id as the notification tag so parallel runs do not overwrite each other.
 
-`buildNotification` always shows AndroidHarness as the title and `localizedOptionLabel(text)` as the body when alerts are enabled. When alerts are off it shows the generic background service notice, since Android still requires a visible foreground notification. It adds Approve and Deny actions for the first pending approval, or Skip and Install for a pending environment prompt. Question prompts are answered from the separate alert notification, which uses `RemoteInput` with key `reply_text` and up to `MAX_OPTION_BUTTONS = 3` option buttons.
+`buildNotification` always shows Aether as the title and `localizedOptionLabel(text)` as the body when alerts are enabled. When alerts are off it shows the generic background service notice, since Android still requires a visible foreground notification. It adds Approve and Deny actions for the first pending approval, or Skip and Install for a pending environment prompt. Question prompts are answered from the separate alert notification, which uses `RemoteInput` with key `reply_text` and up to `MAX_OPTION_BUTTONS = 3` option buttons.
 
 On API 36 (`Build.VERSION_CODES.BAKLAVA`) and later, with alerts and live updates enabled and an active task, the ongoing notification calls `setRequestPromotedOngoing(true)`, sets a short critical text from `liveUpdateShortText`, and uses an indeterminate `ProgressStyle`. This is what OEMs surface as a Live Update or Now Bar card. `liveUpdateShortText` maps known status prefixes to string resources and otherwise truncates the first line to 24 characters.
 
@@ -115,7 +115,7 @@ The run path in `startRunLocked`:
 
 ## Boundary Conditions
 
-- **Background running off**: `startRunLocked` throws before creating work, `onStartCommand` stops the service, and the policy observer stops Telegram, FTP sharing, terminals, background processes, and `AgentService` in `HarnessApp` lines 373 to 383.
+- **Background running off**: `startRunLocked` throws before creating work, `onStartCommand` stops the service, and the policy observer stops Telegram, FTP sharing, terminals, background processes, and `AgentService` in `AetherApp` lines 373 to 383.
 - **Service started by the user, then disabled**: the policy collector calls `stopForeground(STOP_FOREGROUND_REMOVE)` and `stopSelf`.
 - **App killed by the user**: `releaseKeepalive` uses `current?.releaseWakeLock()`, so releasing the last task cannot resurrect a service the user stopped.
 - **First notification**: `startForeground` runs in `onCreate` before any collector can post, so the service is foreground from its first frame.
@@ -147,16 +147,16 @@ The manifest declares `RECEIVE_BOOT_COMPLETED`, but no receiver starts `AgentSer
 - `NotificationActionReceiver` and alert buttons depend on `RunManager` state held in the same process. If the process is gone, the pending alert cannot restore the run, only reopen the chat.
 - The 12 hour wake lock ceiling is a hard limit. A run that exceeds it loses the CPU guarantee even though the foreground service remains.
 
-Sources: [app/src/main/java/com/androidharness/app/AgentService.kt](../app/src/main/java/com/androidharness/app/AgentService.kt)#L36-L571), [app/src/main/java/com/androidharness/app/AppRuntimePolicy.kt](../app/src/main/java/com/androidharness/app/AppRuntimePolicy.kt)#L13-L106), [app/src/main/java/com/androidharness/app/agent/KeepaliveTracker.kt](../app/src/main/java/com/androidharness/app/agent/KeepaliveTracker.kt)#L1-L30), [app/src/main/java/com/androidharness/app/agent/RunManager.kt](../app/src/main/java/com/androidharness/app/agent/RunManager.kt)#L47-L100), [app/src/main/java/com/androidharness/app/agent/RunManager.kt](../app/src/main/java/com/androidharness/app/agent/RunManager.kt)#L355-L770), [app/src/main/java/com/androidharness/app/agent/RunManager.kt](../app/src/main/java/com/androidharness/app/agent/RunManager.kt)#L1561-L1576), [app/src/main/java/com/androidharness/app/data/TerminalManager.kt](../app/src/main/java/com/androidharness/app/data/TerminalManager.kt)#L132-L192), [app/src/main/AndroidManifest.xml](../app/src/main/AndroidManifest.xml)#L1-L185)
+Sources: [app/src/main/java/com/aether/app/AgentService.kt](../app/src/main/java/com/aether/app/AgentService.kt)#L36-L571), [app/src/main/java/com/aether/app/AppRuntimePolicy.kt](../app/src/main/java/com/aether/app/AppRuntimePolicy.kt)#L13-L106), [app/src/main/java/com/aether/app/agent/KeepaliveTracker.kt](../app/src/main/java/com/aether/app/agent/KeepaliveTracker.kt)#L1-L30), [app/src/main/java/com/aether/app/agent/RunManager.kt](../app/src/main/java/com/aether/app/agent/RunManager.kt)#L47-L100), [app/src/main/java/com/aether/app/agent/RunManager.kt](../app/src/main/java/com/aether/app/agent/RunManager.kt)#L355-L770), [app/src/main/java/com/aether/app/agent/RunManager.kt](../app/src/main/java/com/aether/app/agent/RunManager.kt)#L1561-L1576), [app/src/main/java/com/aether/app/data/TerminalManager.kt](../app/src/main/java/com/aether/app/data/TerminalManager.kt)#L132-L192), [app/src/main/AndroidManifest.xml](../app/src/main/AndroidManifest.xml)#L1-L185)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/AgentService.kt`
-- `app/src/main/java/com/androidharness/app/AppRuntimePolicy.kt`
-- `app/src/main/java/com/androidharness/app/agent/KeepaliveTracker.kt`
-- `app/src/main/java/com/androidharness/app/agent/RunManager.kt`
-- `app/src/main/java/com/androidharness/app/agent/TaskControl.kt`
-- `app/src/main/java/com/androidharness/app/agent/NotificationActionReceiver.kt`
-- `app/src/main/java/com/androidharness/app/data/TerminalManager.kt`
-- `app/src/main/java/com/androidharness/app/terminal/InteractiveTerminalManager.kt`
+- `app/src/main/java/com/aether/app/AgentService.kt`
+- `app/src/main/java/com/aether/app/AppRuntimePolicy.kt`
+- `app/src/main/java/com/aether/app/agent/KeepaliveTracker.kt`
+- `app/src/main/java/com/aether/app/agent/RunManager.kt`
+- `app/src/main/java/com/aether/app/agent/TaskControl.kt`
+- `app/src/main/java/com/aether/app/agent/NotificationActionReceiver.kt`
+- `app/src/main/java/com/aether/app/data/TerminalManager.kt`
+- `app/src/main/java/com/aether/app/terminal/InteractiveTerminalManager.kt`
 - `app/src/main/AndroidManifest.xml`

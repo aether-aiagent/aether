@@ -42,7 +42,7 @@ val hasNdk: Boolean = run {
 android {
     if (distributionChannel == "play") dynamicFeatures += setOf(":local_gpu")
     sourceSets.getByName("main").java.srcDir("src/${distributionChannel}Delivery/java")
-    namespace = "com.androidharness.app"
+    namespace = "com.aether.app"
     // The in-app picker must be able to switch languages without a Play download.
     bundle { language { enableSplit = false } }
     compileSdk = 37
@@ -55,11 +55,11 @@ android {
             }
         }
     } else {
-        logger.warn("app: NDK $pinnedNdk not found, configuring without native code (libharness_local.so)")
+        logger.warn("app: NDK $pinnedNdk not found, configuring without native code (libaether_local.so)")
     }
 
     defaultConfig {
-        applicationId = "com.androidharness.app"
+        applicationId = "com.aether.app"
         minSdk = 26
         targetSdk = 36
         versionCode = 41
@@ -69,7 +69,7 @@ android {
         if (hasNdk) {
             ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64") }
             externalNativeBuild {
-                cmake { arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON", "-DHARNESS_GPU_OUTPUT=${layout.buildDirectory.dir("generated/gpuNative").get().asFile}") }
+                cmake { arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON", "-DAETHER_GPU_OUTPUT=${layout.buildDirectory.dir("generated/gpuNative").get().asFile}") }
             }
         }
         // Instrumented tests drive the real WebView (screenshots, history,
@@ -89,6 +89,17 @@ android {
             if (stableDebugKey.exists()) {
                 storeFile = stableDebugKey
             }
+        }
+    }
+
+    testOptions {
+        // Many unit tests create their fixtures under System.getProperty("java.io.tmpdir").
+        // On Android the JVM default is /data/data/com.termux/files/usr/tmp, which
+        // does not exist, so hundreds of tests failed with NoSuchFileException.
+        // Point the test JVM at a directory Gradle creates and can write.
+        val unitTestTmp = file("build/tmp").absolutePath
+        unitTests.all {
+            it.systemProperty("java.io.tmpdir", unitTestTmp)
         }
     }
 
@@ -128,7 +139,7 @@ android {
     lint {
         // lintVitalAnalyzeRelease crashes inside lint's own JavaDoc parser
         // (NoSuchMethodError in JavaDocParser.parseDataItem while analyzing
-        // HarnessUserService.kt), an AGP/lint bug, not a lint finding. Skip
+        // AetherUserService.kt), an AGP/lint bug, not a lint finding. Skip
         // the release lint gate until the toolchain bug is fixed.
         checkReleaseBuilds = false
     }
@@ -155,7 +166,7 @@ android {
     packaging {
         // Delivered separately by Play or the pinned GitHub runtime package.
         jniLibs.excludes += "**/libggml-vulkan.so"
-        jniLibs.excludes += "**/libharness_gpu_unavailable.so"
+        jniLibs.excludes += "**/libaether_gpu_unavailable.so"
         resources {
             excludes += setOf(
                 "META-INF/DEPENDENCIES", "META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/NOTICE", "META-INF/NOTICE.txt",
@@ -275,9 +286,9 @@ abstract class PrepareGpuRuntime @Inject constructor(private val execOps: ExecOp
     @TaskAction fun prepare() {
         listOf(assetDirectory, packageDirectory, featureDirectory).forEach { it.get().asFile.deleteRecursively(); it.get().asFile.mkdirs() }
         for (abi in listOf("armeabi-v7a", "x86")) {
-            val stub = featureDirectory.file("$abi/libharness_gpu_unavailable.so").get().asFile
+            val stub = featureDirectory.file("$abi/libaether_gpu_unavailable.so").get().asFile
             stub.parentFile.mkdirs()
-            nativeDirectory.file("$abi/libharness_gpu_unavailable.so").get().asFile.copyTo(stub, overwrite = true)
+            nativeDirectory.file("$abi/libaether_gpu_unavailable.so").get().asFile.copyTo(stub, overwrite = true)
             execOps.exec { commandLine(stripTool.get().asFile, "--strip-unneeded", stub) }.assertNormalExitValue()
         }
         for (abi in listOf("arm64-v8a", "x86_64")) {

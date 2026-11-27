@@ -73,7 +73,7 @@ Nothing here persists in memory. The CA bundle persists on disk inside the app p
 - There is no call timeout. Connect is 15 seconds and read is 30 seconds, but a server that drips bytes can keep the call alive longer than either value.
 - Response bodies larger than 20,000 characters are truncated in the text output. Binary classification covers image, audio, video and font types, while JSON, XML, YAML, JavaScript, GraphQL, form encoded, SQL, CSV and SVG are treated as text.
 - `NetTls.ensureInstalled` swallows every exception. A failed copy is invisible except as a missing bundle in `EnvStatusTool`.
-- `NetTls` affects shell processes only. The app's own OkHttp client is `OkHttpClient()` with the Android system trust store and no custom trust manager or certificate pinning (`HarnessApp.kt:179`).
+- `NetTls` affects shell processes only. The app's own OkHttp client is `OkHttpClient()` with the Android system trust store and no custom trust manager or certificate pinning (`AetherApp.kt:179`).
 - `gitToolsReady` requires both `bin/git` and `lib/libtermux-exec-ld-preload.so`, so a prefix with git but without the preload library still reports tools as not ready (`data/env/LinuxEnvironment.kt:366`).
 
 ## Extension Points
@@ -90,13 +90,13 @@ Nothing here persists in memory. The CA bundle persists on disk inside the app p
 - `FEATURES.md` does not claim certificate inspection. A page titled TLS diagnostics therefore describes provisioning and HTTP restrictions, not a live handshake report.
 - `NetTls.envVars` does not include `JAVAX_NET_SSL_TRUSTSTORE`, although the class comment mentions a JKS store provisioned separately. No such provisioning exists in the files read for this page.
 
-Sources: [app/src/main/java/com/androidharness/app/tools/NetTools.kt](../app/src/main/java/com/androidharness/app/tools/NetTools.kt)#L276-L396), [app/src/main/java/com/androidharness/app/tools/PublicHttpAddresses.kt](../app/src/main/java/com/androidharness/app/tools/PublicHttpAddresses.kt)#L6-L35), [app/src/main/java/com/androidharness/app/tools/NetTls.kt](../app/src/main/java/com/androidharness/app/tools/NetTls.kt)#L20-L108), [app/src/main/java/com/androidharness/app/data/env/LinuxEnvironment.kt](../app/src/main/java/com/androidharness/app/data/env/LinuxEnvironment.kt)#L1000-L1014)
+Sources: [app/src/main/java/com/aether/app/tools/NetTools.kt](../app/src/main/java/com/aether/app/tools/NetTools.kt)#L276-L396), [app/src/main/java/com/aether/app/tools/PublicHttpAddresses.kt](../app/src/main/java/com/aether/app/tools/PublicHttpAddresses.kt)#L6-L35), [app/src/main/java/com/aether/app/tools/NetTls.kt](../app/src/main/java/com/aether/app/tools/NetTls.kt)#L20-L108), [app/src/main/java/com/aether/app/data/env/LinuxEnvironment.kt](../app/src/main/java/com/aether/app/data/env/LinuxEnvironment.kt)#L1000-L1014)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/NetTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/NetTls.kt`
-- `app/src/main/java/com/androidharness/app/tools/PublicHttpAddresses.kt`
-- `app/src/main/java/com/androidharness/app/tools/EnvStatusTool.kt`
-- `app/src/main/java/com/androidharness/app/data/env/LinuxEnvironment.kt`
-- `app/src/main/java/com/androidharness/app/HarnessApp.kt`
+- `app/src/main/java/com/aether/app/tools/NetTools.kt`
+- `app/src/main/java/com/aether/app/tools/NetTls.kt`
+- `app/src/main/java/com/aether/app/tools/PublicHttpAddresses.kt`
+- `app/src/main/java/com/aether/app/tools/EnvStatusTool.kt`
+- `app/src/main/java/com/aether/app/data/env/LinuxEnvironment.kt`
+- `app/src/main/java/com/aether/app/AetherApp.kt`

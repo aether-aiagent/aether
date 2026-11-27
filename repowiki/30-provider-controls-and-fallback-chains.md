@@ -2,11 +2,11 @@
 
 > Stores provider connections, credentials, proxies and headers, and routes a failed request through an ordered, user-approved fallback chain.
 
-Providers are not just base URLs. `ProviderRepository` merges saved API connections with ChatGPT accounts, the built-in Harness provider and installed local models into one ordered list. Credentials live in encrypted storage through `KeyStoreManager`, not in `ProviderConfig`. `RotatingKeyProvider` wraps every request with a key pool cursor, and `FallbackProvider` decides whether a failure is retryable, quota-related or terminal before moving to the next approved model.
+Providers are not just base URLs. `ProviderRepository` merges saved API connections with ChatGPT accounts, the built-in Aether provider and installed local models into one ordered list. Credentials live in encrypted storage through `KeyStoreManager`, not in `ProviderConfig`. `RotatingKeyProvider` wraps every request with a key pool cursor, and `FallbackProvider` decides whether a failure is retryable, quota-related or terminal before moving to the next approved model.
 
 ## Module Responsibilities
 
-- **`ProviderRepository`**: DataStore-backed provider list, catalog snapshots, custom models, key pools, proxies, headers and learned Harness wire protocols.
+- **`ProviderRepository`**: DataStore-backed provider list, catalog snapshots, custom models, key pools, proxies, headers and learned Aether wire protocols.
 - **`ProviderListPreferences`**: one sort order and one disabled set covering API connections, connected accounts, built-in and installed providers.
 - **`ProviderControls`**: `ProviderApiKey`, `ProviderKeyPool`, `ProviderProxy`, `ProviderProxyMode` and `ProviderProxyType`.
 - **`ProviderHeaders`**: validation, normalization and application of custom HTTP headers, plus redirect suppression for credential-bearing headers.
@@ -41,11 +41,11 @@ flowchart TD
     R --> S[StreamEvent.ProviderChanged]
 ```
 
-`ProviderRepository.providers` is a `combine` of three flows. It restores Harness model snapshots first, decodes the saved `provider_list` JSON, then orders the list as ChatGPT accounts, the built-in Harness config, saved non-Harness connections, and installed local models. A second `combine` with settings applies `ProviderListPreferences.apply`, which sorts by the saved order and sets `enabled = id !in disabled`. Header-only edits are re-read through `keys.providerHeaders` so the metadata JSON does not need to change.
+`ProviderRepository.providers` is a `combine` of three flows. It restores Aether model snapshots first, decodes the saved `provider_list` JSON, then orders the list as ChatGPT accounts, the built-in Aether config, saved non-Aether connections, and installed local models. A second `combine` with settings applies `ProviderListPreferences.apply`, which sorts by the saved order and sets `enabled = id !in disabled`. Header-only edits are re-read through `keys.providerHeaders` so the metadata JSON does not need to change.
 
 `ProviderRepository.catalogs` decodes every `catalog_` and `custom_models_` DataStore key. Custom models are merged on top of fetched entries: a custom ID that the provider also reports inherits the reported reasoning and note, and the fetched duplicate is removed. Local provider IDs get a synthetic catalog, after which any ChatGPT catalog entries stored on disk are removed and replaced with the connected accounts' model lists.
 
-Adding or editing a connection validates the key pool first. `ProviderKeyPool.error()` enforces at most 20 keys, unique IDs, labels of at most 80 characters, values of 1 to 8192 printable ASCII characters, and distinct values. Saving writes headers to encrypted storage, stores the pool and proxy through `putProviderControls`, and appends the config to the provider list. Local, ChatGPT and Harness connections take separate paths: local and ChatGPT edits are ignored, and Harness saves only a sanitized model choice.
+Adding or editing a connection validates the key pool first. `ProviderKeyPool.error()` enforces at most 20 keys, unique IDs, labels of at most 80 characters, values of 1 to 8192 printable ASCII characters, and distinct values. Saving writes headers to encrypted storage, stores the pool and proxy through `putProviderControls`, and appends the config to the provider list. Local, ChatGPT and Aether connections take separate paths: local and ChatGPT edits are ignored, and Aether saves only a sanitized model choice.
 
 ## Invocation Chain
 
@@ -91,8 +91,8 @@ Adding or editing a connection validates the key pool first. `ProviderKeyPool.er
 - A missing key on the primary or a candidate skips that candidate. If no allowed candidate remains, the error names the last failure and points to Fallbacks in the model picker.
 - The fallback stall timeout is 90 seconds, except local models, which get 600 seconds.
 - `FallbackProvider` re-resolves thinking levels per target with `ThinkingSpecs.resolvedForModel` using the target's own provider key.
-- Provider deletion removes the key, proxy, headers, catalog, custom models and visibility entry, but never deletes the built-in Harness provider or a ChatGPT account.
-- `ProviderRepository.resolveHarnessConfig` refuses a resumed run when the provider type or base URL changed after the run started, unless no custom headers are enabled.
+- Provider deletion removes the key, proxy, headers, catalog, custom models and visibility entry, but never deletes the built-in Aether provider or a ChatGPT account.
+- `ProviderRepository.resolveAetherConfig` refuses a resumed run when the provider type or base URL changed after the run started, unless no custom headers are enabled.
 
 ## Extension Points
 
@@ -114,25 +114,25 @@ Local models and ChatGPT connections are explicitly excluded. `withoutLocalModel
 - There is no separate "backup portability" subsystem. Portability is implemented by `SettingsBackupPolicy` and `BackupProvider` inside the general settings backup.
 - Proxy and key pool values are encrypted at rest, but the backup file itself is only protected by the general backup format. This page does not claim additional encryption for provider credentials beyond what `SettingsBackup` and `BackupEncryption` provide.
 
-Sources: [app/src/main/java/com/androidharness/app/data/ProviderRepository.kt](../app/src/main/java/com/androidharness/app/data/ProviderRepository.kt)#L27-L154), [app/src/main/java/com/androidharness/app/data/ProviderRepository.kt](../app/src/main/java/com/androidharness/app/data/ProviderRepository.kt)#L240-L327), [app/src/main/java/com/androidharness/app/data/ProviderListPreferences.kt](../app/src/main/java/com/androidharness/app/data/ProviderListPreferences.kt)#L7-L34), [app/src/main/java/com/androidharness/app/llm/ProviderControls.kt](../app/src/main/java/com/androidharness/app/llm/ProviderControls.kt)#L6-L75), [app/src/main/java/com/androidharness/app/llm/ProviderHeaders.kt](../app/src/main/java/com/androidharness/app/llm/ProviderHeaders.kt)#L8-L56), [app/src/main/java/com/androidharness/app/llm/RotatingKeyProvider.kt](../app/src/main/java/com/androidharness/app/llm/RotatingKeyProvider.kt)#L11-L83), [app/src/main/java/com/androidharness/app/llm/FallbackPolicy.kt](../app/src/main/java/com/androidharness/app/llm/FallbackPolicy.kt)#L8-L48), [app/src/main/java/com/androidharness/app/llm/FallbackProvider.kt](../app/src/main/java/com/androidharness/app/llm/FallbackProvider.kt)#L35-L178), [app/src/main/java/com/androidharness/app/ui/settings/FallbackEditorSheet.kt](../app/src/main/java/com/androidharness/app/ui/settings/FallbackEditorSheet.kt)#L33-L270), [app/src/main/java/com/androidharness/app/ui/settings/ProviderManagerSheet.kt](../app/src/main/java/com/androidharness/app/ui/settings/ProviderManagerSheet.kt)#L42-L187)
+Sources: [app/src/main/java/com/aether/app/data/ProviderRepository.kt](../app/src/main/java/com/aether/app/data/ProviderRepository.kt)#L27-L154), [app/src/main/java/com/aether/app/data/ProviderRepository.kt](../app/src/main/java/com/aether/app/data/ProviderRepository.kt)#L240-L327), [app/src/main/java/com/aether/app/data/ProviderListPreferences.kt](../app/src/main/java/com/aether/app/data/ProviderListPreferences.kt)#L7-L34), [app/src/main/java/com/aether/app/llm/ProviderControls.kt](../app/src/main/java/com/aether/app/llm/ProviderControls.kt)#L6-L75), [app/src/main/java/com/aether/app/llm/ProviderHeaders.kt](../app/src/main/java/com/aether/app/llm/ProviderHeaders.kt)#L8-L56), [app/src/main/java/com/aether/app/llm/RotatingKeyProvider.kt](../app/src/main/java/com/aether/app/llm/RotatingKeyProvider.kt)#L11-L83), [app/src/main/java/com/aether/app/llm/FallbackPolicy.kt](../app/src/main/java/com/aether/app/llm/FallbackPolicy.kt)#L8-L48), [app/src/main/java/com/aether/app/llm/FallbackProvider.kt](../app/src/main/java/com/aether/app/llm/FallbackProvider.kt)#L35-L178), [app/src/main/java/com/aether/app/ui/settings/FallbackEditorSheet.kt](../app/src/main/java/com/aether/app/ui/settings/FallbackEditorSheet.kt)#L33-L270), [app/src/main/java/com/aether/app/ui/settings/ProviderManagerSheet.kt](../app/src/main/java/com/aether/app/ui/settings/ProviderManagerSheet.kt)#L42-L187)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/data/ProviderRepository.kt`
-- `app/src/main/java/com/androidharness/app/data/ProviderListPreferences.kt`
-- `app/src/main/java/com/androidharness/app/llm/ProviderControls.kt`
-- `app/src/main/java/com/androidharness/app/llm/ProviderHeaders.kt`
-- `app/src/main/java/com/androidharness/app/llm/ProviderModelSearch.kt`
-- `app/src/main/java/com/androidharness/app/llm/RotatingKeyProvider.kt`
-- `app/src/main/java/com/androidharness/app/llm/FallbackPolicy.kt`
-- `app/src/main/java/com/androidharness/app/llm/FallbackProvider.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/FallbackEditorSheet.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/ProviderManagerSheet.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/ProviderSheet.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/ProviderListCard.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/ProviderBulkActions.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/ProviderKeysEditor.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/ProviderControlsSheet.kt`
-- `app/src/main/java/com/androidharness/app/data/KeyStoreManager.kt`
-- `app/src/main/java/com/androidharness/app/data/SettingsBackup.kt`
-- `app/src/main/java/com/androidharness/app/agent/TaskControl.kt`
+- `app/src/main/java/com/aether/app/data/ProviderRepository.kt`
+- `app/src/main/java/com/aether/app/data/ProviderListPreferences.kt`
+- `app/src/main/java/com/aether/app/llm/ProviderControls.kt`
+- `app/src/main/java/com/aether/app/llm/ProviderHeaders.kt`
+- `app/src/main/java/com/aether/app/llm/ProviderModelSearch.kt`
+- `app/src/main/java/com/aether/app/llm/RotatingKeyProvider.kt`
+- `app/src/main/java/com/aether/app/llm/FallbackPolicy.kt`
+- `app/src/main/java/com/aether/app/llm/FallbackProvider.kt`
+- `app/src/main/java/com/aether/app/ui/settings/FallbackEditorSheet.kt`
+- `app/src/main/java/com/aether/app/ui/settings/ProviderManagerSheet.kt`
+- `app/src/main/java/com/aether/app/ui/settings/ProviderSheet.kt`
+- `app/src/main/java/com/aether/app/ui/settings/ProviderListCard.kt`
+- `app/src/main/java/com/aether/app/ui/settings/ProviderBulkActions.kt`
+- `app/src/main/java/com/aether/app/ui/settings/ProviderKeysEditor.kt`
+- `app/src/main/java/com/aether/app/ui/settings/ProviderControlsSheet.kt`
+- `app/src/main/java/com/aether/app/data/KeyStoreManager.kt`
+- `app/src/main/java/com/aether/app/data/SettingsBackup.kt`
+- `app/src/main/java/com/aether/app/agent/TaskControl.kt`

@@ -2,9 +2,9 @@
 
 > Owns the MCP server registry, connection lifecycle, workspace approval gate, OAuth sign-in entry points and the per-run tool list.
 
-`McpManager` is the single owner of Model Context Protocol server state in the app. It persists a global server list to `filesDir/mcp-servers.json`, verifies that file with an HMAC sidecar, connects servers lazily per run, exposes a `StateFlow` of `McpServerStatus`, and merges servers declared by the workspace configuration (`harness.json` `mcp` block or the legacy `.harness/mcp.json`) behind an explicit approval gate. `McpConfigParser` converts pasted Claude Desktop / Claude Code configuration and `claude mcp add` command lines into `McpServerConfig` entries. `McpConnection`, `McpTransport`, `McpOAuth` and `McpToolAdapter` are covered in the next page.
+`McpManager` is the single owner of Model Context Protocol server state in the app. It persists a global server list to `filesDir/mcp-servers.json`, verifies that file with an HMAC sidecar, connects servers lazily per run, exposes a `StateFlow` of `McpServerStatus`, and merges servers declared by the workspace configuration (`aether.json` `mcp` block or the legacy `.aether/mcp.json`) behind an explicit approval gate. `McpConfigParser` converts pasted Claude Desktop / Claude Code configuration and `claude mcp add` command lines into `McpServerConfig` entries. `McpConnection`, `McpTransport`, `McpOAuth` and `McpToolAdapter` are covered in the next page.
 
-Chat conversations never use MCP: `RunManager` passes an empty `HarnessConfig` and empty `extraTools` for `conversation.isChat` or a `ChatWorkspaceFs` (`RunManager.kt:586-L588`, `RunManager.kt:617`).
+Chat conversations never use MCP: `RunManager` passes an empty `AetherConfig` and empty `extraTools` for `conversation.isChat` or a `ChatWorkspaceFs` (`RunManager.kt:586-L588`, `RunManager.kt:617`).
 
 ## Module Responsibilities
 
@@ -34,7 +34,7 @@ stateDiagram-v2
 `activeTools` is the main entry point for a run (`McpManager.kt:319-L377`):
 
 1. Read enabled global servers from `_servers`.
-2. Read workspace servers via `workspaceConfigs`, which parses `.harness/mcp.json` and filters any legacy entry whose name is overridden by the resolved `HarnessConfig.servers` (`McpManager.kt:246-L250`).
+2. Read workspace servers via `workspaceConfigs`, which parses `.aether/mcp.json` and filters any legacy entry whose name is overridden by the resolved `AetherConfig.servers` (`McpManager.kt:246-L250`).
 3. Drop workspace servers whose name collides case-insensitively with a global server, since the Settings-saved entry keeps authority.
 4. If `isWorkspaceApproved` is false, stamp each pending workspace server as `blocked` with "Project tools need approval in chat or Configuration settings before they can run." and exclude them.
 5. Evaluate a synthetic startup `Tool` (`shell` for stdio, `http_request` for remote) against `ConfigToolPolicy.permission` and the default agent's `tools` rules. A denied startup becomes `blocked` with "Project configuration blocks this server's startup."
@@ -47,7 +47,7 @@ Connection identity is `config.name` for app-side servers, or `name + "_ws_" + s
 
 ## Invocation Chain
 
-1. `HarnessApp` builds `McpManager(appContext, linuxEnv, keys, codeGraph, configuration)` (`HarnessApp.kt:274`) and passes it to `RunManager` (`HarnessApp.kt:348`).
+1. `AetherApp` builds `McpManager(appContext, linuxEnv, keys, codeGraph, configuration)` (`AetherApp.kt:274`) and passes it to `RunManager` (`AetherApp.kt:348`).
 2. `RunManager` resolves `projectConfiguration` with `mcp?.configuration(runWorkspace) ?: engine.configuration(runWorkspace)`, computes `projectToolsApproved`, and calls `mcp.activeTools(runWorkspace, projectConfiguration, permissionMode, "$sid:$turnId")` (`RunManager.kt:586-L588`, `RunManager.kt:617`).
 3. In `finally`, `RunManager` calls `mcp.releaseWorkspaceTools("$sid:$turnId")` under `NonCancellable`, which decrements the refcount and closes project connections that no run still holds (`RunManager.kt:657-L658`, `McpManager.kt:67-L79`).
 4. Settings → MCP collects `servers`, `statuses` and `configTampered`, renders a dot per state, and wires Test, Edit, Remove, the Enable switch and the Authenticate button (`SettingsScreen.kt:1747-L1891`).
@@ -55,7 +55,7 @@ Connection identity is `config.name` for app-side servers, or `name + "_ws_" + s
 6. Chat gate: `ChatViewModel` loads the workspace config, computes `approvalFingerprint`, and if `unapprovedWorkspaceServers` is non-empty shows the approve/decline prompt instead of starting the run (`ChatViewModel.kt:1535-L1547`). `approveWorkspaceMcp` re-checks the fingerprint before calling `approveWorkspace` (`ChatViewModel.kt:337-L359`).
 7. Configuration screen: the Project tab reloads `container.configuration.load(fs)`, checks `isWorkspaceApproved` and `approvalFingerprint`, and offers Approve only when the fingerprint still matches (`ConfigurationSection.kt:80-L83`, `ConfigurationSection.kt:178-L190`).
 8. Plugin servers: `PluginMcpServersSection` resolves the same config, keeps only servers with a `serverSources` plugin name, and shows plugin, scope, approval and live status (`PluginMcpServersSection.kt:40-L79`).
-9. Browser callback: `MainActivity.handleMcpOAuth` accepts `androidharness://mcp?code=...&state=...` on launch and on `onNewIntent`, then calls `completeAuthentication` (`MainActivity.kt:94-L95`, `MainActivity.kt:293-L326`).
+9. Browser callback: `MainActivity.handleMcpOAuth` accepts `aether://mcp?code=...&state=...` on launch and on `onNewIntent`, then calls `completeAuthentication` (`MainActivity.kt:94-L95`, `MainActivity.kt:293-L326`).
 10. Headless callers refuse to run with unapproved workspace tools: `TelegramAgentBridge` and `AutomationManager` check `unapprovedWorkspaceServers(...).isEmpty()` (`TelegramAgentBridge.kt:94`, `AutomationManager.kt:228`).
 
 ## Key State and Data Structures
@@ -64,11 +64,11 @@ Connection identity is `config.name` for app-side servers, or `name + "_ws_" + s
 - **`McpToolInfo`** (`McpModels.kt:39-L44`): `name`, `description`, `inputSchema`.
 - **`McpServerStatus`** (`McpModels.kt:46-L53`): `state` (`connecting`, `connected`, `failed`, `auth`, plus `blocked` written by `activeTools`), `toolCount`, `error`, `needsAuth`.
 - **`McpStoredStatus`** (`McpReconnectPolicy.kt:15-L19`): `toolCount` and `connectedAtMs`, persisted in `mcp-status.json`.
-- **`McpNames`** (`McpModels.kt:55-L73`): `WORKSPACE_CONFIG = ".harness/mcp.json"` and `toolName(server, tool) = "mcp__<server>__<tool>"` with components sanitized to `[a-z0-9_]`, server truncated to 32 and tool to 64 characters.
+- **`McpNames`** (`McpModels.kt:55-L73`): `WORKSPACE_CONFIG = ".aether/mcp.json"` and `toolName(server, tool) = "mcp__<server>__<tool>"` with components sanitized to `[a-z0-9_]`, server truncated to 32 and tool to 64 characters.
 - **`McpConfigParser`** (`McpModels.kt:83-L248`): `parse` is strict JSON only; `parsePaste` tries JSON then a `claude mcp add` line; `parseJson` accepts a `mcpServers` wrapper, a single server object, or an array; `entry` maps `disabled` to the inverse of `enabled`, defaults URL entries to `http`, and reads `args`, `env` and `headers`; `parseClaudeCommand` handles `--transport`, `--env K=V`, `--header "K: V"`, `--` and infers `http` when the target starts with `http`; `tokenizeCli` honors single and double quotes with backslash escapes.
 - **Persisted files**: `filesDir/mcp-servers.json`, `filesDir/mcp-servers.json.hmac`, `filesDir/mcp-status.json`, `filesDir/mcp-approvals.json` (workspace key to epoch millis), and `cacheDir/mcp/<sanitized-name>.log` for stdio stderr.
 
-`approvalKey` is `"<workspace absolute path or displayPath>:<sha256(configText)>"` (`McpManager.kt:268-L269`). `workspaceConfigText` returns the legacy file when no `HarnessConfig` is present, otherwise `legacy + "\nHarness configuration\n" + trustPayload + "\n" + sha256(serialized resolved transports)` (`McpManager.kt:271-L278`). Because `trustPayload` includes every source text and plugin script, and the transport hash includes substituted secrets and headers, any edit invalidates approval without a separate version counter.
+`approvalKey` is `"<workspace absolute path or displayPath>:<sha256(configText)>"` (`McpManager.kt:268-L269`). `workspaceConfigText` returns the legacy file when no `AetherConfig` is present, otherwise `legacy + "\nAether configuration\n" + trustPayload + "\n" + sha256(serialized resolved transports)` (`McpManager.kt:271-L278`). Because `trustPayload` includes every source text and plugin script, and the transport hash includes substituted secrets and headers, any edit invalidates approval without a separate version counter.
 
 ## Boundary Conditions
 
@@ -81,7 +81,7 @@ Connection identity is `config.name` for app-side servers, or `name + "_ws_" + s
 - **Startup ordering**: remote servers reconnect immediately; stdio servers wait for `EnvState.Ready` from `linuxEnv.state` (`McpManager.kt:419-L432`).
 - **Stdio prerequisites**: `spawnStdio` throws `ToolFailure` when `linuxEnv.bashExecutable()` is null, and appends stderr to the cache log (`McpManager.kt:493-L509`).
 - **SSH workspaces**: for an `SshFs` workspace and a non-remote, non-`deviceLocal` server, the command runs on the SSH host with `env` entries shell-quoted; connection failure does not retry (`McpManager.kt:364`, `McpManager.kt:434-L447`).
-- **Approval scope**: global servers are never gated; only workspace files, `harness.json` `mcp` entries and plugin-supplied servers are. Refusing approval leaves the run usable with normal tools.
+- **Approval scope**: global servers are never gated; only workspace files, `aether.json` `mcp` entries and plugin-supplied servers are. Refusing approval leaves the run usable with normal tools.
 - **Leases**: `retainWorkspaceTool` increments a refcount per `leaseId`; `releaseWorkspaceTools` closes a connection only when the count reaches zero, so overlapping runs in one workspace share processes (`McpManager.kt:67-L85`).
 
 ## Extension Points
@@ -97,16 +97,16 @@ Connection identity is `config.name` for app-side servers, or `name + "_ws_" + s
 - `unapprovedWorkspaceServers` appends a synthetic `Plugin: <name>` entry for every plugin when the workspace is unapproved (`McpManager.kt:289-L290`), so the chat prompt can list names that are not real servers.
 - `workspaceUsers` is a plain `HashMap` keyed by connection name while `connections` is guarded by `synchronized(connections)`; the two use the same monitor, which is correct but easy to break in a refactor.
 
-Sources: [app/src/main/java/com/androidharness/app/tools/mcp/McpManager.kt](../app/src/main/java/com/androidharness/app/tools/mcp/McpManager.kt)#L319-L377), [app/src/main/java/com/androidharness/app/tools/mcp/McpModels.kt](../app/src/main/java/com/androidharness/app/tools/mcp/McpModels.kt)#L83-L211), [app/src/main/java/com/androidharness/app/ui/settings/SettingsScreen.kt](../app/src/main/java/com/androidharness/app/ui/settings/SettingsScreen.kt)#L1747-L1891), [app/src/main/java/com/androidharness/app/agent/RunManager.kt](../app/src/main/java/com/androidharness/app/agent/RunManager.kt)#L586-L619)
+Sources: [app/src/main/java/com/aether/app/tools/mcp/McpManager.kt](../app/src/main/java/com/aether/app/tools/mcp/McpManager.kt)#L319-L377), [app/src/main/java/com/aether/app/tools/mcp/McpModels.kt](../app/src/main/java/com/aether/app/tools/mcp/McpModels.kt)#L83-L211), [app/src/main/java/com/aether/app/ui/settings/SettingsScreen.kt](../app/src/main/java/com/aether/app/ui/settings/SettingsScreen.kt)#L1747-L1891), [app/src/main/java/com/aether/app/agent/RunManager.kt](../app/src/main/java/com/aether/app/agent/RunManager.kt)#L586-L619)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/mcp/McpManager.kt`
-- `app/src/main/java/com/androidharness/app/tools/mcp/McpModels.kt`
-- `app/src/main/java/com/androidharness/app/tools/mcp/McpReconnectPolicy.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/SettingsScreen.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/PluginMcpServersSection.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/TroubleshootingSection.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatViewModel.kt`
-- `app/src/main/java/com/androidharness/app/agent/RunManager.kt`
-- `app/src/main/java/com/androidharness/app/data/SettingsBackup.kt`
+- `app/src/main/java/com/aether/app/tools/mcp/McpManager.kt`
+- `app/src/main/java/com/aether/app/tools/mcp/McpModels.kt`
+- `app/src/main/java/com/aether/app/tools/mcp/McpReconnectPolicy.kt`
+- `app/src/main/java/com/aether/app/ui/settings/SettingsScreen.kt`
+- `app/src/main/java/com/aether/app/ui/settings/PluginMcpServersSection.kt`
+- `app/src/main/java/com/aether/app/ui/settings/TroubleshootingSection.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatViewModel.kt`
+- `app/src/main/java/com/aether/app/agent/RunManager.kt`
+- `app/src/main/java/com/aether/app/data/SettingsBackup.kt`

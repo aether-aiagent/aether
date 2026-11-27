@@ -2,7 +2,7 @@
 
 > The storage permission ladder, the app workspace location, and the shell routing that decides whether app-owned folders run as the app UID or a privileged UID.
 
-Harness reaches files through four different storage stories: its private data directory, the app-owned external files directory that holds the default workspace, shared storage (`/storage/emulated/0`), and the shell-tier deployment under `/data/local/tmp`. `StorageAccess` answers whether broad shared-storage access is available. `WorkspaceManager` places the app workspace and classifies project folders. `DeviceAccessManager` and `ShellTierRouter` decide which UID runs commands in each region, with one setting that opts the app workspace into privileged execution.
+Aether reaches files through four different storage stories: its private data directory, the app-owned external files directory that holds the default workspace, shared storage (`/storage/emulated/0`), and the shell-tier deployment under `/data/local/tmp`. `StorageAccess` answers whether broad shared-storage access is available. `WorkspaceManager` places the app workspace and classifies project folders. `DeviceAccessManager` and `ShellTierRouter` decide which UID runs commands in each region, with one setting that opts the app workspace into privileged execution.
 
 ## Module Responsibilities
 
@@ -74,15 +74,15 @@ Until `StorageGate.install` runs (unit tests), every path is allowed.
 | Root | Path | Purpose |
 | --- | --- | --- |
 | `linuxEnv.prefix` | `filesDir/linux` | Installed Linux toolchain, launcher, CodeGraph bundle (`data/env/LinuxEnvironment.kt:305`) |
-| `linuxEnv.tmpBase` / `tmpPrefix` | `/data/local/tmp/androidharness/<packageName>` and `/linux` | Per-build copy deployed for the shell UID (`308-309`, `1861`) |
-| `linuxEnv.marker` | `filesDir/linux/.harness-installed` | Installed package list (`311`) |
+| `linuxEnv.tmpBase` / `tmpPrefix` | `/data/local/tmp/aether/<packageName>` and `/linux` | Per-build copy deployed for the shell UID (`308-309`, `1861`) |
+| `linuxEnv.marker` | `filesDir/linux/.aether-installed` | Installed package list (`311`) |
 | `linuxEnv.tempDir` | `cacheDir/deb-download` | Package downloads (`313`) |
 | `linuxEnv.sharedCacheRoot` | `filesDir/package-cache` | npm and pip caches, outside the staging archive (`315`) |
 | `linuxEnv.shellFallbackRoot` | `getExternalFilesDir(null)/shell-workspace` | Real cwd for SAF workspaces, shared with the shell UID (`327-338`) |
 | `linuxEnv.internalDataRoot` | `context.dataDir` | `/data/user/0/<pkg>`, unreachable by the shell UID (`341`) |
-| `linuxEnv.appPrivateScratch` | `filesDir/.harness-scratch` | Exec-capable scratch for this app UID (`998`) |
+| `linuxEnv.appPrivateScratch` | `filesDir/.aether-scratch` | Exec-capable scratch for this app UID (`998`) |
 | `WorkspaceManager.appPrivateRoot` | `(externalFilesDir ?: filesDir)/workspace` | Default app workspace (`workspace/WorkspaceManager.kt:44-47`) |
-| `ShellPolicy.SCRATCH_TMP` | `/data/local/tmp/androidharness-scratch` | Shell-owned scratch, mode 0700 (`tools/ShellPolicy.kt:642`) |
+| `ShellPolicy.SCRATCH_TMP` | `/data/local/tmp/aether-scratch` | Shell-owned scratch, mode 0700 (`tools/ShellPolicy.kt:642`) |
 
 The constructor `init` block resets `dataDir` and `filesDir` to 0700 (`LinuxEnvironment.kt:347-348`), then provisions TLS, scratch, and GitHub credentials. `ensureScratchDirs` (`980-994`) creates the tmp scratch, chmods it to 0700, and creates the app-private scratch.
 
@@ -140,19 +140,19 @@ The setting is stored per device, not in portable settings, in the `device_acces
 - CodeGraph, package and other tools that run commands through `ShellTierRouter` directly are not hard blocked on a shared root; they get the router note only.
 - `StorageManager` never scans SAF tree contents, so storage totals exclude picked-folder usage by design. The UI labels this as a scan gap, not an error.
 
-Sources: [app/src/main/java/com/androidharness/app/data/env/StorageAccess.kt](../app/src/main/java/com/androidharness/app/data/env/StorageAccess.kt)#L11-L38), [app/src/main/java/com/androidharness/app/data/env/LinuxEnvironment.kt](../app/src/main/java/com/androidharness/app/data/env/LinuxEnvironment.kt)#L305-L351), [app/src/main/java/com/androidharness/app/workspace/WorkspaceManager.kt](../app/src/main/java/com/androidharness/app/workspace/WorkspaceManager.kt)#L44-L181), [app/src/main/java/com/androidharness/app/data/env/DeviceAccessManager.kt](../app/src/main/java/com/androidharness/app/data/env/DeviceAccessManager.kt)#L172-L188), [app/src/main/java/com/androidharness/app/data/env/DeviceAccessStore.kt](../app/src/main/java/com/androidharness/app/data/env/DeviceAccessStore.kt)#L13-L31), [app/src/main/java/com/androidharness/app/data/storage/StorageManager.kt](../app/src/main/java/com/androidharness/app/data/storage/StorageManager.kt)#L24-L163), [app/src/main/java/com/androidharness/app/ui/common/StorageAccessState.kt](../app/src/main/java/com/androidharness/app/ui/common/StorageAccessState.kt)#L31-L75), [app/src/main/AndroidManifest.xml](../app/src/main/AndroidManifest.xml)#L54-L68)
+Sources: [app/src/main/java/com/aether/app/data/env/StorageAccess.kt](../app/src/main/java/com/aether/app/data/env/StorageAccess.kt)#L11-L38), [app/src/main/java/com/aether/app/data/env/LinuxEnvironment.kt](../app/src/main/java/com/aether/app/data/env/LinuxEnvironment.kt)#L305-L351), [app/src/main/java/com/aether/app/workspace/WorkspaceManager.kt](../app/src/main/java/com/aether/app/workspace/WorkspaceManager.kt)#L44-L181), [app/src/main/java/com/aether/app/data/env/DeviceAccessManager.kt](../app/src/main/java/com/aether/app/data/env/DeviceAccessManager.kt)#L172-L188), [app/src/main/java/com/aether/app/data/env/DeviceAccessStore.kt](../app/src/main/java/com/aether/app/data/env/DeviceAccessStore.kt)#L13-L31), [app/src/main/java/com/aether/app/data/storage/StorageManager.kt](../app/src/main/java/com/aether/app/data/storage/StorageManager.kt)#L24-L163), [app/src/main/java/com/aether/app/ui/common/StorageAccessState.kt](../app/src/main/java/com/aether/app/ui/common/StorageAccessState.kt)#L31-L75), [app/src/main/AndroidManifest.xml](../app/src/main/AndroidManifest.xml)#L54-L68)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/data/env/StorageAccess.kt`
-- `app/src/main/java/com/androidharness/app/data/storage/StorageManager.kt`
-- `app/src/main/java/com/androidharness/app/data/env/LinuxEnvironment.kt`
-- `app/src/main/java/com/androidharness/app/data/env/ShellTierRouter.kt`
-- `app/src/main/java/com/androidharness/app/data/env/DeviceAccessManager.kt`
-- `app/src/main/java/com/androidharness/app/data/env/DeviceAccessPolicy.kt`
-- `app/src/main/java/com/androidharness/app/data/env/DeviceAccessStore.kt`
-- `app/src/main/java/com/androidharness/app/workspace/WorkspaceManager.kt`
-- `app/src/main/java/com/androidharness/app/ui/common/StorageAccessState.kt`
-- `app/src/main/java/com/androidharness/app/ui/common/SystemGrants.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/RootAccessSection.kt`
+- `app/src/main/java/com/aether/app/data/env/StorageAccess.kt`
+- `app/src/main/java/com/aether/app/data/storage/StorageManager.kt`
+- `app/src/main/java/com/aether/app/data/env/LinuxEnvironment.kt`
+- `app/src/main/java/com/aether/app/data/env/ShellTierRouter.kt`
+- `app/src/main/java/com/aether/app/data/env/DeviceAccessManager.kt`
+- `app/src/main/java/com/aether/app/data/env/DeviceAccessPolicy.kt`
+- `app/src/main/java/com/aether/app/data/env/DeviceAccessStore.kt`
+- `app/src/main/java/com/aether/app/workspace/WorkspaceManager.kt`
+- `app/src/main/java/com/aether/app/ui/common/StorageAccessState.kt`
+- `app/src/main/java/com/aether/app/ui/common/SystemGrants.kt`
+- `app/src/main/java/com/aether/app/ui/settings/RootAccessSection.kt`
 - `app/src/main/AndroidManifest.xml`

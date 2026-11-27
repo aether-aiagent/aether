@@ -36,11 +36,11 @@ graphify-out/
 # --- Not part of the published source tree ---
 docs/*
 !docs/configuration/
-!docs/harness.schema.json
+!docs/aether.schema.json
 screenshots/
 mock-server.js
 README.full.md
-android-harness-website/
+android-aether-website/
 
 # --- OS noise ---
 .DS_Store

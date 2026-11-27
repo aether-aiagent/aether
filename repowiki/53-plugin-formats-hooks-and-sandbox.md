@@ -17,7 +17,7 @@ This page covers what happens after a bundle is downloaded and before its conten
 
 `PluginAdapter` handles these layouts (`PluginFormats.kt:11-16`):
 
-- **AndroidHarness**: a root `plugin.json` with array component fields and no Claude-only keys, recognized by `isNative` (`PluginFormats.kt:107-110`).
+- **Aether**: a root `plugin.json` with array component fields and no Claude-only keys, recognized by `isNative` (`PluginFormats.kt:107-110`).
 - **Claude Code plugins**: `.claude-plugin/plugin.json`, plus `commands`, `agents`, `skills`, `hooks`, `mcpServers`, `outputStyles` and `lspServers` fields. Also root `plugin.json` with Claude keys.
 - **Codex and Cursor plugins**: `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, and `.agents-plugin/plugin.json`, using the Claude shape.
 - **Gemini CLI extensions**: `gemini-extension.json` with `mcpServers`, `contextFileName` (default `GEMINI.md`), `commands` and `excludeTools`.
@@ -83,28 +83,28 @@ flowchart TD
 4. `PluginManifest.digest(bundle)` hashes each file's relative path, a NUL separator, the bytes and a trailing NUL, sorted by path (`PluginModels.kt:172-184`).
 5. `PluginManager.install` optionally installs runtimes, then `PluginStore.install` re-runs `inspect` and compares it to the reviewed `PluginContents` (`PluginStore.kt:84-85`).
 6. Configuration loading reads every enabled payload: `PluginStore.checkedDirectory` re-verifies the digest before any file is exposed (`PluginStore.kt:53-64`).
-7. `HarnessConfigLoader.plugin` parses `plugin.json` again for skills, instructions, agents, MCP servers, JS hooks and command hooks (`HarnessConfig.kt:266-324`).
+7. `AetherConfigLoader.plugin` parses `plugin.json` again for skills, instructions, agents, MCP servers, JS hooks and command hooks (`AetherConfig.kt:266-324`).
 8. At run time, `PluginHooks.invoke(plugins, hook, event)` runs JavaScript hooks first, then matching command hooks, and merges their instructions and deny decision (`PluginHooks.kt:31-37`).
 
 ## Key State and Data Structures
 
 - **`PluginContents`** (`PluginModels.kt:36-50`): name, version, description, instruction paths, skill names, MCP server names, JS hook events, `needsRuntime`, warnings, agent names, command hooks, `format`, and detected runtimes.
-- **`PluginAdapter.Plan`** (`PluginFormats.kt:112-384`): Mutable build state. `skills`, `instructions`, `mcp`, `agents`, `commandHooks`, `notes`, `hooks`, `entry`, and a `taken` set that prevents duplicate component names. Generated files go under `.harness/`.
-- **`ConfigPlugin`** (`HarnessConfig.kt:15`): name, JS script, declared hook events, command hooks and the plugin folder. `ConfigCommandHook` (`HarnessConfig.kt:14`): event, command, matcher, timeout, original source event.
-- **`ConfigServerSource`** (`HarnessConfig.kt:18`): server name, optional plugin name and configuration source, used by the MCP settings section to label ownership.
+- **`PluginAdapter.Plan`** (`PluginFormats.kt:112-384`): Mutable build state. `skills`, `instructions`, `mcp`, `agents`, `commandHooks`, `notes`, `hooks`, `entry`, and a `taken` set that prevents duplicate component names. Generated files go under `.aether/`.
+- **`ConfigPlugin`** (`AetherConfig.kt:15`): name, JS script, declared hook events, command hooks and the plugin folder. `ConfigCommandHook` (`AetherConfig.kt:14`): event, command, matcher, timeout, original source event.
+- **`ConfigServerSource`** (`AetherConfig.kt:18`): server name, optional plugin name and configuration source, used by the MCP settings section to label ownership.
 - **`HookResult`** (`PluginHooks.kt:151`): appended instructions and an optional deny reason.
 - **`PluginRuntime`** (`PluginInstallers.kt:9-15`): the Linux environment contract used for installer commands.
 
 Persistence:
 
 - The normalized `plugin.json` is written into the bundle before it is moved into `packages/<uuid>`, so the digest covers the normalized form.
-- When the source was not already `AndroidHarness`, an existing `plugin.json` is renamed to `plugin.original.json` (or `plugin.original.N.json`) before the new one is written (`PluginFormats.kt:377-382`). The original file therefore remains part of the bundle and the digest.
+- When the source was not already `Aether`, an existing `plugin.json` is renamed to `plugin.original.json` (or `plugin.original.N.json`) before the new one is written (`PluginFormats.kt:377-382`). The original file therefore remains part of the bundle and the digest.
 - Command hooks store both names: `source` keeps the original event (for example `PreToolUse`) and `event` uses the internal name (`tool.before`), so the stdin payload reports Claude's vocabulary.
 
 Component generation details:
 
-- **Commands become skills.** `addCommands` writes `.harness/commands/<name>/SKILL.md` with frontmatter and a preamble explaining `$ARGUMENTS`, `{{args}}`, `$1` and `$2`, lines beginning with `!` as shell commands, and `@path` as file reads (`PluginFormats.kt:256-277`). The generated `commands` folder is then added as a skills path, so the command is available as `/<name>`.
-- **Agents become prompt files.** `addAgents` writes `.harness/agents/<agent>.md` and adds an entry with `description`, `instructions` and optional `tools` groups. `agentTools` denies `edit` and `delete` unless the agent lists `Write`/`Edit`/`MultiEdit`/`NotebookEdit`, denies `shell` without `Bash`, and denies `network` without `WebFetch`/`WebSearch` (`PluginFormats.kt:297-304`).
+- **Commands become skills.** `addCommands` writes `.aether/commands/<name>/SKILL.md` with frontmatter and a preamble explaining `$ARGUMENTS`, `{{args}}`, `$1` and `$2`, lines beginning with `!` as shell commands, and `@path` as file reads (`PluginFormats.kt:256-277`). The generated `commands` folder is then added as a skills path, so the command is available as `/<name>`.
+- **Agents become prompt files.** `addAgents` writes `.aether/agents/<agent>.md` and adds an entry with `description`, `instructions` and optional `tools` groups. `agentTools` denies `edit` and `delete` unless the agent lists `Write`/`Edit`/`MultiEdit`/`NotebookEdit`, denies `shell` without `Bash`, and denies `network` without `WebFetch`/`WebSearch` (`PluginFormats.kt:297-304`).
 - **Rules become instructions or one skill.** If the combined rule text is at most 16,000 bytes, each file becomes an instruction; otherwise the text is folded into one `<plugin>-rules` skill (`PluginFormats.kt:338-358`).
 - **Hooks are mapped by event name** (`PluginFormats.kt:23-25`): `SessionStart` to `session.start`, `UserPromptSubmit` and `BeforeAgent` to `message.received`, `PreToolUse` and `BeforeTool` to `tool.before`, `PostToolUse` and `AfterTool` to `tool.after`, `Stop`, `SubagentStop` and `SessionEnd` to `session.end`. Only `type: command` hooks are kept; other hook types produce a note. Timeouts are clamped to 1 through 600 seconds.
 - **MCP conversion** (`PluginFormats.kt:411-448`): `url`, `httpUrl` or `serverUrl` produces an `http` or `sse` server; `command` plus `args` produces a stdio server. `bunx`, `bun x`, `pnpm dlx` and `yarn dlx` become `npx -y`. `docker` and `podman` servers are added disabled with a note. `${VAR}` and `$VAR` become `{env:VAR}`; root variables become `{plugin:root}`. `cwd` is ignored.
@@ -113,9 +113,9 @@ Component generation details:
 
 **Bundle isolation.** Payloads live under the app's private `filesDir/plugins/packages`. `PluginStore.checkedDirectory` refuses symlinks and any tree larger than `MAX_FILES`, and re-verifies the digest when file size or mtime changes. A plugin that changes after installation is rejected until disabled or reinstalled.
 
-**Configuration isolation.** Installed plugins are merged as `ConfigSource` objects whose IDs begin with `Managed/Global/` or `Managed/Project/`. `HarnessConfigLoader.load` merges managed global sources, global `home` config, managed project sources, then the project's own `harness.json` (`HarnessConfig.kt:191-195`). Shared `harness.json` files are never rewritten by install or uninstall.
+**Configuration isolation.** Installed plugins are merged as `ConfigSource` objects whose IDs begin with `Managed/Global/` or `Managed/Project/`. `AetherConfigLoader.load` merges managed global sources, global `home` config, managed project sources, then the project's own `aether.json` (`AetherConfig.kt:191-195`). Shared `aether.json` files are never rewritten by install or uninstall.
 
-**Plugin MCP wiring.** `HarnessConfigLoader.plugin` namespace-qualifies every server: `<plugin name, 10 chars>_<digest 4>_<server key, 8 chars>_<digest 6>` (`HarnessConfig.kt:291-296`). Name collisions are refused. Values containing `{plugin:root}` are replaced with the canonical payload folder and require a real folder, so a bundled MCP file cannot be installed without one. Each server records `ConfigServerSource(key, pluginName, configurationSource)` and `deviceLocal = true` for plugin sources (`HarnessConfig.kt:307-308,368`).
+**Plugin MCP wiring.** `AetherConfigLoader.plugin` namespace-qualifies every server: `<plugin name, 10 chars>_<digest 4>_<server key, 8 chars>_<digest 6>` (`AetherConfig.kt:291-296`). Name collisions are refused. Values containing `{plugin:root}` are replaced with the canonical payload folder and require a real folder, so a bundled MCP file cannot be installed without one. Each server records `ConfigServerSource(key, pluginName, configurationSource)` and `deviceLocal = true` for plugin sources (`AetherConfig.kt:307-308,368`).
 
 **Workspace approval.** Plugin MCP servers are treated as workspace configuration. `McpManager.isWorkspaceApproved` compares a key built from the workspace path and a SHA-256 of the workspace config text plus `trustPayload` and the serialized transports (`McpManager.kt:268-284`). When not approved, workspace servers and a marker for each plugin are returned by `unapprovedWorkspaceServers` (`McpManager.kt:287-292`), and `activeTools` records `blocked` instead of connecting (`McpManager.kt:319-340`). `PluginMcpServersSection` reflects the same state: `Plugin` servers are filtered from the resolved config, labeled with plugin and scope, and show "approval pending" until the workspace is approved.
 
@@ -137,8 +137,8 @@ Component generation details:
 
 ## Extension Points
 
-- **New manifest keys**: add to `PluginManifest.known`, parse in `inspect`, generate in `Plan.write`, and read in `HarnessConfigLoader.plugin`.
-- **New hook event**: add to `PluginManifest.hookNames`, `HarnessConfigLoader`'s `events` set and `PluginHooks` dispatch. The adapter also needs a `hookEvents` mapping if a foreign event should map to it.
+- **New manifest keys**: add to `PluginManifest.known`, parse in `inspect`, generate in `Plan.write`, and read in `AetherConfigLoader.plugin`.
+- **New hook event**: add to `PluginManifest.hookNames`, `AetherConfigLoader`'s `events` set and `PluginHooks` dispatch. The adapter also needs a `hookEvents` mapping if a foreign event should map to it.
 - **New MCP dialect**: extend `PluginMcp.convert` and `PluginMcp.text`.
 - **New command format**: `Plan.addCommands` already handles Markdown and Gemini TOML (`tomlCommand`, `PluginFormats.kt:401-407`).
 - **Custom installer runtime**: implement `PluginRuntime` and pass it to `PluginManager` through the `runtime` lambda.
@@ -147,16 +147,16 @@ Component generation details:
 - `prompt.before` is accepted by the manifest and config loader, but `PluginAdapter.hookEvents` has no foreign event mapping to it. Only a native `plugin.json` can declare it.
 - `formatName` labels `.agents-plugin` as "Claude Code plugin", so that ecosystem is not preserved in the displayed format.
 
-Sources: [app/src/main/java/com/androidharness/app/plugins/PluginFormats.kt](../app/src/main/java/com/androidharness/app/plugins/PluginFormats.kt)#L17-L448), [app/src/main/java/com/androidharness/app/plugins/PluginModels.kt](../app/src/main/java/com/androidharness/app/plugins/PluginModels.kt)#L62-L225), [app/src/main/java/com/androidharness/app/plugins/PluginArchives.kt](../app/src/main/java/com/androidharness/app/plugins/PluginArchives.kt)#L13-L175), [app/src/main/java/com/androidharness/app/plugins/PluginInstallers.kt](../app/src/main/java/com/androidharness/app/plugins/PluginInstallers.kt)#L21-L68), [app/src/main/java/com/androidharness/app/config/PluginHooks.kt](../app/src/main/java/com/androidharness/app/config/PluginHooks.kt)#L19-L151), [app/src/main/java/com/androidharness/app/config/HarnessConfig.kt](../app/src/main/java/com/androidharness/app/config/HarnessConfig.kt)#L266-L343), [app/src/main/java/com/androidharness/app/ui/settings/PluginMcpServersSection.kt](../app/src/main/java/com/androidharness/app/ui/settings/PluginMcpServersSection.kt)#L28-L87)
+Sources: [app/src/main/java/com/aether/app/plugins/PluginFormats.kt](../app/src/main/java/com/aether/app/plugins/PluginFormats.kt)#L17-L448), [app/src/main/java/com/aether/app/plugins/PluginModels.kt](../app/src/main/java/com/aether/app/plugins/PluginModels.kt)#L62-L225), [app/src/main/java/com/aether/app/plugins/PluginArchives.kt](../app/src/main/java/com/aether/app/plugins/PluginArchives.kt)#L13-L175), [app/src/main/java/com/aether/app/plugins/PluginInstallers.kt](../app/src/main/java/com/aether/app/plugins/PluginInstallers.kt)#L21-L68), [app/src/main/java/com/aether/app/config/PluginHooks.kt](../app/src/main/java/com/aether/app/config/PluginHooks.kt)#L19-L151), [app/src/main/java/com/aether/app/config/AetherConfig.kt](../app/src/main/java/com/aether/app/config/AetherConfig.kt)#L266-L343), [app/src/main/java/com/aether/app/ui/settings/PluginMcpServersSection.kt](../app/src/main/java/com/aether/app/ui/settings/PluginMcpServersSection.kt)#L28-L87)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/plugins/PluginFormats.kt`
-- `app/src/main/java/com/androidharness/app/plugins/PluginModels.kt`
-- `app/src/main/java/com/androidharness/app/plugins/PluginArchives.kt`
-- `app/src/main/java/com/androidharness/app/plugins/PluginInstallers.kt`
-- `app/src/main/java/com/androidharness/app/plugins/PluginCommands.kt`
-- `app/src/main/java/com/androidharness/app/config/PluginHooks.kt`
-- `app/src/main/java/com/androidharness/app/config/HarnessConfig.kt`
-- `app/src/main/java/com/androidharness/app/tools/mcp/McpManager.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/PluginMcpServersSection.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginFormats.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginModels.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginArchives.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginInstallers.kt`
+- `app/src/main/java/com/aether/app/plugins/PluginCommands.kt`
+- `app/src/main/java/com/aether/app/config/PluginHooks.kt`
+- `app/src/main/java/com/aether/app/config/AetherConfig.kt`
+- `app/src/main/java/com/aether/app/tools/mcp/McpManager.kt`
+- `app/src/main/java/com/aether/app/ui/settings/PluginMcpServersSection.kt`

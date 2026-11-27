@@ -92,7 +92,7 @@
       "outcome": "Açıklama için Sohbet'i, gerçek bir projede değişiklik yapmak için Kod'u seçebilirsiniz.",
       "limits": [
         "Chat, çalışma alanınızı sessizce düzenleyemez veya kabuk komutlarını çalıştıramaz. Proje çalışmasına yönelik bir talep, Kod'a geçiş yapılmasını sağlayabilir.",
-        "Seçtiğiniz model kaliteyi, takım kullanımını, vizyonu, maliyeti ve hızı etkiler. AndroidHarness'nin yüklenmesi her yapay zeka modeline erişim izni vermez."
+        "Seçtiğiniz model kaliteyi, takım kullanımını, vizyonu, maliyeti ve hızı etkiler. Aether'nin yüklenmesi her yapay zeka modeline erişim izni vermez."
       ],
       "fixes": [
         {
@@ -136,7 +136,7 @@
       "steps": [
         {
           "title": "Bir model seçin",
-          "body": "Model adına dokunun. Yerleşik ücretsiz bir model mevcutsa, bağladığınız bir sağlayıcı, oturum açmış bir ChatGPT hesabı veya yüklü bir yerel model varsa Harness'yi seçin."
+          "body": "Model adına dokunun. Yerleşik ücretsiz bir model mevcutsa, bağladığınız bir sağlayıcı, oturum açmış bir ChatGPT hesabı veya yüklü bir yerel model varsa Aether'yi seçin."
         },
         {
           "title": "Küçük bir istekle başlayın",
@@ -153,7 +153,7 @@
       ],
       "outcome": "Konuşmanızda bir yanıt görünür ve bir takip isteğinde bulunabilirsiniz.",
       "limits": [
-        "Harness ücretsiz modelin kullanılabilirliği ve sınırları, yukarı akış hizmetleri tarafından kontrol edilir; ücretsiz erişim garanti edilmez.",
+        "Aether ücretsiz modelin kullanılabilirliği ve sınırları, yukarı akış hizmetleri tarafından kontrol edilir; ücretsiz erişim garanti edilmez.",
         "Normal Sohbet, Linux, GitHub, root veya kablosuz hata ayıklamayı gerektirmez. Barındırılan yanıtlar hâlâ çalışan bir bağlantıya ve sağlayıcı erişimine ihtiyaç duyuyor."
       ],
       "fixes": [
@@ -181,7 +181,7 @@
       ],
       "sources": [
         "ui/chat/components/ModelPickerSheet.kt",
-        "llm/HarnessProvider.kt",
+        "llm/AetherProvider.kt",
         "ui/chat/ChatScreen.kt"
       ],
       "keywords": "",
@@ -264,7 +264,7 @@
       "steps": [
         {
           "title": "Anahtarı anlayın",
-          "body": "API anahtarı gizli bir kimlik bilgisidir. AndroidHarness'nin sağlayıcı hesabınıza istek göndermesine olanak tanır. Anahtar oluşturmanın kendisi bir model satın almaz, bir hesaba fon sağlamaz veya istekleri sınırsız hale getirmez."
+          "body": "API anahtarı gizli bir kimlik bilgisidir. Aether'nin sağlayıcı hesabınıza istek göndermesine olanak tanır. Anahtar oluşturmanın kendisi bir model satın almaz, bir hesaba fon sağlamaz veya istekleri sınırsız hale getirmez."
         },
         {
           "title": "Faturalandırma yolunu kontrol edin",
@@ -272,7 +272,7 @@
         },
         {
           "title": "Gerekirse erişimi etkinleştirin",
-          "body": "Bir ödeme yöntemi eklemek, kredi satın almak veya uygun bir planı etkinleştirmek için sağlayıcının kendi ödeme sayfasını kullanın. Onaylamadan önce otomatik yüklemeleri ve harcama kontrollerini kontrol edin. AndroidHarness, sağlayıcı API aboneliklerini satmaz."
+          "body": "Bir ödeme yöntemi eklemek, kredi satın almak veya uygun bir planı etkinleştirmek için sağlayıcının kendi ödeme sayfasını kullanın. Onaylamadan önce otomatik yüklemeleri ve harcama kontrollerini kontrol edin. Aether, sağlayıcı API aboneliklerini satmaz."
         },
         {
           "title": "Kullanıma dikkat edin",
@@ -287,7 +287,7 @@
       "fixes": [
         {
           "problem": "Bir sohbet uygulaması için ödeme yaptım ancak API anahtarım başarısız oluyor",
-          "solution": "API erişimi, mevcut krediler ve abonelik-kredi bağlama adımları için geliştirici konsolunu kontrol edin. Alternatif olarak AndroidHarness'de desteklenen bir oturum açma bağlantısını kullanın."
+          "solution": "API erişimi, mevcut krediler ve abonelik-kredi bağlama adımları için geliştirici konsolunu kontrol edin. Alternatif olarak Aether'de desteklenen bir oturum açma bağlantısını kullanın."
         }
       ],
       "related": [
@@ -392,7 +392,7 @@
       "category": "providers",
       "title": "Bir OpenAI API anahtarı bağlayın",
       "summary": "API erişimini ayarlayın ve OpenAI bağlantı türünü seçin.",
-      "location": "OpenAI geliştirici platformu → API anahtarları ve Faturalandırma; AndroidHarness → Sağlayıcıları yönetin.",
+      "location": "OpenAI geliştirici platformu → API anahtarları ve Faturalandırma; Aether → Sağlayıcıları yönetin.",
       "before": [
         "Ödeme yapmayı düşündüğünüz OpenAI hesabını ve API organizasyonunu kullanın."
       ],
@@ -406,7 +406,7 @@
           "body": "Bir proje API anahtarı oluşturun, ona tanınabilir bir ad verin ve gizli dizi görüntülenirken kopyalayın. Bunu özel tut."
         },
         {
-          "title": "AndroidHarness'ye ekleyin",
+          "title": "Aether'ye ekleyin",
           "body": "Sağlayıcıları yönet bölümünde OpenAI veya OpenAI (Yanıtlar) öğesini seçin. Anahtarı yapıştırın, devam edin, mevcut bir modeli seçin ve kaydedin."
         },
         {
@@ -458,7 +458,7 @@
       "category": "providers",
       "title": "Claude'yi API aracılığıyla bağlayın",
       "summary": "Bir Anthropic anahtarı oluşturun ve API finansmanını kontrol edin.",
-      "location": "Claude Konsol → API anahtarları ve Faturalandırma; AndroidHarness → Sağlayıcıları yönetin → Anthropic.",
+      "location": "Claude Konsol → API anahtarları ve Faturalandırma; Aether → Sağlayıcıları yönetin → Anthropic.",
       "before": [
         "Amaçlanan Claude API organizasyonuna veya çalışma alanına erişime sahip olun."
       ],
@@ -477,7 +477,7 @@
         },
         {
           "title": "Kaydet ve test et",
-          "body": "AndroidHarness'de Anthropic'yi seçin, anahtarı yapıştırın, hesabınızda kullanılabilen bir model seçin ve kaydedin. Bunu Sohbet veya Kod'da seçin ve kısa bir istek gönderin."
+          "body": "Aether'de Anthropic'yi seçin, anahtarı yapıştırın, hesabınızda kullanılabilen bir model seçin ve kaydedin. Bunu Sohbet veya Kod'da seçin ve kısa bir istek gönderin."
         }
       ],
       "outcome": "Kaydedilmiş bir Anthropic bağlantısı seçtiğiniz modelle yanıt verebilir.",
@@ -488,7 +488,7 @@
       "fixes": [
         {
           "problem": "Sağlayıcı düşük kredi bildiriyor",
-          "solution": "Bu anahtarın sahibi olan kuruluşun faturalandırma sayfasını kontrol edin. AndroidHarness'ye anahtar eklemek para eklemez."
+          "solution": "Bu anahtarın sahibi olan kuruluşun faturalandırma sayfasını kontrol edin. Aether'ye anahtar eklemek para eklemez."
         }
       ],
       "related": [
@@ -524,7 +524,7 @@
       "category": "providers",
       "title": "Bir Gemini API anahtarı bağlayın",
       "summary": "Google AI Studio'yu kullanın ve doğru projeyi seçin.",
-      "location": "Google AI Studio → API tuşları; AndroidHarness → Sağlayıcıları yönetin → Gemini.",
+      "location": "Google AI Studio → API tuşları; Aether → Sağlayıcıları yönetin → Gemini.",
       "before": [
         "Gemini API'ye uygun bir Google hesabı ve proje kullanın."
       ],
@@ -539,14 +539,14 @@
         },
         {
           "title": "Gemini bağlantısını ekleyin",
-          "body": "AndroidHarness'de Gemini'yi seçin, anahtarı yapıştırın, model listesine devam edin ve hesabınıza sunulan bir modeli kaydedin."
+          "body": "Aether'de Gemini'yi seçin, anahtarı yapıştırın, model listesine devam edin ve hesabınıza sunulan bir modeli kaydedin."
         },
         {
           "title": "Kısa bir mesaj deneyin",
           "body": "Modeli Sohbet veya Kod'da seçin. Başarısız olursa anahtar projesinin, etkin API'nin, faturalama durumunun ve model sınırlarının isteğinizle eşleşip eşleşmediğini kontrol edin."
         }
       ],
-      "outcome": "AndroidHarness, seçtiğiniz projeye eklenen anahtarı kullanarak Gemini'ye ulaşabilir.",
+      "outcome": "Aether, seçtiğiniz projeye eklenen anahtarı kullanarak Gemini'ye ulaşabilir.",
       "limits": [
         "Ücretsiz ve ücretli katmanların farklı sınırları ve koşulları vardır. Hassas verileri kullanmadan veya satın alma işlemi yapmadan önce mevcut resmi faturalandırma sayfasını kontrol edin.",
         "Resimleri destekleyen bir model, her sağlayıcı özelliğinin bu uygulama aracılığıyla kullanılabilir olmasını sağlamaz. Yalnızca uygulanan konuşma ve araç yetenekleri gösterilir."
@@ -590,7 +590,7 @@
       "category": "providers",
       "title": "OpenRouter'yi bağlayın",
       "summary": "OpenRouter'nin model kataloğundan seçim yapmak için tek bir bağlantı kullanın.",
-      "location": "OpenRouter → Ayarlar → Tuşlar ve Krediler; AndroidHarness → Sağlayıcıları yönetin → OpenRouter.",
+      "location": "OpenRouter → Ayarlar → Tuşlar ve Krediler; Aether → Sağlayıcıları yönetin → OpenRouter.",
       "before": [
         "Bir OpenRouter hesabınız olsun. Seçilen her modelin fiyatını ve erişim gereksinimlerini kontrol edin."
       ],
@@ -675,7 +675,7 @@
         },
         {
           "title": "Bir modeli kaydedin ve seçin",
-          "body": "Anahtarı eşleşen AndroidHarness bağlantısına yapıştırın, sunulan bir modeli seçin ve kaydedin. Konuşma başlığında bu modeli seçin ve test edin."
+          "body": "Anahtarı eşleşen Aether bağlantısına yapıştırın, sunulan bir modeli seçin ve kaydedin. Konuşma başlığında bu modeli seçin ve test edin."
         }
       ],
       "outcome": "Seçilen hizmet model seçicinizde mevcuttur.",
@@ -759,13 +759,13 @@
         },
         {
           "title": "Telefondan test edin",
-          "body": "Sunucunun erişilebilir bir arayüzü dinlediğinden ve ağın bağlantıya izin verdiğinden emin olun. Sağlayıcıyı kaydedin ve AndroidHarness'den küçük bir istek gönderin."
+          "body": "Sunucunun erişilebilir bir arayüzü dinlediğinden ve ağın bağlantıya izin verdiğinden emin olun. Sağlayıcıyı kaydedin ve Aether'den küçük bir istek gönderin."
         }
       ],
       "outcome": "Telefon uyumlu sunucuyla konuşabilir ve bir model yanıtı alabilir.",
       "limits": [
         "Masaüstü model sunucusu, uygulamanın cihazdaki Yerel modeller özelliğinden farklıdır.",
-        "AndroidHarness, bilgisayarınızda Ollama veya LM Studio'yi başlatmaz veya otomatik olarak bir ağ tüneli oluşturmaz."
+        "Aether, bilgisayarınızda Ollama veya LM Studio'yi başlatmaz veya otomatik olarak bir ağ tüneli oluşturmaz."
       ],
       "fixes": [
         {
@@ -983,7 +983,7 @@
       "steps": [
         {
           "title": "Oturum açmayı başlat",
-          "body": "Hesap ekle'yi veya oturum açma eylemini seçin. Resmi tarayıcı yetkilendirmesini tamamlayın ve AndroidHarness'ye geri dönün. Bekleyen bir oturum açma işlemini hesap panelinden iptal edebilirsiniz."
+          "body": "Hesap ekle'yi veya oturum açma eylemini seçin. Resmi tarayıcı yetkilendirmesini tamamlayın ve Aether'ye geri dönün. Bekleyen bir oturum açma işlemini hesap panelinden iptal edebilirsiniz."
         },
         {
           "title": "Bağlı hesabı seçin",
@@ -2475,7 +2475,7 @@
       "outcome": "Uzak klasör bir çalışma alanı olarak görünür ve desteklenen eylemler SSH ana bilgisayarında çalışır.",
       "limits": [
         "Uzak sunucunun yerel ana bilgisayarı, telefonunuzun yerel ana bilgisayarı değildir. Uzaktan web önizlemeleri, telefondan erişilebilen bir URL'ye veya ayrı olarak yapılandırılmış bir bağlantıya ihtiyaç duyar.",
-        "AndroidHarness, uzak SSH sunucusunu sizin için kurmaz veya yönetmez."
+        "Aether, uzak SSH sunucusunu sizin için kurmaz veya yönetmez."
       ],
       "fixes": [
         {
@@ -3302,7 +3302,7 @@
         "ui/settings/SettingsScreen.kt",
         "ui/projects/ProjectMemoryScreen.kt",
         "workspace/ProjectMemory.kt",
-        "config/HarnessConfig.kt"
+        "config/AetherConfig.kt"
       ],
       "keywords": ""
     },
@@ -3580,7 +3580,7 @@
       ],
       "outcome": "Yürütülebilir dosya yerel bir MCP işlemi olarak başlar ve araçları başarıyla tanıtır.",
       "limits": [
-        "Yerel MCP sunucusu çalıştırılabilir bir yazılımdır. AndroidHarness, rastgele masaüstü ikili dosyalarını telefonunuzla uyumlu hale getirmez.",
+        "Yerel MCP sunucusu çalıştırılabilir bir yazılımdır. Aether, rastgele masaüstü ikili dosyalarını telefonunuzla uyumlu hale getirmez.",
         "Proje tarafından sağlanan MCP/eklenti yapılandırmasının çalışma alanı güveninin incelenmesi gerekiyor. Workspace MCP henüz çoklu çalışma alanı sohbetlerinde kullanılamıyor."
       ],
       "fixes": [
@@ -3621,7 +3621,7 @@
       "summary": "Becerilerini, kancalarını ve araçlarını etkinleştirmeden önce bir paketi inceleyin.",
       "location": "Ayarlar → Kodlama → Eklentiler → Yüklendi / Keşfet / Ekle.",
       "before": [
-        "AndroidHarness'nin desteklenen paket formatı için yapılmış bir eklenti kullanın.",
+        "Aether'nin desteklenen paket formatı için yapılmış bir eklenti kullanın.",
         "Kapsamının bu proje mi yoksa küresel mi olacağını seçin."
       ],
       "steps": [
@@ -3726,8 +3726,8 @@
       ],
       "sources": [
         "ui/settings/ConfigurationSection.kt",
-        "config/HarnessConfig.kt",
-        "config/HarnessConfigRepository.kt",
+        "config/AetherConfig.kt",
+        "config/AetherConfigRepository.kt",
         "config/ConfigValidation.kt"
       ],
       "keywords": ""
@@ -4284,10 +4284,10 @@
       "steps": [
         {
           "title": "Sağlayıcıyı başlat",
-          "body": "Hizmetinin çalışması için sağlayıcı uygulamasının kendi kurulumunu izleyin. AndroidHarness onu yalnızca kurularak etkinleştirmez."
+          "body": "Hizmetinin çalışması için sağlayıcı uygulamasının kendi kurulumunu izleyin. Aether onu yalnızca kurularak etkinleştirmez."
         },
         {
-          "title": "AndroidHarness'ye erişim izni ver",
+          "title": "Aether'ye erişim izni ver",
           "body": "Kabuk sağlayıcı bölümünü açın ve izin isteyin. Sağlayıcıda amaçlanan isteği onaylayın, ardından bağlantı durumunu yenileyin."
         },
         {
@@ -4334,7 +4334,7 @@
       "category": "device",
       "title": "Kablosuz hata ayıklamayı eşleştir",
       "summary": "Uygulamadan Android'nin kablosuz ADB rotasını bağlayın.",
-      "location": "Android Geliştirici seçenekleri → Kablosuz hata ayıklama; AndroidHarness → Terminal ve cihaz → Kablosuz ADB.",
+      "location": "Android Geliştirici seçenekleri → Kablosuz hata ayıklama; Aether → Terminal ve cihaz → Kablosuz ADB.",
       "before": [
         "Kablosuz hata ayıklama özelliğine sahip, desteklenen bir Android sürümü mevcuttur.",
         "Android kablosuz hata ayıklamaya izin veren bir ağ/cihaz durumu.",
@@ -4342,7 +4342,7 @@
       ],
       "steps": [
         {
-          "title": "AndroidHarness'den eşleştirmeye başlayın",
+          "title": "Aether'den eşleştirmeye başlayın",
           "body": "Kablosuz ADB'de eşleştirme düğmesine dokunun. Android isterse yerel ağ iznine izin verin. Uygulama, Android'nin eşleştirme hizmetini aramaya başlar."
         },
         {
@@ -4351,7 +4351,7 @@
         },
         {
           "title": "Kodu bildirim yoluyla girin",
-          "body": "Bildirim gölgesini aşağı çekin, AndroidHarness'nin eşleştirme bildirimini açın, Kodu girin işlemini kullanın ve halihazırda Android tarafından gösterilen altı haneli kodu gönderin. Eşleştirme/bağlantı sonucunu bekleyin."
+          "body": "Bildirim gölgesini aşağı çekin, Aether'nin eşleştirme bildirimini açın, Kodu girin işlemini kullanın ve halihazırda Android tarafından gösterilen altı haneli kodu gönderin. Eşleştirme/bağlantı sonucunu bekleyin."
         },
         {
           "title": "Gerekirse manuel eşleştirmeyi kullanın",
@@ -4399,7 +4399,7 @@
       "summary": "Kök bağlantısını, proje iznini ve görev modunu ayrı tutun.",
       "location": "Ayarlar → Kodlama → Terminal ve cihaz → Gelişmiş → Kök erişimi.",
       "before": [
-        "Zaten çalışan bir kök yöneticisi olan bir cihaz. AndroidHarness onu köklendirmez."
+        "Zaten çalışan bir kök yöneticisi olan bir cihaz. Aether onu köklendirmez."
       ],
       "steps": [
         {
@@ -4462,7 +4462,7 @@
       "steps": [
         {
           "title": "Önce Dhizuku'yi kontrol edin",
-          "body": "Kendi uygulamasını açın ve Cihaz Sahibi aktivasyonunun tamamlandığını doğrulayın. AndroidHarness kartı, hizmetin kurulu mu, etkin mi yoksa izin mi beklediğini bildirir."
+          "body": "Kendi uygulamasını açın ve Cihaz Sahibi aktivasyonunun tamamlandığını doğrulayın. Aether kartı, hizmetin kurulu mu, etkin mi yoksa izin mi beklediğini bildirir."
         },
         {
           "title": "Bağlantıyı ver",
@@ -4697,7 +4697,7 @@
       "location": "Ayarlar → Telegram.",
       "before": [
         "Telegram'nin resmi BotFather aracılığıyla oluşturulan, kontrol ettiğiniz bir bot.",
-        "AndroidHarness'nin Telegram hizmeti etkin durumdayken telefonunuzu çevrimiçi tutun."
+        "Aether'nin Telegram hizmeti etkin durumdayken telefonunuzu çevrimiçi tutun."
       ],
       "steps": [
         {
@@ -4706,7 +4706,7 @@
         },
         {
           "title": "Hesabınızı eşleştirin",
-          "body": "AndroidHarness'de eşleştirmeye başlayın, sağlanan bağlantı/kodla botu açın ve onaylamadan önce uygulamada Telegram kullanıcı kimliğini tekrar inceleyin."
+          "body": "Aether'de eşleştirmeye başlayın, sağlanan bağlantı/kodla botu açın ve onaylamadan önce uygulamada Telegram kullanıcı kimliğini tekrar inceleyin."
         },
         {
           "title": "Çalışma bağlamını seçin",
@@ -4719,7 +4719,7 @@
       ],
       "outcome": "Eşleştirilmiş Telegram hesabınız seçilen uygulama projesine/sohbetine çalışma gönderebilir ve ilerleme/sonuçları alabilir.",
       "limits": [
-        "Botun ve telefonunuzun ağ erişimine ihtiyacı var. Telegram, AndroidHarness görevini sizin adınıza barındırmaz.",
+        "Botun ve telefonunuzun ağ erişimine ihtiyacı var. Telegram, Aether görevini sizin adınıza barındırmaz.",
         "Eşleştirme, uygulama aracı izinleri, model faturalandırma ve arka plan ayarları hâlâ geçerlidir. Aynı bot tokenin başka bir rakip tüketicisini çalıştırmayın."
       ],
       "fixes": [
@@ -4830,7 +4830,7 @@
           "body": "Desteklendiği durumlarda duvar kağıdından türetilen renkleri, yerleşik bir paleti veya özel bir paleti kullanın. Özel paletlerde amaçlanan renkleri kaydedin, paleti seçin ve önizlemeyi inceleyin."
         },
         {
-          "title": "Bir Harness Canvas ekleyin",
+          "title": "Bir Aether Canvas ekleyin",
           "body": "Bir fotoğraf/resim ekleyin, bunun Sohbet ve Kod'da görünüp görünmeyeceğini seçin, okunabilirlik için görüntü karartmasını ayarlayın ve isteğe bağlı olarak uygulama renklerini bununla eşleştirin. Aynı bölümdeki resmi değiştirin/kaldırın."
         },
         {
@@ -4866,7 +4866,7 @@
         "ui/settings/WorkspaceLayoutSection.kt",
         "ui/settings/ThemeColorSection.kt",
         "ui/settings/CustomPaletteSection.kt",
-        "ui/settings/HarnessCanvasSection.kt",
+        "ui/settings/AetherCanvasSection.kt",
         "ui/settings/ProgressBarStyleSection.kt"
       ],
       "keywords": ""
@@ -5707,7 +5707,7 @@
     {
       "id": "honest-limits",
       "category": "help",
-      "title": "AndroidHarness'nin yapabileceği ve yapamayacağı şeyler",
+      "title": "Aether'nin yapabileceği ve yapamayacağı şeyler",
       "summary": "Uygulama yeteneklerini model vaatlerinden ve cihaz izinlerinden ayırın.",
       "location": "Bir iş akışı seçmeden önce bu kontrol listesini kullanın.",
       "before": [
@@ -5964,17 +5964,17 @@
     {
       "id": "share-to-chat",
       "category": "chat",
-      "title": "AndroidHarness'de bir şeyler paylaşın",
+      "title": "Aether'de bir şeyler paylaşın",
       "summary": "Başka bir uygulamadaki metinleri, bağlantıları ve desteklenen ekleri Sohbete taşıyın.",
-      "location": "Başka bir Android uygulaması → Paylaş → AndroidHarness.",
+      "location": "Başka bir Android uygulaması → Paylaş → Aether.",
       "before": [
         "Kaynak uygulamanın içerik için Android paylaşımı sunması gerekir.",
         "Göndermeden önce özel içeriği ve model hedefini inceleyin."
       ],
       "steps": [
         {
-          "title": "Paylaşımda AndroidHarness'yi seçin",
-          "body": "Kaynak uygulamanın Android paylaşım sayfasını kullanın. AndroidHarness, paylaşılan metin ve desteklenen ek önizlemeleri için bir inceleme sayfası açar."
+          "title": "Paylaşımda Aether'yi seçin",
+          "body": "Kaynak uygulamanın Android paylaşım sayfasını kullanın. Aether, paylaşılan metin ve desteklenen ek önizlemeleri için bir inceleme sayfası açar."
         },
         {
           "title": "Konuşmayı seçin",
@@ -6022,16 +6022,16 @@
       "id": "screen-assistant",
       "category": "chat",
       "title": "Asistanla herhangi bir ekran hakkında sor",
-      "summary": "AndroidHarness'ı telefonunun asistanı yap ve kullandığın uygulama hakkında sor.",
+      "summary": "Aether'ı telefonunun asistanı yap ve kullandığın uygulama hakkında sor.",
       "location": "Ayarlar → Diğer uygulamaların üzerinde asistan; sonra güç veya ana ekran düğmesini basılı tut ya da alt köşeden yukarı kaydır.",
       "before": [
         "Önce bir Sohbet modeli seç ve anahtarını ekle. Asistan, Sohbet ile aynı modeli ve ayarları kullanır.",
-        "Android, AndroidHarness'ın dijital asistan uygulaması olmasına izin vermeli. Bazı telefonlarda bu, Varsayılan uygulamalar altındadır."
+        "Android, Aether'ın dijital asistan uygulaması olmasına izin vermeli. Bazı telefonlarda bu, Varsayılan uygulamalar altındadır."
       ],
       "steps": [
         {
           "title": "Onu asistanın yap",
-          "body": "Ayarlar → Diğer uygulamaların üzerinde asistan bölümünü aç ve Asistan uygulamasını seç düğmesine dokun. Android listesinde AndroidHarness'ı dijital asistan uygulaması olarak seç ve geri dön. Sayfa, açık olduğunda bunu gösterir."
+          "body": "Ayarlar → Diğer uygulamaların üzerinde asistan bölümünü aç ve Asistan uygulamasını seç düğmesine dokun. Android listesinde Aether'ı dijital asistan uygulaması olarak seç ve geri dön. Sayfa, açık olduğunda bunu gösterir."
         },
         {
           "title": "Her uygulamadan çağır",
@@ -6061,7 +6061,7 @@
       ],
       "fixes": [
         {
-          "problem": "Asistan listesinde AndroidHarness yok",
+          "problem": "Asistan listesinde Aether yok",
           "solution": "Asistan uygulamasını seç düğmesine yeniden dokun. Android başka bir sayfa açarsa Ayarlar → Uygulamalar → Varsayılan uygulamalar → Dijital asistan uygulaması bölümüne bak. Bazı telefonlar buna Asist ve sesli giriş der."
         },
         {
@@ -6082,7 +6082,7 @@
         }
       ],
       "sources": [
-        "assistant/HarnessAssistantSession.kt",
+        "assistant/AetherAssistantSession.kt",
         "assistant/AssistantPanel.kt",
         "assistant/AssistantController.kt",
         "ui/settings/AssistantSetupSection.kt"

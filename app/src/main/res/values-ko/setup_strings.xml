@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">"AndroidHarness에 오신 것을 환영합니다"</string>
+    <string name="setup_welcome_title">"Aether에 오신 것을 환영합니다"</string>
     <string name="setup_welcome_body">"코딩 에이전트를 바로 당신의 휴대폰에. 설정을 시작하겠습니다."</string>
     <string name="setup_start_fresh">"새로 시작"</string>
-    <string name="setup_start_fresh_body">"완전히 새로운 AndroidHarness 설정"</string>
-    <string name="setup_restore">"AndroidHarness 복원"</string>
+    <string name="setup_start_fresh_body">"완전히 새로운 Aether 설정"</string>
+    <string name="setup_restore">"Aether 복원"</string>
     <string name="setup_restore_body">"백업 파일에서 채팅과 설정을 되살립니다"</string>
 
     <string name="setup_storage_title">"파일 접근 허용"</string>
-    <string name="setup_storage_body">"선택 사항입니다. 허용하지 않으면 AndroidHarness는 자체 폴더에서 작동하고 작업에 파일이 필요할 때 물어봅니다."</string>
+    <string name="setup_storage_body">"선택 사항입니다. 허용하지 않으면 Aether는 자체 폴더에서 작동하고 작업에 파일이 필요할 때 물어봅니다."</string>
     <string name="setup_storage_all_files">"모든 파일 접근"</string>
     <string name="setup_storage_all_files_body">"터미널과 파일 도구가 기대하는 대로 모든 폴더를 읽고 편집합니다. 코딩에 가장 적합합니다."</string>
     <string name="setup_storage_legacy">"저장소 권한"</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">"데이터 복원"</string>
     <string name="setup_restore_subtitle">"이전 휴대폰의 백업 파일을 선택하세요. 하나, 둘 다, 또는 아무것도 복원하지 않아도 됩니다."</string>
     <string name="setup_restore_chats">"채팅"</string>
-    <string name="setup_restore_chats_body">"채팅, 이미지, 사용 통계, 메모리, 스니펫이 담긴 .harnessbackup 파일"</string>
+    <string name="setup_restore_chats_body">"채팅, 이미지, 사용 통계, 메모리, 스니펫이 담긴 .aetherbackup 파일"</string>
     <string name="setup_restore_settings">"설정 및 공급자"</string>
     <string name="setup_restore_settings_body">"공급자, API 키, 환경설정이 담긴 비밀번호로 보호된 .hbackup 파일"</string>
     <string name="setup_restore_choose">"파일 선택"</string>

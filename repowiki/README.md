@@ -1,4 +1,4 @@
-# AndroidHarness repo wiki
+# Aether repo wiki
 
 Last updated 07/11/2026, generated from `main` at commit `aae55c4`.
 
@@ -45,7 +45,7 @@ Since the previous edition (September 2026) the app grew a separate Chat section
 - [Anthropic and Gemini Providers](24-anthropic-and-gemini-providers.md)
 - [OpenAI Compatible and Responses Providers](25-openai-compatible-and-responses-providers.md)
 - [ChatGPT Accounts](26-chatgpt-accounts.md)
-- [Harness Keyless Provider](27-harness-keyless-provider.md)
+- [Aether Keyless Provider](27-aether-keyless-provider.md)
 - [Model Catalog and Capabilities](28-model-catalog-and-capabilities.md)
 - [Pricing, Cost and Usage](29-pricing-cost-and-usage.md)
 - [Provider Controls and Fallback Chains](30-provider-controls-and-fallback-chains.md)
@@ -97,7 +97,7 @@ Since the previous edition (September 2026) the app grew a separate Chat section
 
 ### Interface and Personalization
 
-- [Theme Palettes and Harness Canvas](64-theme-palettes-and-canvas.md)
+- [Theme Palettes and Aether Canvas](64-theme-palettes-and-canvas.md)
 - [Motion, Glass, and Haptics](65-motion-glass-and-haptics.md)
 - [Learn, Tips, and What's New](66-learn-tips-and-whats-new.md)
 - [Localization](67-localization.md)

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">"欢迎使用 AndroidHarness"</string>
+    <string name="setup_welcome_title">"欢迎使用 Aether"</string>
     <string name="setup_welcome_body">"你的编程代理，就在手机上。让我们完成设置。"</string>
     <string name="setup_start_fresh">"全新开始"</string>
-    <string name="setup_start_fresh_body">"设置一个全新的 AndroidHarness"</string>
-    <string name="setup_restore">"恢复 AndroidHarness"</string>
+    <string name="setup_start_fresh_body">"设置一个全新的 Aether"</string>
+    <string name="setup_restore">"恢复 Aether"</string>
     <string name="setup_restore_body">"从备份文件取回你的聊天和设置"</string>
 
     <string name="setup_storage_title">"允许文件访问"</string>
-    <string name="setup_storage_body">"可选。如果不允许，AndroidHarness 会在自己的文件夹中运行，并在任务需要你的文件时询问。"</string>
+    <string name="setup_storage_body">"可选。如果不允许，Aether 会在自己的文件夹中运行，并在任务需要你的文件时询问。"</string>
     <string name="setup_storage_all_files">"所有文件访问权限"</string>
     <string name="setup_storage_all_files_body">"像终端和文件工具预期的那样读取和编辑任何文件夹。最适合编程。"</string>
     <string name="setup_storage_legacy">"存储权限"</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">"恢复你的数据"</string>
     <string name="setup_restore_subtitle">"选择旧手机上的备份文件。可恢复一个、两个或都不恢复。"</string>
     <string name="setup_restore_chats">"聊天"</string>
-    <string name="setup_restore_chats_body">"包含聊天、图片、使用统计、记忆和片段的 .harnessbackup 文件"</string>
+    <string name="setup_restore_chats_body">"包含聊天、图片、使用统计、记忆和片段的 .aetherbackup 文件"</string>
     <string name="setup_restore_settings">"设置和提供商"</string>
     <string name="setup_restore_settings_body">"包含提供商、API 密钥和偏好的受密码保护 .hbackup 文件"</string>
     <string name="setup_restore_choose">"选择文件"</string>

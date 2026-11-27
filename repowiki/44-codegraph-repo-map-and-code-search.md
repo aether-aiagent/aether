@@ -35,13 +35,13 @@ flowchart TD
     Q --> R[write launcher + patches + telemetry off]
 ```
 
-Provisioning deliberately avoids npm. Android reports `process.platform == "android"`, so the npm shim asks for `codegraph-android-arm64`, which is never published. Harness downloads the linux-arm64 release archive, keeps only `lib/` entries that carry no platform assumption (dropping `lib/kernel/`, `.map`, and `.d.ts`), and installs the Termux `nodejs-lts` package to supply Node 24.
+Provisioning deliberately avoids npm. Android reports `process.platform == "android"`, so the npm shim asks for `codegraph-android-arm64`, which is never published. Aether downloads the linux-arm64 release archive, keeps only `lib/` entries that carry no platform assumption (dropping `lib/kernel/`, `.map`, and `.d.ts`), and installs the Termux `nodejs-lts` package to supply Node 24.
 
-Runtime layout under the app prefix is fixed by getters: `bin/codegraph` (launcher), `codegraph/node/bin/node`, `codegraph/bundle/lib/dist` (the JavaScript), and `codegraph/bundle.pristine/lib/dist` (an unpatched snapshot). The version marker is `.harness-codegraph-version` in the prefix root.
+Runtime layout under the app prefix is fixed by getters: `bin/codegraph` (launcher), `codegraph/node/bin/node`, `codegraph/bundle/lib/dist` (the JavaScript), and `codegraph/bundle.pristine/lib/dist` (an unpatched snapshot). The version marker is `.aether-codegraph-version` in the prefix root.
 
 ## Invocation Chain
 
-1. `ToolRegistry.default` registers the five static CodeGraph tools at `app/src/main/java/com/androidharness/app/tools/Tool.kt:150-154`.
+1. `ToolRegistry.default` registers the five static CodeGraph tools at `app/src/main/java/com/aether/app/tools/Tool.kt:150-154`.
 2. `WorkspaceToolRouting.available` consults each tool's `isAvailable(ctx)` override, which delegates to `CodeGraphManager.isAvailable(workspace)` (`tools/CodeGraphTools.kt:13`).
 3. `CodeGraphManager.isAvailable` (`data/env/CodeGraphManager.kt:376-381`): SSH workspaces return true; local workspaces require `linuxEnv.isReady`, `bin/codegraph` existing, and `shellRoot/.codegraph` being a directory. It also calls `ensureLauncherCurrent()`.
 4. `codegraph_explore` executes `codeGraph.explore` (`CodeGraphManager.kt:542`), which calls `queryWorkspace` (860).
@@ -58,7 +58,7 @@ Runtime layout under the app prefix is fixed by getters: `bin/codegraph` (launch
 - **`CodeGraphBundlePatches.Result`** (`data/env/CodeGraphPatches.kt:68-70`): `applied` and `unresolved` path lists. `changed` is true when anything applied.
 - **`CodeGraphBundlePatches.Patch`** (46-66): `relativePath`, `anchor`, `replacement`, `fallbackAnchors`, `fallbackReplacements`, `satisfiedMarkers`, `requiresMarker`. `VERSION = 12` gates the patch generation; `patchedFiles` lists 12 bundle files.
 - **`FileEntry` / `SymbolInfo`** (`repomap/RepoMapGenerator.kt:3-6`, `repomap/RepoSymbolExtractor.kt:5-10`): `relPath` with symbols; each symbol has `name`, `kind`, `signature`, `line`.
-- **Progress log**: `.harness-progress.log` (`CODEGRAPH_PROGRESS_LOG`) is written inside `.codegraph` once it exists, otherwise beside the workspace root. The app polls it every 400 ms and keeps the last 2,000 characters; each read pulls at most 64,000 bytes from the previous offset.
+- **Progress log**: `.aether-progress.log` (`CODEGRAPH_PROGRESS_LOG`) is written inside `.codegraph` once it exists, otherwise beside the workspace root. The app polls it every 400 ms and keeps the last 2,000 characters; each read pulls at most 64,000 bytes from the previous offset.
 
 ## Boundary Conditions
 
@@ -85,16 +85,16 @@ Runtime layout under the app prefix is fixed by getters: `bin/codegraph` (launch
 - `tools/SearchBackends.kt` does not contain code-indexing logic. It implements web search backends (`KeylessSearchBackend`, `BraveApiBackend`, `TavilyApiBackend`) and `WebResultCache` (`SearchBackends.kt:113-541`). Repository text search is performed separately by `SearchFilesTool` (`tools/FileTools.kt:501`) and `GrepTool` (`FileTools.kt:767`), not by CodeGraph.
 - The repo map is intentionally shallow: it extracts declaration lines only. It has no call graph, no cross-file resolution, and no relation to the CodeGraph index.
 
-Sources: [app/src/main/java/com/androidharness/app/data/env/CodeGraphManager.kt](../app/src/main/java/com/androidharness/app/data/env/CodeGraphManager.kt)#L288-L1051), [app/src/main/java/com/androidharness/app/data/env/CodeGraphMcp.kt](../app/src/main/java/com/androidharness/app/data/env/CodeGraphMcp.kt)#L23-L122), [app/src/main/java/com/androidharness/app/data/env/CodeGraphPatches.kt](../app/src/main/java/com/androidharness/app/data/env/CodeGraphPatches.kt)#L25-L1637), [app/src/main/java/com/androidharness/app/tools/CodeGraphTools.kt](../app/src/main/java/com/androidharness/app/tools/CodeGraphTools.kt)#L10-L113), [app/src/main/java/com/androidharness/app/repomap/RepoMapCache.kt](../app/src/main/java/com/androidharness/app/repomap/RepoMapCache.kt)#L8-L70), [app/src/main/java/com/androidharness/app/repomap/RepoMapGenerator.kt](../app/src/main/java/com/androidharness/app/repomap/RepoMapGenerator.kt)#L8-L93), [app/src/main/java/com/androidharness/app/repomap/RepoSymbolExtractor.kt](../app/src/main/java/com/androidharness/app/repomap/RepoSymbolExtractor.kt)#L12-L123), [app/src/main/java/com/androidharness/app/agent/AgentEngine.kt](../app/src/main/java/com/androidharness/app/agent/AgentEngine.kt)#L2313-L2319)
+Sources: [app/src/main/java/com/aether/app/data/env/CodeGraphManager.kt](../app/src/main/java/com/aether/app/data/env/CodeGraphManager.kt)#L288-L1051), [app/src/main/java/com/aether/app/data/env/CodeGraphMcp.kt](../app/src/main/java/com/aether/app/data/env/CodeGraphMcp.kt)#L23-L122), [app/src/main/java/com/aether/app/data/env/CodeGraphPatches.kt](../app/src/main/java/com/aether/app/data/env/CodeGraphPatches.kt)#L25-L1637), [app/src/main/java/com/aether/app/tools/CodeGraphTools.kt](../app/src/main/java/com/aether/app/tools/CodeGraphTools.kt)#L10-L113), [app/src/main/java/com/aether/app/repomap/RepoMapCache.kt](../app/src/main/java/com/aether/app/repomap/RepoMapCache.kt)#L8-L70), [app/src/main/java/com/aether/app/repomap/RepoMapGenerator.kt](../app/src/main/java/com/aether/app/repomap/RepoMapGenerator.kt)#L8-L93), [app/src/main/java/com/aether/app/repomap/RepoSymbolExtractor.kt](../app/src/main/java/com/aether/app/repomap/RepoSymbolExtractor.kt)#L12-L123), [app/src/main/java/com/aether/app/agent/AgentEngine.kt](../app/src/main/java/com/aether/app/agent/AgentEngine.kt)#L2313-L2319)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/CodeGraphTools.kt`
-- `app/src/main/java/com/androidharness/app/data/env/CodeGraphManager.kt`
-- `app/src/main/java/com/androidharness/app/data/env/CodeGraphMcp.kt`
-- `app/src/main/java/com/androidharness/app/data/env/CodeGraphPatches.kt`
-- `app/src/main/java/com/androidharness/app/repomap/RepoMapCache.kt`
-- `app/src/main/java/com/androidharness/app/repomap/RepoMapGenerator.kt`
-- `app/src/main/java/com/androidharness/app/repomap/RepoSymbolExtractor.kt`
-- `app/src/main/java/com/androidharness/app/tools/SearchBackends.kt`
-- `app/src/main/java/com/androidharness/app/tools/mcp/McpManager.kt`
+- `app/src/main/java/com/aether/app/tools/CodeGraphTools.kt`
+- `app/src/main/java/com/aether/app/data/env/CodeGraphManager.kt`
+- `app/src/main/java/com/aether/app/data/env/CodeGraphMcp.kt`
+- `app/src/main/java/com/aether/app/data/env/CodeGraphPatches.kt`
+- `app/src/main/java/com/aether/app/repomap/RepoMapCache.kt`
+- `app/src/main/java/com/aether/app/repomap/RepoMapGenerator.kt`
+- `app/src/main/java/com/aether/app/repomap/RepoSymbolExtractor.kt`
+- `app/src/main/java/com/aether/app/tools/SearchBackends.kt`
+- `app/src/main/java/com/aether/app/tools/mcp/McpManager.kt`

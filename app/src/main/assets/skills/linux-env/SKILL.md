@@ -6,7 +6,7 @@ category: environment
 
 # Linux environment
 
-The harness owns PATH. You do not.
+The aether owns PATH. You do not.
 
 ## When to use
 - Exit 126 / 127, "not found", "permission denied" on a basic tool

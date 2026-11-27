@@ -42,7 +42,7 @@ flowchart TD
 
 The fetch path starts in `ProviderRepository.refreshCatalog`, which serializes per-provider work with a `Mutex` from `catalogRefreshLocks`. It strips the provider name and model from the connection object so that catalog refresh is a pure connectivity check, then tries each enabled pooled key in rotation order. Only 401, 402, 403 and 429 responses advance to the next key; a successful but empty list returns "No model capabilities reported". Results are persisted through `saveCatalog` under a `catalog_<providerId>` DataStore key.
 
-`ModelCatalog.buildRequest` selects the path and auth header by `ProviderType`: `/models` with `Authorization: Bearer` for OpenAI compatible and Responses, `/v1/models` with `x-api-key` and `anthropic-version: 2023-06-01` for Anthropic, `/models` with `x-goog-api-key` for Gemini. The built-in Harness provider bypasses typed auth entirely and uses the Kilo endpoint plus its own user agent. `ProviderHeaders.apply` adds user-defined headers last, except for non-editable providers.
+`ModelCatalog.buildRequest` selects the path and auth header by `ProviderType`: `/models` with `Authorization: Bearer` for OpenAI compatible and Responses, `/v1/models` with `x-api-key` and `anthropic-version: 2023-06-01` for Anthropic, `/models` with `x-goog-api-key` for Gemini. The built-in Aether provider bypasses typed auth entirely and uses the Kilo endpoint plus its own user agent. `ProviderHeaders.apply` adds user-defined headers last, except for non-editable providers.
 
 Parsing differs by shape. OpenAI, Responses and Anthropic responses read `data[]`, taking `id`, reported reasoning from `reasoning`, `capabilities.reasoning`, reported effort arrays or `supported_parameters`, and a context window from `context_length`, `max_tokens`, `context_window` or `context_window.tokens`. Gemini reads `models[]`, strips the `models/` prefix and reads the `thinking` boolean. Every list is sorted by ID.
 
@@ -73,7 +73,7 @@ The models.dev merge happens at read time, not at fetch time. `ModelCapabilities
 - Automatic refresh results are cached for five minutes per connection object (`automaticCatalogChecks`, compared in nanoseconds). Failures are cached too, so repeatedly opening the picker does not hammer a broken endpoint.
 - A manual refresh bypasses that cache. `detectReasoningLevels` uses this path and then asserts the connection did not change before returning levels.
 - `refreshCatalog` returns early for local providers. Local models synthesize a single `ModelEntry` from the installed spec and never call HTTP.
-- ChatGPT providers require the `ModelCatalog.chatGptModels` hook, installed by `HarnessApp`. If it is missing, the catalog reports a message asking the user to connect an account.
+- ChatGPT providers require the `ModelCatalog.chatGptModels` hook, installed by `AetherApp`. If it is missing, the catalog reports a message asking the user to connect an account.
 - `ModelVisibility` deliberately treats an empty saved set as "hide everything". Removing a provider through `ProviderRepository.delete` also removes its visibility entry.
 - `ProviderModelSearch.results` can include disabled providers when a search query is present, so a user can still find a model on a provider they turned off. The picker then offers "Enable and use" before committing.
 - Gemini cached catalogs that predate `reasoningReported` are treated as unconfirmed: `ModelReasoning.of` maps them to `INFERRED` or `UNKNOWN`, never `REPORTED`.
@@ -94,18 +94,18 @@ The models.dev merge happens at read time, not at fetch time. `ModelCapabilities
 - No "model_usage" style table is involved here. Catalog persistence is DataStore JSON, not Room.
 - `ModelsDev.speakableProviders` is a curated list of hosts and IDs intended for the add-provider directory. This page does not cover the directory UI beyond that filter.
 
-Sources: [app/src/main/java/com/androidharness/app/llm/ModelCatalog.kt](../app/src/main/java/com/androidharness/app/llm/ModelCatalog.kt)#L20-L222), [app/src/main/java/com/androidharness/app/llm/ModelCapabilities.kt](../app/src/main/java/com/androidharness/app/llm/ModelCapabilities.kt)#L3-L38), [app/src/main/java/com/androidharness/app/llm/ModelReasoning.kt](../app/src/main/java/com/androidharness/app/llm/ModelReasoning.kt)#L3-L18), [app/src/main/java/com/androidharness/app/llm/ModelsDev.kt](../app/src/main/java/com/androidharness/app/llm/ModelsDev.kt)#L141-L249), [app/src/main/java/com/androidharness/app/data/ModelVisibility.kt](../app/src/main/java/com/androidharness/app/data/ModelVisibility.kt)#L10-L50), [app/src/main/java/com/androidharness/app/data/ModelShortcuts.kt](../app/src/main/java/com/androidharness/app/data/ModelShortcuts.kt)#L10-L49), [app/src/main/java/com/androidharness/app/llm/ProviderModelSearch.kt](../app/src/main/java/com/androidharness/app/llm/ProviderModelSearch.kt)#L10-L45), [app/src/main/java/com/androidharness/app/ui/settings/ModelVisibilitySheet.kt](../app/src/main/java/com/androidharness/app/ui/settings/ModelVisibilitySheet.kt)#L37-L139), [app/src/main/java/com/androidharness/app/data/ProviderRepository.kt](../app/src/main/java/com/androidharness/app/data/ProviderRepository.kt)#L73-L154), [app/src/main/java/com/androidharness/app/ui/chat/components/ModelPickerSheet.kt](../app/src/main/java/com/androidharness/app/ui/chat/components/ModelPickerSheet.kt)#L140-L170)
+Sources: [app/src/main/java/com/aether/app/llm/ModelCatalog.kt](../app/src/main/java/com/aether/app/llm/ModelCatalog.kt)#L20-L222), [app/src/main/java/com/aether/app/llm/ModelCapabilities.kt](../app/src/main/java/com/aether/app/llm/ModelCapabilities.kt)#L3-L38), [app/src/main/java/com/aether/app/llm/ModelReasoning.kt](../app/src/main/java/com/aether/app/llm/ModelReasoning.kt)#L3-L18), [app/src/main/java/com/aether/app/llm/ModelsDev.kt](../app/src/main/java/com/aether/app/llm/ModelsDev.kt)#L141-L249), [app/src/main/java/com/aether/app/data/ModelVisibility.kt](../app/src/main/java/com/aether/app/data/ModelVisibility.kt)#L10-L50), [app/src/main/java/com/aether/app/data/ModelShortcuts.kt](../app/src/main/java/com/aether/app/data/ModelShortcuts.kt)#L10-L49), [app/src/main/java/com/aether/app/llm/ProviderModelSearch.kt](../app/src/main/java/com/aether/app/llm/ProviderModelSearch.kt)#L10-L45), [app/src/main/java/com/aether/app/ui/settings/ModelVisibilitySheet.kt](../app/src/main/java/com/aether/app/ui/settings/ModelVisibilitySheet.kt)#L37-L139), [app/src/main/java/com/aether/app/data/ProviderRepository.kt](../app/src/main/java/com/aether/app/data/ProviderRepository.kt)#L73-L154), [app/src/main/java/com/aether/app/ui/chat/components/ModelPickerSheet.kt](../app/src/main/java/com/aether/app/ui/chat/components/ModelPickerSheet.kt)#L140-L170)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/llm/ModelCatalog.kt`
-- `app/src/main/java/com/androidharness/app/llm/ModelCapabilities.kt`
-- `app/src/main/java/com/androidharness/app/llm/ModelReasoning.kt`
-- `app/src/main/java/com/androidharness/app/llm/ModelsDev.kt`
-- `app/src/main/java/com/androidharness/app/data/ModelVisibility.kt`
-- `app/src/main/java/com/androidharness/app/data/ModelShortcuts.kt`
-- `app/src/main/java/com/androidharness/app/llm/ProviderModelSearch.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/ModelVisibilitySheet.kt`
-- `app/src/main/java/com/androidharness/app/data/ProviderRepository.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/ModelPickerSheet.kt`
-- `app/src/main/java/com/androidharness/app/ui/common/ModelReasoningIcon.kt`
+- `app/src/main/java/com/aether/app/llm/ModelCatalog.kt`
+- `app/src/main/java/com/aether/app/llm/ModelCapabilities.kt`
+- `app/src/main/java/com/aether/app/llm/ModelReasoning.kt`
+- `app/src/main/java/com/aether/app/llm/ModelsDev.kt`
+- `app/src/main/java/com/aether/app/data/ModelVisibility.kt`
+- `app/src/main/java/com/aether/app/data/ModelShortcuts.kt`
+- `app/src/main/java/com/aether/app/llm/ProviderModelSearch.kt`
+- `app/src/main/java/com/aether/app/ui/settings/ModelVisibilitySheet.kt`
+- `app/src/main/java/com/aether/app/data/ProviderRepository.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/ModelPickerSheet.kt`
+- `app/src/main/java/com/aether/app/ui/common/ModelReasoningIcon.kt`

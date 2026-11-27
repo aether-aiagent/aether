@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">"ยินดีต้อนรับสู่ AndroidHarness"</string>
+    <string name="setup_welcome_title">"ยินดีต้อนรับสู่ Aether"</string>
     <string name="setup_welcome_body">"เอเจนต์เขียนโค้ดของคุณ บนโทรศัพท์ของคุณเอง มาตั้งค่ากัน"</string>
     <string name="setup_start_fresh">"เริ่มใหม่"</string>
-    <string name="setup_start_fresh_body">"ตั้งค่า AndroidHarness ใหม่ทั้งหมด"</string>
-    <string name="setup_restore">"กู้คืน AndroidHarness"</string>
+    <string name="setup_start_fresh_body">"ตั้งค่า Aether ใหม่ทั้งหมด"</string>
+    <string name="setup_restore">"กู้คืน Aether"</string>
     <string name="setup_restore_body">"นำแชทและการตั้งค่ากลับมาจากไฟล์สำรอง"</string>
 
     <string name="setup_storage_title">"อนุญาตการเข้าถึงไฟล์"</string>
-    <string name="setup_storage_body">"ไม่บังคับ หากไม่ให้ AndroidHarness จะทำงานในโฟลเดอร์ของตัวเองและถามเมื่องานต้องใช้ไฟล์ของคุณ"</string>
+    <string name="setup_storage_body">"ไม่บังคับ หากไม่ให้ Aether จะทำงานในโฟลเดอร์ของตัวเองและถามเมื่องานต้องใช้ไฟล์ของคุณ"</string>
     <string name="setup_storage_all_files">"การเข้าถึงไฟล์ทั้งหมด"</string>
     <string name="setup_storage_all_files_body">"อ่านและแก้ไขโฟลเดอร์ใดก็ได้ตามที่เทอร์มินัลและเครื่องมือไฟล์คาดหวัง เหมาะกับการเขียนโค้ดที่สุด"</string>
     <string name="setup_storage_legacy">"สิทธิ์พื้นที่เก็บข้อมูล"</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">"กู้คืนข้อมูลของคุณ"</string>
     <string name="setup_restore_subtitle">"เลือกไฟล์สำรองจากโทรศัพท์เครื่องเก่า กู้คืนหนึ่งไฟล์ ทั้งสอง หรือไม่เลย"</string>
     <string name="setup_restore_chats">"แชท"</string>
-    <string name="setup_restore_chats_body">"ไฟล์ .harnessbackup ที่มีแชท รูปภาพ สถิติการใช้งาน ความทรงจำ และตัวอย่าง"</string>
+    <string name="setup_restore_chats_body">"ไฟล์ .aetherbackup ที่มีแชท รูปภาพ สถิติการใช้งาน ความทรงจำ และตัวอย่าง"</string>
     <string name="setup_restore_settings">"การตั้งค่าและผู้ให้บริการ"</string>
     <string name="setup_restore_settings_body">"ไฟล์ .hbackup ที่ป้องกันด้วยรหัสผ่าน ซึ่งมีผู้ให้บริการ คีย์ API และการกำหนดค่า"</string>
     <string name="setup_restore_choose">"เลือกไฟล์"</string>

@@ -1,29 +1,29 @@
 # Workspace configuration on Android
 
-AndroidHarness reads optional `harness.json` (strict JSON) or `harness.jsonc` (comments and trailing commas) at the start of each **Code** run. Personal Chat agents remain managed by Chat settings. No config preserves existing behavior. Configuration discovery, validation, instructions, references and skills do not require Linux.
+Aether reads optional `aether.json` (strict JSON) or `aether.jsonc` (comments and trailing commas) at the start of each **Code** run. Personal Chat agents remain managed by Chat settings. No config preserves existing behavior. Configuration discovery, validation, instructions, references and skills do not require Linux.
 
-Open **Settings → Coding → Configuration**. Project edits the selected workspace; Global edits the app-private `config/harness.json[c]`. The screen previews active files and has a full-screen editor with validation, save-conflict detection and unsaved-change protection. Its project header identifies the selected workspace; this may differ from a particular chat's assigned workspace.
+Open **Settings → Coding → Configuration**. Project edits the selected workspace; Global edits the app-private `config/aether.json[c]`. The screen previews active files and has a full-screen editor with validation, save-conflict detection and unsaved-change protection. Its project header identifies the selected workspace; this may differ from a particular chat's assigned workspace.
 
 ## Discovery and merge
 
 Layers, from lowest to highest priority:
 
 1. Enabled global plugins installed through the plugin manager.
-2. App-private `config/harness.json` or `config/harness.jsonc`.
+2. App-private `config/aether.json` or `config/aether.jsonc`.
 3. Enabled plugins installed for the primary Code workspace.
-4. The primary Code workspace's `harness.json` or `harness.jsonc`.
-5. `HARNESS_CONFIG`, a path relative to the primary workspace (also accepts connected folders and app home).
-6. `HARNESS_CONFIG_CONTENT`, inline JSONC relative to the primary workspace.
+4. The primary Code workspace's `aether.json` or `aether.jsonc`.
+5. `AETHER_CONFIG`, a path relative to the primary workspace (also accepts connected folders and app home).
+6. `AETHER_CONFIG_CONTENT`, inline JSONC relative to the primary workspace.
 
 Set these variables in the Global tab's Variables and secrets section, or in the process environment used to launch the Android app. Variables exported in a separate Termux/Linux shell do not automatically reach an already-running Android application.
 
 Objects merge recursively, arrays concatenate, scalars replace and `null` clears an inherited value. A later array after `null` starts a new list. Every layer must be syntactically valid and have valid field types, even when a higher layer overrides it. The effective `default_agent` is validated after merging. Unknown fields are errors. If both extensions exist, JSON wins with a visible notice; the JSONC file is not merged. A bad config blocks the affected new run; it does not close chats or block editing the file. A running turn and its nested tasks retain their captured configuration.
 
-The [JSON Schema](../harness.schema.json) can be used locally in an editor. The canonical URL in its `$id` becomes available when these repository changes are published; the app performs validation locally without downloading a schema.
+The [JSON Schema](../aether.schema.json) can be used locally in an editor. The canonical URL in its `$id` becomes available when these repository changes are published; the app performs validation locally without downloading a schema.
 
 ## Files and paths
 
-Paths stay relative to the document that declared each value after merging. `~/` means **AndroidHarness configuration home** (`<app-files>/config/home`), not Termux or the optional Linux environment. Connect extra folders from the Global tab and use `@shared/path`. Those aliases are stored on this phone and grant configuration reads only; they do not widen agent file-tool grants. Reconnect moved or revoked Android document folders. Absolute paths and `..` traversal are refused. Symlinks cannot leave a real filesystem's granted root.
+Paths stay relative to the document that declared each value after merging. `~/` means **Aether configuration home** (`<app-files>/config/home`), not Termux or the optional Linux environment. Connect extra folders from the Global tab and use `@shared/path`. Those aliases are stored on this phone and grant configuration reads only; they do not widen agent file-tool grants. Reconnect moved or revoked Android document folders. Absolute paths and `..` traversal are refused. Symlinks cannot leave a real filesystem's granted root.
 
 Glob rules: `*` matches within one directory, `**` can cross directories, `**/` can match zero directories, and `?` matches one character. Matching is case-sensitive and results are sorted. Scans skip `.git`, `node_modules`, `build` and `.gradle`. Limits are explicit: 256 KiB per config, 2 MiB of configuration dependencies, 4096 scanned entries per glob, 24 directory levels and 64,000 instruction characters. Narrow the glob or move large background documents to references when a limit is reached.
 
@@ -40,13 +40,13 @@ Glob rules: `*` matches within one directory, `**` can cross directories, `**/` 
 }
 ```
 
-Both root `AGENTS.md` and `HARNESS.md` load automatically with a config, without duplication. Explicit `!AGENTS.md` and `!HARNESS.md` exclude them. Without a config, the existing AGENTS-first fallback is unchanged. Reference contents are not injected; `reference_read(name)` opens their numbered catalog entries. Add `"glob": true` for reference path globs.
+Both root `AGENTS.md` and `AETHER.md` load automatically with a config, without duplication. Explicit `!AGENTS.md` and `!AETHER.md` exclude them. Without a config, the existing AGENTS-first fallback is unchanged. Reference contents are not injected; `reference_read(name)` opens their numbered catalog entries. Add `"glob": true` for reference path globs.
 
-Skill paths supplement bundled and user skills. Configured bundles and conventional `.harness/skills` are captured for the run, including supporting files. Conventional project skills win over additional paths; additional paths use declaration order, later wins. Project > user > bundled remains the source priority. Nonempty `enable` filters the catalog, `disable` wins, and app-disabled skills stay disabled. Auto-loaded skills must exist and be enabled. Missing explicitly configured folders/files are errors; create them or remove their entries before running. Save checks the edited document’s structure, while Validate checks all merged layers, references and auto-loaded skills. A valid document can be saved while another layer is broken, so the files can be repaired independently.
+Skill paths supplement bundled and user skills. Configured bundles and conventional `.aether/skills` are captured for the run, including supporting files. Conventional project skills win over additional paths; additional paths use declaration order, later wins. Project > user > bundled remains the source priority. Nonempty `enable` filters the catalog, `disable` wins, and app-disabled skills stay disabled. Auto-loaded skills must exist and be enabled. Missing explicitly configured folders/files are errors; create them or remove their entries before running. Save checks the edited document’s structure, while Validate checks all merged layers, references and auto-loaded skills. A valid document can be saved while another layer is broken, so the files can be repaired independently.
 
 ## MCP and secrets
 
-Existing Settings servers and `.harness/mcp.json` remain supported. `harness.json` entries override same-named legacy project entries, including disabling them. Servers saved in the Settings UI retain authority on name conflicts. Project definitions require approval bound to the workspace, configuration, plugin scripts, legacy MCP file and resolved transport settings. Changing them invalidates approval. Refusing project tools still allows a run with normal tools and instructions.
+Existing Settings servers and `.aether/mcp.json` remain supported. `aether.json` entries override same-named legacy project entries, including disabling them. Servers saved in the Settings UI retain authority on name conflicts. Project definitions require approval bound to the workspace, configuration, plugin scripts, legacy MCP file and resolved transport settings. Changing them invalidates approval. Refusing project tools still allows a run with normal tools and instructions.
 
 ```jsonc
 {
@@ -81,7 +81,7 @@ Substitutions apply to MCP command/args/env/URL/headers only. `{env:NAME}` reads
   "default_agent": "reviewer",
   "permissions": { "edit": "ask", "delete": "ask", "network": "deny" },
   "memory": {
-    "file": ".harness/memory.md", "topics_dir": ".harness/memory",
+    "file": ".aether/memory.md", "topics_dir": ".aether/memory",
     "auto_recall": true, "max_core_lines": 120
   }
 }

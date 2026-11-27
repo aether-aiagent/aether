@@ -13,7 +13,7 @@ import { getCSSLanguageService, getSCSSLanguageService, getLESSLanguageService }
 import { getLanguageService as getJson } from 'vscode-json-languageservice';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
-const libraries = HARNESS_STANDARD_LIBRARIES;
+const libraries = AETHER_STANDARD_LIBRARIES;
 let files = Object.create(null), versions = Object.create(null), options = {}, service;
 const html = getHtml(), css = getCSSLanguageService(), scss = getSCSSLanguageService(), less = getLESSLanguageService();
 const json = getJson({ schemaRequestService: () => Promise.reject(new Error('Remote schemas are disabled.')) });

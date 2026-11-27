@@ -15,7 +15,7 @@
 - **`WebPreviewSheet.kt`**: source hub, WebView host, toolbar, console, activity trail and element selection dialog.
 - **`WebPreviewAvailability.kt`**: decides whether the chat shows the preview shortcut.
 - **`BrowserToolCard.kt`**: the text-only browser card with the Watch button.
-- **`WorkspacePathHandler.kt`**: serves workspace files under `https://harness.workspace/ws/...`.
+- **`WorkspacePathHandler.kt`**: serves workspace files under `https://aether.workspace/ws/...`.
 
 ## Architecture and Flow
 
@@ -45,16 +45,16 @@ flowchart TD
     C --> W[DisposableEffect -> adoptWebView]
 ```
 
-The two entry points share one controller and therefore one page. When the user taps Watch, `ChatScreen.watchBrowser` sets `webPreviewUrl` from the tool's target or from `browser.getActiveUrl()` and opens the sheet (`ui/chat/ChatScreen.kt:309`). The sheet binds its WebView with `browserController.bindActiveWebView(this)`, so agent actions now run against the visible view. On dispose it calls `adoptWebView`, which keeps the page, scroll position and back/forward list alive in a headless view instead of destroying them (`app/src/main/java/com/androidharness/app/browser/BrowserController.kt:257`). A blank or uninitialized view is destroyed rather than adopted.
+The two entry points share one controller and therefore one page. When the user taps Watch, `ChatScreen.watchBrowser` sets `webPreviewUrl` from the tool's target or from `browser.getActiveUrl()` and opens the sheet (`ui/chat/ChatScreen.kt:309`). The sheet binds its WebView with `browserController.bindActiveWebView(this)`, so agent actions now run against the visible view. On dispose it calls `adoptWebView`, which keeps the page, scroll position and back/forward list alive in a headless view instead of destroying them (`app/src/main/java/com/aether/app/browser/BrowserController.kt:257`). A blank or uninitialized view is destroyed rather than adopted.
 
 Every action captures a baseline before it runs and waits for a real document afterward. `PageLoadTracker` increments a generation on `onPageStarted`, marks the finished generation only while a load is in flight, and records errors and downloads. `awaitNavigation` first waits for the generation to move or the in-page document to change, then waits for the new document to report complete. When the WebView's client is not the controller's, `readDocumentProbe` asks the page for `location.href` and `readyState`, because `WebView.url` becomes provisional as soon as a navigation starts (`browser/PageLoadTracker.kt:143`). This is what stops a slow page from being reported as loaded with the previous document's URL and DOM.
 
-Workspace HTML is served through `WebViewAssetLoader` on `https://harness.workspace`. `prepareWorkspacePreview` normalizes the relative path and records it as `baseUrlPath`; `interceptWorkspaceRequest` routes the whole host through `WorkspacePathHandler`, so relative links, forms, `fetch('/...')` and assets resolve like a real site without opening a socket (`browser/BrowserController.kt:225`). Both the headless and visible clients call the same interception, which is why agent and user see the same page.
+Workspace HTML is served through `WebViewAssetLoader` on `https://aether.workspace`. `prepareWorkspacePreview` normalizes the relative path and records it as `baseUrlPath`; `interceptWorkspaceRequest` routes the whole host through `WorkspacePathHandler`, so relative links, forms, `fetch('/...')` and assets resolve like a real site without opening a socket (`browser/BrowserController.kt:225`). Both the headless and visible clients call the same interception, which is why agent and user see the same page.
 
 ## Invocation Chain
 
 1. `ToolRegistry.default` adds the browser tools only when `browserController` is non-null (`tools/Tool.kt:181` to `197`).
-2. `HarnessApp` creates one `BrowserController(appContext, images)` and passes it to the registry as `browserController` (`HarnessApp.kt:256`).
+2. `AetherApp` creates one `BrowserController(appContext, images)` and passes it to the registry as `browserController` (`AetherApp.kt:256`).
 3. `BrowserNavigateTool.execute` calls `controller.navigate(url, ctx.workspace)` and renders the returned state (`tools/BrowserTools.kt:89`).
 4. `navigate` tracks the action, normalizes local targets, reads the committed URL before the load, calls `loadUrl`, waits for navigation, rejects a download or a navigation that never started, then calls `extractState` (`browser/BrowserController.kt:669`).
 5. `browser_click`, `browser_type` and `browser_scroll` call `click`, `type` and `scroll`, each of which tracks the action and returns a fresh `BrowserState` (`browser/BrowserController.kt:767`, `:799`, `:852`).
@@ -76,7 +76,7 @@ Workspace HTML is served through `WebViewAssetLoader` on `https://harness.worksp
 - **`PreviewSelection`**: `selector`, `html` (4000 chars), `styles` (3000 chars), with `prompt(url, request, errors, screenshot)` and `script(x, y)`.
 - **`BrowserToolActivity`**: `target`, `site`, `action`, `status`. Derived from the transcript, not from live browser state.
 
-Console logs, the action trail and the DOM state are in memory only. Screenshots are written to `.harness/screenshots/yyyyMMdd_HHmmss.jpg` in the active workspace and copied into `ImageStore` for chat rendering, so they survive process death. The adopted WebView keeps history across sheet close but not across process death. The element selection prompt includes console errors from the sheet's local buffer, capped at five.
+Console logs, the action trail and the DOM state are in memory only. Screenshots are written to `.aether/screenshots/yyyyMMdd_HHmmss.jpg` in the active workspace and copied into `ImageStore` for chat rendering, so they survive process death. The adopted WebView keeps history across sheet close but not across process death. The element selection prompt includes console errors from the sheet's local buffer, capped at five.
 
 ## Boundary Conditions
 
@@ -89,7 +89,7 @@ Console logs, the action trail and the DOM state are in memory only. Screenshots
 - JavaScript dialogs are auto-handled and reported as browser notices: `alert` confirms, `confirm` returns false, `prompt` returns null, `beforeunload` confirms. Popups are blocked and reported, so a target that opens a new window must be loaded in place (`browser/BrowserController.kt:118` to `143`).
 - `browser_screenshot` requires an attached, visible, focused preview. A hidden or detached surface throws rather than returning a blank image. `captureReadPage` for `browser_read` additionally samples a 64 by 64 downscale and rejects a uniform frame.
 - Full-page capture is capped at 8192 px of height and 8 megapixels, and reports `truncated` when the page exceeds it.
-- The visible preview allows mixed content (`MIXED_CONTENT_ALWAYS_ALLOW`) and enables zoom, while file and content access are disabled. The headless view also disables file and content access and appends `AndroidHarnessAgent/1.0` to the user agent.
+- The visible preview allows mixed content (`MIXED_CONTENT_ALWAYS_ALLOW`) and enables zoom, while file and content access are disabled. The headless view also disables file and content access and appends `AetherAgent/1.0` to the user agent.
 - Console messages are deduplicated when the same level, text, source and line arrive within 150 ms, because both clients can dispatch one message. The buffer drops the oldest entry past 200.
 - The sheet keeps its own console list, capped at 200, separate from the controller's buffer. The error badge reads the sheet list, while `browser_get_logs` reads the controller list.
 - The agent stop button is enabled only while `agentRunning` is true and calls `viewModel.stop()`; it does not close the sheet.
@@ -110,21 +110,21 @@ Console logs, the action trail and the DOM state are in memory only. Screenshots
 - History, console logs and the action trail do not survive process death. Only screenshots and workspace files persist.
 - `browser_screenshot` cannot capture a headless page. It intentionally fails unless the preview is open and visible, which means an agent cannot take a screenshot without user-visible UI.
 
-Sources: [app/src/main/java/com/androidharness/app/browser/BrowserController.kt](../app/src/main/java/com/androidharness/app/browser/BrowserController.kt)#L175-L360), [app/src/main/java/com/androidharness/app/tools/BrowserTools.kt](../app/src/main/java/com/androidharness/app/tools/BrowserTools.kt)#L241-L378), [app/src/main/java/com/androidharness/app/ui/chat/components/WebPreviewSheet.kt](../app/src/main/java/com/androidharness/app/ui/chat/components/WebPreviewSheet.kt)#L178-L309), [app/src/main/java/com/androidharness/app/browser/HistoryStep.kt](../app/src/main/java/com/androidharness/app/browser/HistoryStep.kt)#L44-L108)
+Sources: [app/src/main/java/com/aether/app/browser/BrowserController.kt](../app/src/main/java/com/aether/app/browser/BrowserController.kt)#L175-L360), [app/src/main/java/com/aether/app/tools/BrowserTools.kt](../app/src/main/java/com/aether/app/tools/BrowserTools.kt)#L241-L378), [app/src/main/java/com/aether/app/ui/chat/components/WebPreviewSheet.kt](../app/src/main/java/com/aether/app/ui/chat/components/WebPreviewSheet.kt)#L178-L309), [app/src/main/java/com/aether/app/browser/HistoryStep.kt](../app/src/main/java/com/aether/app/browser/HistoryStep.kt)#L44-L108)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/BrowserTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/BrowserOpenExternalTool.kt`
-- `app/src/main/java/com/androidharness/app/browser/BrowserController.kt`
-- `app/src/main/java/com/androidharness/app/browser/PageLoadTracker.kt`
-- `app/src/main/java/com/androidharness/app/browser/HistoryStep.kt`
-- `app/src/main/java/com/androidharness/app/browser/PreviewSelection.kt`
-- `app/src/main/java/com/androidharness/app/browser/BrowserToolActivity.kt`
-- `app/src/main/java/com/androidharness/app/browser/WorkspacePathHandler.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/WebPreviewSheet.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/components/BrowserToolCard.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/WebPreviewAvailability.kt`
-- `app/src/main/java/com/androidharness/app/ui/chat/ChatScreen.kt`
-- `app/src/main/java/com/androidharness/app/core/LocalPortProbe.kt`
-- `app/src/main/java/com/androidharness/app/tools/Tool.kt`
+- `app/src/main/java/com/aether/app/tools/BrowserTools.kt`
+- `app/src/main/java/com/aether/app/tools/BrowserOpenExternalTool.kt`
+- `app/src/main/java/com/aether/app/browser/BrowserController.kt`
+- `app/src/main/java/com/aether/app/browser/PageLoadTracker.kt`
+- `app/src/main/java/com/aether/app/browser/HistoryStep.kt`
+- `app/src/main/java/com/aether/app/browser/PreviewSelection.kt`
+- `app/src/main/java/com/aether/app/browser/BrowserToolActivity.kt`
+- `app/src/main/java/com/aether/app/browser/WorkspacePathHandler.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/WebPreviewSheet.kt`
+- `app/src/main/java/com/aether/app/ui/chat/components/BrowserToolCard.kt`
+- `app/src/main/java/com/aether/app/ui/chat/WebPreviewAvailability.kt`
+- `app/src/main/java/com/aether/app/ui/chat/ChatScreen.kt`
+- `app/src/main/java/com/aether/app/core/LocalPortProbe.kt`
+- `app/src/main/java/com/aether/app/tools/Tool.kt`

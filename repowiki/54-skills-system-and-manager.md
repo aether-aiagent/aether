@@ -30,13 +30,13 @@ A skill is a folder containing `SKILL.md` plus optional support folders named `r
 
 ## Loading order and layer precedence
 
-`SkillStore` receives `bundled`, `userDir`, a `projectDir` supplier, a `disabled` supplier, optional extra bundled skills, explicit configured skills and an optional `HarnessConfig`. The app wires it as:
+`SkillStore` receives `bundled`, `userDir`, a `projectDir` supplier, a `disabled` supplier, optional extra bundled skills, explicit configured skills and an optional `AetherConfig`. The app wires it as:
 
 - bundled: `SkillAssets.load(appContext.assets)`
 - user: `filesDir/skills`
-- project: the `projectSkillsDir` supplier, normally `.harness/skills` of the active workspace
+- project: the `projectSkillsDir` supplier, normally `.aether/skills` of the active workspace
 - optional bundled: Caveman skills when that mode is installed
-- configured: `harness.json` skills collected by `HarnessConfigLoader`
+- configured: `aether.json` skills collected by `AetherConfigLoader`
 
 `list()` scans in this order (`SkillStore.kt:42-58`): bundled plus optional bundled, then the user folder, then the project folder, then `configuredSkills`. Later scans overwrite earlier records with the same name in the `byName` map, which produces the visible catalog order. `findAll` plus `pickWinner` implement the authoritative lookup precedence (`SkillStore.kt:192-222`):
 
@@ -47,7 +47,7 @@ A skill is a folder containing `SKILL.md` plus optional support folders named `r
 
 Because `list()` uses map overwrite and `view()` uses `pickWinner`, a duplicate name inside one layer shows the last-scanned entry in the list while `view()` refuses it as ambiguous. Frozen stores use `pickWinner` for the list too, so ambiguous names disappear from a frozen catalog.
 
-`forProject(directory)` creates a store with a fixed project folder, used when one chat must keep its catalog independent of the currently selected workspace. `configured(config)` replaces the project folder with null and adds the config's skill map, but only when the config is present. `forWorkspace(workspace)` uses the workspace's shell root `.harness/skills`; if the store already has a configuration it returns itself. `freeze()` snapshots `list().flatMap { findAll(it.name) }` so a run's catalog does not change midway through a turn. `AgentEngine` calls `skills.forWorkspace(workspace).configured(projectConfig).freeze()` before a run (`AgentEngine.kt:305-308`).
+`forProject(directory)` creates a store with a fixed project folder, used when one chat must keep its catalog independent of the currently selected workspace. `configured(config)` replaces the project folder with null and adds the config's skill map, but only when the config is present. `forWorkspace(workspace)` uses the workspace's shell root `.aether/skills`; if the store already has a configuration it returns itself. `freeze()` snapshots `list().flatMap { findAll(it.name) }` so a run's catalog does not change midway through a turn. `AgentEngine` calls `skills.forWorkspace(workspace).configured(projectConfig).freeze()` before a run (`AgentEngine.kt:305-308`).
 
 ## Architecture and Flow
 
@@ -55,8 +55,8 @@ Because `list()` uses map overwrite and `view()` uses `pickWinner`, a duplicate 
 flowchart TD
     A[assets/skills] --> B[SkillAssets.load]
     C[filesDir/skills] --> D[SkillStore.list and findAll]
-    E[workspace .harness/skills] --> D
-    F[harness.json skills.paths] --> D
+    E[workspace .aether/skills] --> D
+    F[aether.json skills.paths] --> D
     B --> D
     D --> G{enabled?}
     G -->|disabled set or config glob| H[excluded]
@@ -78,7 +78,7 @@ Slash invocation uses the same store. `SlashCommands.resolve` receives `chatSkil
 
 ## Invocation Chain
 
-1. `HarnessApp` constructs `SkillStore` once with the bundled map, `filesDir/skills`, the project supplier and the disabled-set supplier (`HarnessApp.kt:247-256`).
+1. `AetherApp` constructs `SkillStore` once with the bundled map, `filesDir/skills`, the project supplier and the disabled-set supplier (`AetherApp.kt:247-256`).
 2. A run freezes and configures the store (`AgentEngine.kt:305-308`), and the resulting `SkillStore` travels in `ConfigRunContext` (`ConfigRunContext.kt:10`).
 3. `ToolRegistry.default` registers `SkillViewTool`, `SkillsListTool` and `SkillManageTool` with that base store (`Tool.kt:147-149`).
 4. Each tool resolves the run's store with `ctx.skills ?: store.forWorkspace(ctx.workspace)` (`SkillTools.kt:30,71`), so a configured run uses the frozen catalog.
@@ -102,8 +102,8 @@ Persistence:
 
 - User skills are written to `filesDir/skills/<parsed name>/SKILL.md`; the folder name follows the parsed frontmatter name, not necessarily the edit target (`SkillStore.kt:147-153`).
 - Bundled skills are read-only assets. They are never rewritten; edits and patches produce a user copy.
-- Project skills live in the workspace and survive independently of the app. They can also come from `harness.json` `skills.paths`, in which case `configuredSkills` supplies them in memory.
-- Enable state lives in the settings preference `disabled_skills`. Config-level `skills.enable` and `skills.disable` globs are evaluated by `HarnessConfig.skillEnabled` (`HarnessConfig.kt:46-48`) and take effect in addition to the preference.
+- Project skills live in the workspace and survive independently of the app. They can also come from `aether.json` `skills.paths`, in which case `configuredSkills` supplies them in memory.
+- Enable state lives in the settings preference `disabled_skills`. Config-level `skills.enable` and `skills.disable` globs are evaluated by `AetherConfig.skillEnabled` (`AetherConfig.kt:46-48`) and take effect in addition to the preference.
 - `freeze()` keeps a per-run snapshot in memory only; the next run re-reads disk.
 
 ## Enable, disable, deletion and the manager UI
@@ -134,8 +134,8 @@ Persistence:
 
 - **Bundled skills**: add `app/src/main/assets/skills/<folder>/SKILL.md` plus optional `references`, `templates`, `scripts` or `assets` subfolders. `SkillAssets.load` discovers them by directory name and parses the frontmatter.
 - **Support folders**: extend `SkillStore.SUPPORT_DIRS` (`SkillStore.kt:331`). Both the asset loader and directory scanner use the same set.
-- **Config-driven skills**: `harness.json` `skills.paths`, `skills.enable`, `skills.disable` and `skills.auto_load` are read by `HarnessConfigLoader` and enforced by `HarnessConfig.skillEnabled`.
-- **Optional skill packs**: pass a map through `optionalBundled`, as the Caveman mode does (`HarnessApp.kt:252-255`).
+- **Config-driven skills**: `aether.json` `skills.paths`, `skills.enable`, `skills.disable` and `skills.auto_load` are read by `AetherConfigLoader` and enforced by `AetherConfig.skillEnabled`.
+- **Optional skill packs**: pass a map through `optionalBundled`, as the Caveman mode does (`AetherApp.kt:252-255`).
 - **New tools**: `SkillTools.kt` is a plain set of `Tool` implementations; any new skill operation should use `ctx.skills` when present so frozen runs stay consistent.
 - **Template for new skills**: `skillTemplate()` in `SkillTools.kt:153-177` produces the frontmatter and section skeleton used by the New skill button.
 
@@ -144,17 +144,17 @@ Persistence:
 - `SkillsScreen` can create and edit only USER skills. PROJECT skills are listed and can be enabled, disabled or previewed, but the UI offers no editor and no workspace-scoped create action; those edits must be made in the workspace files.
 - The manager does not export or import skills as files, so moving a skill between devices relies on the workspace or on copying `filesDir/skills`.
 
-Sources: [app/src/main/java/com/androidharness/app/skills/SkillStore.kt](../app/src/main/java/com/androidharness/app/skills/SkillStore.kt)#L9-L370), [app/src/main/java/com/androidharness/app/skills/SkillParser.kt](../app/src/main/java/com/androidharness/app/skills/SkillParser.kt)#L3-L142), [app/src/main/java/com/androidharness/app/skills/Skill.kt](../app/src/main/java/com/androidharness/app/skills/Skill.kt)#L3-L50), [app/src/main/java/com/androidharness/app/skills/SkillAssets.kt](../app/src/main/java/com/androidharness/app/skills/SkillAssets.kt)#L5-L39), [app/src/main/java/com/androidharness/app/tools/SkillTools.kt](../app/src/main/java/com/androidharness/app/tools/SkillTools.kt)#L8-L177), [app/src/main/java/com/androidharness/app/ui/settings/SkillsScreen.kt](../app/src/main/java/com/androidharness/app/ui/settings/SkillsScreen.kt)#L78-L605), [app/src/main/java/com/androidharness/app/agent/AgentEngine.kt](../app/src/main/java/com/androidharness/app/agent/AgentEngine.kt)#L2274-L2294)
+Sources: [app/src/main/java/com/aether/app/skills/SkillStore.kt](../app/src/main/java/com/aether/app/skills/SkillStore.kt)#L9-L370), [app/src/main/java/com/aether/app/skills/SkillParser.kt](../app/src/main/java/com/aether/app/skills/SkillParser.kt)#L3-L142), [app/src/main/java/com/aether/app/skills/Skill.kt](../app/src/main/java/com/aether/app/skills/Skill.kt)#L3-L50), [app/src/main/java/com/aether/app/skills/SkillAssets.kt](../app/src/main/java/com/aether/app/skills/SkillAssets.kt)#L5-L39), [app/src/main/java/com/aether/app/tools/SkillTools.kt](../app/src/main/java/com/aether/app/tools/SkillTools.kt)#L8-L177), [app/src/main/java/com/aether/app/ui/settings/SkillsScreen.kt](../app/src/main/java/com/aether/app/ui/settings/SkillsScreen.kt)#L78-L605), [app/src/main/java/com/aether/app/agent/AgentEngine.kt](../app/src/main/java/com/aether/app/agent/AgentEngine.kt)#L2274-L2294)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/skills/Skill.kt`
-- `app/src/main/java/com/androidharness/app/skills/SkillParser.kt`
-- `app/src/main/java/com/androidharness/app/skills/SkillStore.kt`
-- `app/src/main/java/com/androidharness/app/skills/SkillAssets.kt`
-- `app/src/main/java/com/androidharness/app/tools/SkillTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/Tool.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/SkillsScreen.kt`
-- `app/src/main/java/com/androidharness/app/data/SettingsRepository.kt`
-- `app/src/main/java/com/androidharness/app/HarnessApp.kt`
+- `app/src/main/java/com/aether/app/skills/Skill.kt`
+- `app/src/main/java/com/aether/app/skills/SkillParser.kt`
+- `app/src/main/java/com/aether/app/skills/SkillStore.kt`
+- `app/src/main/java/com/aether/app/skills/SkillAssets.kt`
+- `app/src/main/java/com/aether/app/tools/SkillTools.kt`
+- `app/src/main/java/com/aether/app/tools/Tool.kt`
+- `app/src/main/java/com/aether/app/ui/settings/SkillsScreen.kt`
+- `app/src/main/java/com/aether/app/data/SettingsRepository.kt`
+- `app/src/main/java/com/aether/app/AetherApp.kt`
 - `app/src/main/assets/skills/plan/SKILL.md`

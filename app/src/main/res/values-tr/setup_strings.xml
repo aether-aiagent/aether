@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setup_welcome_title">"AndroidHarness\'ye hoş geldiniz"</string>
+    <string name="setup_welcome_title">"Aether\'ye hoş geldiniz"</string>
     <string name="setup_welcome_body">"Kodlama ajanınız, doğrudan telefonunuzda. Hadi kuralım."</string>
     <string name="setup_start_fresh">"Sıfırdan başla"</string>
-    <string name="setup_start_fresh_body">"Yepyeni bir AndroidHarness kur"</string>
-    <string name="setup_restore">"AndroidHarness\'i geri yükle"</string>
+    <string name="setup_start_fresh_body">"Yepyeni bir Aether kur"</string>
+    <string name="setup_restore">"Aether\'i geri yükle"</string>
     <string name="setup_restore_body">"Sohbetlerini ve ayarlarını bir yedek dosyasından geri getir"</string>
 
     <string name="setup_storage_title">"Dosya erişimine izin ver"</string>
-    <string name="setup_storage_body">"İsteğe bağlı. Bu olmadan AndroidHarness kendi klasöründe çalışır ve bir görev dosyalarınıza ihtiyaç duyduğunda sorar."</string>
+    <string name="setup_storage_body">"İsteğe bağlı. Bu olmadan Aether kendi klasöründe çalışır ve bir görev dosyalarınıza ihtiyaç duyduğunda sorar."</string>
     <string name="setup_storage_all_files">"Tüm dosyalara erişim"</string>
     <string name="setup_storage_all_files_body">"Terminalin ve dosya araçlarının beklediği gibi her klasörü okuyup düzenleyin. Kodlama için en iyisi."</string>
     <string name="setup_storage_legacy">"Depolama izni"</string>
@@ -25,7 +25,7 @@
     <string name="setup_restore_title">"Verilerini geri yükle"</string>
     <string name="setup_restore_subtitle">"Eski telefonundan yedek dosyalarını seç. Birini, ikisini ya da hiçbirini geri yükle."</string>
     <string name="setup_restore_chats">"Sohbetler"</string>
-    <string name="setup_restore_chats_body">"Sohbetlerin, görsellerin, kullanım istatistiklerin, anıların ve parçacıkların olduğu bir .harnessbackup dosyası"</string>
+    <string name="setup_restore_chats_body">"Sohbetlerin, görsellerin, kullanım istatistiklerin, anıların ve parçacıkların olduğu bir .aetherbackup dosyası"</string>
     <string name="setup_restore_settings">"Ayarlar ve sağlayıcılar"</string>
     <string name="setup_restore_settings_body">"Sağlayıcıların, API anahtarların ve tercihlerin olan parola korumalı bir .hbackup dosyası"</string>
     <string name="setup_restore_choose">"Dosya seç"</string>

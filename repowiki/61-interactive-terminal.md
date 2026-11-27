@@ -6,7 +6,7 @@ Two backends share the screen. `InteractiveTerminalManager` starts one `Terminal
 
 ## Module Responsibilities
 
-- **`Pty`**: Owns the master file descriptor and child pid. Exposes `write`, `resize`, `waitFor`, `foregroundGroup`, `signal` and `close`, with native methods loaded from `libharness_pty` (`Pty.kt:11-79`).
+- **`Pty`**: Owns the master file descriptor and child pid. Exposes `write`, `resize`, `waitFor`, `foregroundGroup`, `signal` and `close`, with native methods loaded from `libaether_pty` (`Pty.kt:11-79`).
 - **`TerminalSession`**: A running program plus its screen. Holds the emulator, an exit-code flow, a title flow, a working-directory flow, a reader thread and a wait thread (`TerminalSession.kt:15-106`).
 - **`TerminalEmulator`**: The xterm screen model: grid, scrollback, cursor, modes, parser and replies (`TerminalEmulator.kt:61-908`).
 - **`TerminalRow` and `CellStyle`**: One screen row as parallel `IntArray` code points and `LongArray` packed styles (`TerminalEmulator.kt:4-48`; `CellStyle.kt:11-38`).
@@ -50,13 +50,13 @@ The grid size is the trigger. The view measures cells, reports rows and columns,
 
 `InteractiveTerminalManager.start` returns an existing running session for the key, checks that storage maintenance is off, builds a `Launch`, chooses the cwd when it is a directory, and calls `Pty.start` with rows and columns (`InteractiveTerminalManager.kt:49-60`). It then calls `runManager.acquireKeepalive()` and registers an `onExit` callback that releases the keepalive.
 
-`launchSpec` copies `linuxEnv.processEnv()`, sets `TERM=xterm-256color`, `COLORTERM=truecolor` and `HARNESS_TERMINAL=interactive`, points `TERMINFO` at the Linux prefix when it exists, and creates `HOME` and `TMPDIR` (`InteractiveTerminalManager.kt:72-80`). With a Linux bash it calls `linuxEnv.ensureShims()`, writes the rc file, sets `SHELL`, and starts `bash --rcfile <rc> -i`, using the Linux linker as the executable when one is needed. Without a Linux environment it falls back to `/system/bin/sh -i`, resets `PATH` to the system directories and removes `LD_PRELOAD` and `LD_LIBRARY_PATH` (`InteractiveTerminalManager.kt:81-97`).
+`launchSpec` copies `linuxEnv.processEnv()`, sets `TERM=xterm-256color`, `COLORTERM=truecolor` and `AETHER_TERMINAL=interactive`, points `TERMINFO` at the Linux prefix when it exists, and creates `HOME` and `TMPDIR` (`InteractiveTerminalManager.kt:72-80`). With a Linux bash it calls `linuxEnv.ensureShims()`, writes the rc file, sets `SHELL`, and starts `bash --rcfile <rc> -i`, using the Linux linker as the executable when one is needed. Without a Linux environment it falls back to `/system/bin/sh -i`, resets `PATH` to the system directories and removes `LD_PRELOAD` and `LD_LIBRARY_PATH` (`InteractiveTerminalManager.kt:81-97`).
 
-`writeRcFile` writes `etc/harness-terminal.bashrc` under the Linux prefix. It sources the shims, sets history options, `checkwinsize`, a colored `PS1`, and an OSC 7 `PROMPT_COMMAND` that reports the working directory (`InteractiveTerminalManager.kt:99-119`).
+`writeRcFile` writes `etc/aether-terminal.bashrc` under the Linux prefix. It sources the shims, sets history options, `checkwinsize`, a colored `PS1`, and an OSC 7 `PROMPT_COMMAND` that reports the working directory (`InteractiveTerminalManager.kt:99-119`).
 
 `nativeStart` opens `/dev/ptmx`, calls `grantpt`, `unlockpt` and `ptsname_r`, enables `IUTF8`, disables `IXON` and `IXOFF` so Ctrl+S reaches programs, and sets the initial window size. It forks; the child unblocks signals, restores default handlers, calls `setsid`, opens the slave, sets it via `TIOCSCTTY`, duplicates it onto stdin, stdout and stderr, closes inherited descriptors, changes directory and calls `execve` (`pty.cpp:88-139`). A failed exec writes `failed to start shell` and exits 127. The parent stores the pid and returns the master fd (`pty.cpp:141-145`).
 
-`Pty.available` is false when `libharness_pty` cannot be loaded, which disables interactive mode for builds without the NDK (`Pty.kt:66-68`). The library is declared for every ABI in `CMakeLists.txt` (`app/src/main/cpp/CMakeLists.txt:12-15`).
+`Pty.available` is false when `libaether_pty` cannot be loaded, which disables interactive mode for builds without the NDK (`Pty.kt:66-68`). The library is declared for every ABI in `CMakeLists.txt` (`app/src/main/cpp/CMakeLists.txt:12-15`).
 
 ## Session Model
 
@@ -99,7 +99,7 @@ The pane menu holds the clipboard and font actions: Paste calls `session.paste`,
 
 ## App-Level Session Persistence
 
-`HarnessApp` constructs `interactiveTerminal` and `terminal` once for the process (`HarnessApp.kt:357-358`). The session map and PTY live on that object, so navigating away or rotating does not kill the shell, and `TerminalScreen`'s `DisposableEffect` does nothing on dispose (`TerminalScreen.kt:147-152`). Closing is explicit through Restart shell or `InteractiveTerminalManager.close`. Each session holds `RunManager`'s keepalive, wired to `AgentService.acquireKeepalive` and `releaseKeepalive` (`RunManager.kt:194-200`).
+`AetherApp` constructs `interactiveTerminal` and `terminal` once for the process (`AetherApp.kt:357-358`). The session map and PTY live on that object, so navigating away or rotating does not kill the shell, and `TerminalScreen`'s `DisposableEffect` does nothing on dispose (`TerminalScreen.kt:147-152`). Closing is explicit through Restart shell or `InteractiveTerminalManager.close`. Each session holds `RunManager`'s keepalive, wired to `AgentService.acquireKeepalive` and `releaseKeepalive` (`RunManager.kt:194-200`).
 
 State does not survive process death: sessions, scrollback, exit codes and title are memory only. `withClosedStorage` refuses while command mode is busy and asks `InteractiveTerminalManager.beginStorageMaintenance` so an interactive shell blocks cleanup too (`TerminalManager.kt:86-100`).
 
@@ -125,23 +125,23 @@ When interactive is off, the screen uses `TerminalManager`. `send` trims the com
 
 ## Known gaps
 
-- `app/src/main/java/com/androidharness/app/ui/chat/components/SidePaneTerminalPane.kt` does not exist at HEAD, and no `SidePane` terminal component is referenced from the chat UI. The Terminal is reached through `TerminalScreen` only.
+- `app/src/main/java/com/aether/app/ui/chat/components/SidePaneTerminalPane.kt` does not exist at HEAD, and no `SidePane` terminal component is referenced from the chat UI. The Terminal is reached through `TerminalScreen` only.
 - Interactive mode is intentionally unavailable for SSH, Shizuku, wireless ADB and root workspaces; those keep command mode, so programs that need a PTY cannot run through them (`TerminalScreen.kt:113-116`).
 
-Sources: [terminal/Pty.kt](../app/src/main/java/com/androidharness/app/terminal/Pty.kt)#L11-L79), [terminal/TerminalSession.kt](../app/src/main/java/com/androidharness/app/terminal/TerminalSession.kt)#L15-L106), [terminal/InteractiveTerminalManager.kt](../app/src/main/java/com/androidharness/app/terminal/InteractiveTerminalManager.kt)#L16-L122), [terminal/TerminalEmulator.kt](../app/src/main/java/com/androidharness/app/terminal/TerminalEmulator.kt)#L61-L908), [terminal/KeyEncoder.kt](../app/src/main/java/com/androidharness/app/terminal/KeyEncoder.kt)#L19-L101), [data/TerminalManager.kt](../app/src/main/java/com/androidharness/app/data/TerminalManager.kt)#L30-L457), [ui/terminal/TerminalScreen.kt](../app/src/main/java/com/androidharness/app/ui/terminal/TerminalScreen.kt)#L77-L391), [ui/terminal/InteractiveTerminalPane.kt](../app/src/main/java/com/androidharness/app/ui/terminal/InteractiveTerminalPane.kt)#L89-L460), [ui/terminal/TerminalCanvasView.kt](../app/src/main/java/com/androidharness/app/ui/terminal/TerminalCanvasView.kt)#L75-L583), [app/src/main/cpp/pty.cpp](../app/src/main/cpp/pty.cpp)#L88-L175)
+Sources: [terminal/Pty.kt](../app/src/main/java/com/aether/app/terminal/Pty.kt)#L11-L79), [terminal/TerminalSession.kt](../app/src/main/java/com/aether/app/terminal/TerminalSession.kt)#L15-L106), [terminal/InteractiveTerminalManager.kt](../app/src/main/java/com/aether/app/terminal/InteractiveTerminalManager.kt)#L16-L122), [terminal/TerminalEmulator.kt](../app/src/main/java/com/aether/app/terminal/TerminalEmulator.kt)#L61-L908), [terminal/KeyEncoder.kt](../app/src/main/java/com/aether/app/terminal/KeyEncoder.kt)#L19-L101), [data/TerminalManager.kt](../app/src/main/java/com/aether/app/data/TerminalManager.kt)#L30-L457), [ui/terminal/TerminalScreen.kt](../app/src/main/java/com/aether/app/ui/terminal/TerminalScreen.kt)#L77-L391), [ui/terminal/InteractiveTerminalPane.kt](../app/src/main/java/com/aether/app/ui/terminal/InteractiveTerminalPane.kt)#L89-L460), [ui/terminal/TerminalCanvasView.kt](../app/src/main/java/com/aether/app/ui/terminal/TerminalCanvasView.kt)#L75-L583), [app/src/main/cpp/pty.cpp](../app/src/main/cpp/pty.cpp)#L88-L175)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/terminal/Pty.kt`
-- `app/src/main/java/com/androidharness/app/terminal/TerminalSession.kt`
-- `app/src/main/java/com/androidharness/app/terminal/TerminalEmulator.kt`
-- `app/src/main/java/com/androidharness/app/terminal/CellStyle.kt`
-- `app/src/main/java/com/androidharness/app/terminal/WcWidth.kt`
-- `app/src/main/java/com/androidharness/app/terminal/KeyEncoder.kt`
-- `app/src/main/java/com/androidharness/app/terminal/InteractiveTerminalManager.kt`
-- `app/src/main/java/com/androidharness/app/data/TerminalManager.kt`
-- `app/src/main/java/com/androidharness/app/ui/terminal/TerminalScreen.kt`
-- `app/src/main/java/com/androidharness/app/ui/terminal/InteractiveTerminalPane.kt`
-- `app/src/main/java/com/androidharness/app/ui/terminal/TerminalCanvasView.kt`
+- `app/src/main/java/com/aether/app/terminal/Pty.kt`
+- `app/src/main/java/com/aether/app/terminal/TerminalSession.kt`
+- `app/src/main/java/com/aether/app/terminal/TerminalEmulator.kt`
+- `app/src/main/java/com/aether/app/terminal/CellStyle.kt`
+- `app/src/main/java/com/aether/app/terminal/WcWidth.kt`
+- `app/src/main/java/com/aether/app/terminal/KeyEncoder.kt`
+- `app/src/main/java/com/aether/app/terminal/InteractiveTerminalManager.kt`
+- `app/src/main/java/com/aether/app/data/TerminalManager.kt`
+- `app/src/main/java/com/aether/app/ui/terminal/TerminalScreen.kt`
+- `app/src/main/java/com/aether/app/ui/terminal/InteractiveTerminalPane.kt`
+- `app/src/main/java/com/aether/app/ui/terminal/TerminalCanvasView.kt`
 - `app/src/main/cpp/pty.cpp`
 - `app/src/main/cpp/CMakeLists.txt`

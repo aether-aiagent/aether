@@ -86,7 +86,7 @@ The JWKS URL comes from OIDC discovery at `https://auth.openai.com/.well-known/o
 
 ## Token Storage and Refresh
 
-The store is a `ChatGptStore` (`ChatGptProtocol.kt#L154`) serialized as one JSON record: `hostId`, `accounts`, and `welcomeSeen`. It is read and written through callbacks passed by the container. In `HarnessApp.kt#L114`, those callbacks are `KeyStoreManager.chatGptCredentials` and `putChatGptCredentials`, which use the key `chatgpt_accounts` in the `api_keys` EncryptedSharedPreferences file (`KeyStoreManager.kt#L14`). The file is wrapped by an Android Keystore AES256-GCM master key. `putChatGptCredentials` uses `commit()` and throws if the secure write fails.
+The store is a `ChatGptStore` (`ChatGptProtocol.kt#L154`) serialized as one JSON record: `hostId`, `accounts`, and `welcomeSeen`. It is read and written through callbacks passed by the container. In `AetherApp.kt#L114`, those callbacks are `KeyStoreManager.chatGptCredentials` and `putChatGptCredentials`, which use the key `chatgpt_accounts` in the `api_keys` EncryptedSharedPreferences file (`KeyStoreManager.kt#L14`). The file is wrapped by an Android Keystore AES256-GCM master key. `putChatGptCredentials` uses `commit()` and throws if the secure write fails.
 
 `save` writes the whole updated store before publishing it, so all rotating credentials move together.
 
@@ -117,17 +117,17 @@ Before publishing, the method rechecks that the registration is still connected 
 
 `selectAccount` (`ChatGptAccounts.kt#L149`) refreshes models without verified entries, requires the account to be connected, keeps the requested model when the account offers it, otherwise takes the first offered model, and returns a config with that model. `ConnectedAccountsSection` calls it and then `settings.setActiveSelection(config.id, config.model)`.
 
-`ProviderRepository.providers` (`ProviderRepository.kt#L42`) combines DataStore, local models, and `chatGpt.state`. It emits all connected accounts with non-empty model lists first, then the Harness provider, then saved API providers and local models. Saved entries whose id is a ChatGPT provider are filtered out, so a managed account cannot be duplicated or edited as a normal connection. `catalogs` inserts account models under each `chatgpt:` id and removes any stale catalog with that prefix. `apiKey` returns `"managed-oauth"` for a connected account and null otherwise.
+`ProviderRepository.providers` (`ProviderRepository.kt#L42`) combines DataStore, local models, and `chatGpt.state`. It emits all connected accounts with non-empty model lists first, then the Aether provider, then saved API providers and local models. Saved entries whose id is a ChatGPT provider are filtered out, so a managed account cannot be duplicated or edited as a normal connection. `catalogs` inserts account models under each `chatgpt:` id and removes any stale catalog with that prefix. `apiKey` returns `"managed-oauth"` for a connected account and null otherwise.
 
-`ProviderFactory.create` (`Llm.kt#L215`) checks `ChatGptProtocol.isProvider(config.id)` first and returns the singleton `chatGptProvider`, which `HarnessApp.kt#L129` constructs with `chatGpt::accessToken` and a model lookup from the current account state. `ModelCatalog.listModels` delegates to `ModelCatalog.chatGptModels`, which `HarnessApp.kt#L131` binds to `chatGpt.refreshModels`.
+`ProviderFactory.create` (`Llm.kt#L215`) checks `ChatGptProtocol.isProvider(config.id)` first and returns the singleton `chatGptProvider`, which `AetherApp.kt#L129` constructs with `chatGpt::accessToken` and a model lookup from the current account state. `ModelCatalog.listModels` delegates to `ModelCatalog.chatGptModels`, which `AetherApp.kt#L131` binds to `chatGpt.refreshModels`.
 
-`onDisconnected` in `HarnessApp.kt#L117` stops every running session or active subagent that used the account id, including sessions where the id appears in `usedProviderIds`.
+`onDisconnected` in `AetherApp.kt#L117` stops every running session or active subagent that used the account id, including sessions where the id appears in `usedProviderIds`.
 
 ## ChatGPT Provider Behavior
 
-`ChatGptProvider.body` (`ChatGptProvider.kt#L29`) starts from `OpenAiResponsesProvider.buildRequestBody`, removes `max_output_tokens`, `user`, and `reasoning`, then adds `reasoning.effort` and `summary: "auto"` from the resolved thinking level. It always includes `reasoning.encrypted_content`. For legacy messages with no native state, it replays stored `responseReasoning` onto matching `function_call` items when `responseProviderId` matches the account. Tools are wrapped in one namespace item: `{type: "namespace", name: "harness", description: ..., tools: [...]}`. Each replayed function call gets `namespace: "harness"`.
+`ChatGptProvider.body` (`ChatGptProvider.kt#L29`) starts from `OpenAiResponsesProvider.buildRequestBody`, removes `max_output_tokens`, `user`, and `reasoning`, then adds `reasoning.effort` and `summary: "auto"` from the resolved thinking level. It always includes `reasoning.encrypted_content`. For legacy messages with no native state, it replays stored `responseReasoning` onto matching `function_call` items when `responseProviderId` matches the account. Tools are wrapped in one namespace item: `{type: "namespace", name: "aether", description: ..., tools: [...]}`. Each replayed function call gets `namespace: "aether"`.
 
-`streamChat` (`ChatGptProvider.kt#L60`) posts to `RESOURCE + "/responses"` with a fresh access token. It rejects any function call whose namespace is not `harness`, any call id that is blank, any name not present in the requested tool list, and any arguments that do not parse as a JSON object. On `response.completed`, terminal output is authoritative. If `response.output` is empty, completed items from `response.output_item.done` are used instead. Reasoning items with non-blank `encrypted_content` become `ResponseState`. Tool calls are released only after successful completion, never from an interrupted stream. A completed response with status other than `completed` fails.
+`streamChat` (`ChatGptProvider.kt#L60`) posts to `RESOURCE + "/responses"` with a fresh access token. It rejects any function call whose namespace is not `aether`, any call id that is blank, any name not present in the requested tool list, and any arguments that do not parse as a JSON object. On `response.completed`, terminal output is authoritative. If `response.output` is empty, completed items from `response.output_item.done` are used instead. Reasoning items with non-blank `encrypted_content` become `ResponseState`. Tool calls are released only after successful completion, never from an interrupted stream. A completed response with status other than `completed` fails.
 
 `failure` maps error codes through `ChatGptProtocol.requestError` and `errorStatus`, and marks the usage-limit code as not retryable.
 
@@ -153,20 +153,20 @@ The app-level settings backup has a second layer. `SettingsBackupPolicy.canExpor
 - There is no periodic background token refresh. Connected accounts are refreshed once in `ChatGptAccounts.init` and then on demand through `accessToken`, model refresh, or a provider 401.
 - `ChatGptUsageLimits` and the panel's Limits & usage link open the ChatGPT settings page. The app does not read or display remaining plan limits or reset times from an API.
 
-Sources: [app/src/main/java/com/androidharness/app/chatgpt/ChatGptAccounts.kt](../app/src/main/java/com/androidharness/app/chatgpt/ChatGptAccounts.kt)#L25-L362), [app/src/main/java/com/androidharness/app/chatgpt/ChatGptProtocol.kt](../app/src/main/java/com/androidharness/app/chatgpt/ChatGptProtocol.kt)#L22-L215), [app/src/main/java/com/androidharness/app/chatgpt/ChatGptProvider.kt](../app/src/main/java/com/androidharness/app/chatgpt/ChatGptProvider.kt)#L15-L165), [app/src/main/java/com/androidharness/app/chatgpt/ChatGptThinking.kt](../app/src/main/java/com/androidharness/app/chatgpt/ChatGptThinking.kt)#L7-L50), [app/src/main/java/com/androidharness/app/ui/settings/ChatGptAccountsPanel.kt](../app/src/main/java/com/androidharness/app/ui/settings/ChatGptAccountsPanel.kt)#L22-L115), [app/src/main/java/com/androidharness/app/ui/settings/ConnectedAccountsSection.kt](../app/src/main/java/com/androidharness/app/ui/settings/ConnectedAccountsSection.kt)#L18-L74), [app/src/main/java/com/androidharness/app/data/KeyStoreManager.kt](../app/src/main/java/com/androidharness/app/data/KeyStoreManager.kt)#L9-L42), [app/src/main/java/com/androidharness/app/data/SettingsBackup.kt](../app/src/main/java/com/androidharness/app/data/SettingsBackup.kt)#L43-L75), [app/src/main/res/xml/backup_rules.xml](../app/src/main/res/xml/backup_rules.xml)#L12-L21), [app/src/main/res/xml/data_extraction_rules.xml](../app/src/main/res/xml/data_extraction_rules.xml)#L13-L34)
+Sources: [app/src/main/java/com/aether/app/chatgpt/ChatGptAccounts.kt](../app/src/main/java/com/aether/app/chatgpt/ChatGptAccounts.kt)#L25-L362), [app/src/main/java/com/aether/app/chatgpt/ChatGptProtocol.kt](../app/src/main/java/com/aether/app/chatgpt/ChatGptProtocol.kt)#L22-L215), [app/src/main/java/com/aether/app/chatgpt/ChatGptProvider.kt](../app/src/main/java/com/aether/app/chatgpt/ChatGptProvider.kt)#L15-L165), [app/src/main/java/com/aether/app/chatgpt/ChatGptThinking.kt](../app/src/main/java/com/aether/app/chatgpt/ChatGptThinking.kt)#L7-L50), [app/src/main/java/com/aether/app/ui/settings/ChatGptAccountsPanel.kt](../app/src/main/java/com/aether/app/ui/settings/ChatGptAccountsPanel.kt)#L22-L115), [app/src/main/java/com/aether/app/ui/settings/ConnectedAccountsSection.kt](../app/src/main/java/com/aether/app/ui/settings/ConnectedAccountsSection.kt)#L18-L74), [app/src/main/java/com/aether/app/data/KeyStoreManager.kt](../app/src/main/java/com/aether/app/data/KeyStoreManager.kt)#L9-L42), [app/src/main/java/com/aether/app/data/SettingsBackup.kt](../app/src/main/java/com/aether/app/data/SettingsBackup.kt)#L43-L75), [app/src/main/res/xml/backup_rules.xml](../app/src/main/res/xml/backup_rules.xml)#L12-L21), [app/src/main/res/xml/data_extraction_rules.xml](../app/src/main/res/xml/data_extraction_rules.xml)#L13-L34)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/chatgpt/ChatGptAccounts.kt`
-- `app/src/main/java/com/androidharness/app/chatgpt/ChatGptProtocol.kt`
-- `app/src/main/java/com/androidharness/app/chatgpt/ChatGptProvider.kt`
-- `app/src/main/java/com/androidharness/app/chatgpt/ChatGptThinking.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/ChatGptAccountsPanel.kt`
-- `app/src/main/java/com/androidharness/app/ui/settings/ConnectedAccountsSection.kt`
-- `app/src/main/java/com/androidharness/app/ui/common/ChatGptUsageLimits.kt`
-- `app/src/main/java/com/androidharness/app/data/KeyStoreManager.kt`
-- `app/src/main/java/com/androidharness/app/data/ProviderRepository.kt`
-- `app/src/main/java/com/androidharness/app/data/SettingsBackup.kt`
-- `app/src/main/java/com/androidharness/app/HarnessApp.kt`
+- `app/src/main/java/com/aether/app/chatgpt/ChatGptAccounts.kt`
+- `app/src/main/java/com/aether/app/chatgpt/ChatGptProtocol.kt`
+- `app/src/main/java/com/aether/app/chatgpt/ChatGptProvider.kt`
+- `app/src/main/java/com/aether/app/chatgpt/ChatGptThinking.kt`
+- `app/src/main/java/com/aether/app/ui/settings/ChatGptAccountsPanel.kt`
+- `app/src/main/java/com/aether/app/ui/settings/ConnectedAccountsSection.kt`
+- `app/src/main/java/com/aether/app/ui/common/ChatGptUsageLimits.kt`
+- `app/src/main/java/com/aether/app/data/KeyStoreManager.kt`
+- `app/src/main/java/com/aether/app/data/ProviderRepository.kt`
+- `app/src/main/java/com/aether/app/data/SettingsBackup.kt`
+- `app/src/main/java/com/aether/app/AetherApp.kt`
 - `app/src/main/res/xml/backup_rules.xml`
 - `app/src/main/res/xml/data_extraction_rules.xml`

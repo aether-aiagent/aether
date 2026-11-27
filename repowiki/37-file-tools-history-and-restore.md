@@ -40,7 +40,7 @@ flowchart TD
     O --> S[record restored]
 ```
 
-The write path is deliberately narrow. `WorkspaceFs.writeText` converts to UTF-8 bytes, and `FileFs.writeBytes` calls `atomicWrite`, which creates a `.harness-write-*.tmp` file in the target directory, writes and calls `fd.sync()`, preserves POSIX permissions when the target existed, and moves with `ATOMIC_MOVE` and `REPLACE_EXISTING` (`WorkspaceFs.kt` lines 176-216). A crash mid-write leaves either the old file or the new file, not a truncated one.
+The write path is deliberately narrow. `WorkspaceFs.writeText` converts to UTF-8 bytes, and `FileFs.writeBytes` calls `atomicWrite`, which creates a `.aether-write-*.tmp` file in the target directory, writes and calls `fd.sync()`, preserves POSIX permissions when the target existed, and moves with `ATOMIC_MOVE` and `REPLACE_EXISTING` (`WorkspaceFs.kt` lines 176-216). A crash mid-write leaves either the old file or the new file, not a truncated one.
 
 ## Invocation Chain
 
@@ -77,7 +77,7 @@ Binary detection rejects the read rather than dumping bytes. `FileInfoTool` uses
 
 ## History and Restore
 
-`WorkspaceFileHistory` stores one `.gz` payload and one `.json` metadata file per version in `filesDir/workspace-file-history` (`HarnessApp.kt` lines 174-175). `FileVersion` holds `id`, `sessionId`, `workspace`, `path`, `sha256`, `bytes`, `createdAt`, `reason`, and `deleted` (`WorkspaceFileHistory.kt` lines 19-24).
+`WorkspaceFileHistory` stores one `.gz` payload and one `.json` metadata file per version in `filesDir/workspace-file-history` (`AetherApp.kt` lines 174-175). `FileVersion` holds `id`, `sessionId`, `workspace`, `path`, `sha256`, `bytes`, `createdAt`, `reason`, and `deleted` (`WorkspaceFileHistory.kt` lines 19-24).
 
 `record` canonicalizes the location through `fs.resolve`, so the current grant is enforced even when reading history. It skips a non-file, skips a deletion unless `recordMissing` is true and an earlier version exists, refuses a file over 32 MiB, and returns the previous version when the SHA-256 is unchanged, which deduplicates repeated snapshots (`WorkspaceFileHistory.kt` lines 67-102). The `.gz` and `.json` files are written with `fd.sync()`, and the JSON is renamed into place only after the bytes are durable.
 
@@ -128,21 +128,21 @@ There is no age-based retention for file history. Versions are added on edit, re
 
 - Add a file tool by implementing `Tool` and adding it to `ToolRegistry.default`; include its name in `WorkspaceToolRouting.fileTools` if it should remain available when a selected workspace is read-only.
 - New mutation tools need a `checkpointTargets` entry so undo and history capture them.
-- `WorkspaceFileHistory` is constructed in `HarnessApp` and passed to both `CheckpointStore` and the tool registry, so replacing its directory moves both layers together.
+- `WorkspaceFileHistory` is constructed in `AetherApp` and passed to both `CheckpointStore` and the tool registry, so replacing its directory moves both layers together.
 
 ## Known gaps
 
 - FEATURES.md says file history copies survive chat truncation and restarts, which the file-backed store does. It also implies retention management; no automatic pruning of history files exists in `WorkspaceFileHistory`, only the 32 MiB per-file cap and SHA deduplication.
 
-Sources: [app/src/main/java/com/androidharness/app/tools/FileTools.kt](../app/src/main/java/com/androidharness/app/tools/FileTools.kt)#L101-L191), [app/src/main/java/com/androidharness/app/tools/FileTools.kt](../app/src/main/java/com/androidharness/app/tools/FileTools.kt)#L767-L917), [app/src/main/java/com/androidharness/app/data/WorkspaceFileHistory.kt](../app/src/main/java/com/androidharness/app/data/WorkspaceFileHistory.kt)#L59-L129), [app/src/main/java/com/androidharness/app/workspace/WorkspaceFs.kt](../app/src/main/java/com/androidharness/app/workspace/WorkspaceFs.kt)#L188-L216)
+Sources: [app/src/main/java/com/aether/app/tools/FileTools.kt](../app/src/main/java/com/aether/app/tools/FileTools.kt)#L101-L191), [app/src/main/java/com/aether/app/tools/FileTools.kt](../app/src/main/java/com/aether/app/tools/FileTools.kt)#L767-L917), [app/src/main/java/com/aether/app/data/WorkspaceFileHistory.kt](../app/src/main/java/com/aether/app/data/WorkspaceFileHistory.kt)#L59-L129), [app/src/main/java/com/aether/app/workspace/WorkspaceFs.kt](../app/src/main/java/com/aether/app/workspace/WorkspaceFs.kt)#L188-L216)
 
 ## Source files
 
-- `app/src/main/java/com/androidharness/app/tools/FileTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/FileHistoryTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/ReadToolOutputTool.kt`
-- `app/src/main/java/com/androidharness/app/data/WorkspaceFileHistory.kt`
-- `app/src/main/java/com/androidharness/app/data/CheckpointStore.kt`
-- `app/src/main/java/com/androidharness/app/tools/MoreTools.kt`
-- `app/src/main/java/com/androidharness/app/tools/PatchTools.kt`
-- `app/src/main/java/com/androidharness/app/workspace/WorkspaceFs.kt`
+- `app/src/main/java/com/aether/app/tools/FileTools.kt`
+- `app/src/main/java/com/aether/app/tools/FileHistoryTools.kt`
+- `app/src/main/java/com/aether/app/tools/ReadToolOutputTool.kt`
+- `app/src/main/java/com/aether/app/data/WorkspaceFileHistory.kt`
+- `app/src/main/java/com/aether/app/data/CheckpointStore.kt`
+- `app/src/main/java/com/aether/app/tools/MoreTools.kt`
+- `app/src/main/java/com/aether/app/tools/PatchTools.kt`
+- `app/src/main/java/com/aether/app/workspace/WorkspaceFs.kt`
